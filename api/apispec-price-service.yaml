@@ -1,0 +1,1931 @@
+openapi: 3.0.3
+info:
+  title: AB-Inbev B2B Pricing Conditions Service
+  description: '"REST API for AB-Inbev Pricing Conditions Service Microservice"'
+  license:
+    name: Anheuser-Busch InBev © 2023
+  version: '3.0'
+servers:
+  - url: https://services-uat.bees-platform.dev/api
+paths:
+  /price-service/v3:
+    post:
+      tags:
+        - Prices API
+      summary: Retrieves prices by customer ID. Taxes are not included
+      operationId: getPricesV3
+      parameters:
+        - name: country
+          in: header
+          description: Country/region. ISO 3166 alpha-2 country code
+          required: true
+          schema:
+            type: string
+        - name: requestTraceId
+          in: header
+          description: Cross transaction unique ID
+          required: true
+          schema:
+            type: string
+        - name: ignoreValidFrom
+          in: query
+          description: Filter to ignore field validFrom, if true it will return future prices
+          required: false
+          schema:
+            type: boolean
+            default: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceRequestV3'
+        required: true
+      responses:
+        '200':
+          description: Successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PriceResponseVoV3'
+        '204':
+          description: No Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Resource is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Accessing the resource you were trying to reach is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '405':
+          description: Method Not Allowed
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '503':
+          description: Service Unavailable. Please contact system administrator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+      security:
+        - Authorization: []
+  /price-service/v2:
+    get:
+      tags:
+        - Prices API
+      summary: Retrieves prices by customer ID. Taxes are not included
+      operationId: get
+      parameters:
+        - name: country
+          in: header
+          description: Country/region. ISO 3166 alpha-2 country code
+          required: true
+          schema:
+            type: string
+        - name: vendorId
+          in: header
+          description: Vendor ID for filtering by vendor
+          required: true
+          schema:
+            type: string
+        - name: vendorAccountId
+          in: header
+          description: Vendor Account ID for filtering by vendor account
+          required: true
+          schema:
+            type: string
+        - name: requestTraceId
+          in: header
+          description: Cross transaction unique ID
+          required: true
+          schema:
+            type: string
+        - name: priceListId
+          in: header
+          description: PRICE LIST ID for filtering by price list
+          required: false
+          schema:
+            type: string
+        - name: vendorItemIds
+          in: query
+          description: Vendor Item ID for filtering by vendor account item
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: page
+          in: query
+          description: The page selected
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: size
+          in: query
+          description: The quantity of how many items per page
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceResponseVoV2'
+        '400':
+          description: Resource is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Accessing the resource you were trying to reach is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '405':
+          description: Method Not Allowed
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '503':
+          description: Service Unavailable. Please contact system administrator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+      security:
+        - Authorization: []
+  /price-service/v1:
+    get:
+      tags:
+        - Prices API
+      summary: Retrieves prices by customer ID. Taxes are not included
+      operationId: get_1
+      parameters:
+        - name: accountId
+          in: query
+          description: AccountID for filtering by account
+          required: true
+          schema:
+            type: string
+        - name: country
+          in: header
+          description: Country/region. ISO 3166 alpha-2 country code
+          required: true
+          schema:
+            type: string
+        - name: requestTraceId
+          in: header
+          description: Cross transaction unique ID
+          required: true
+          schema:
+            type: string
+        - name: skus
+          in: query
+          description: 'Set of SKUs to filter e.g: ?skus=SKU0001,SKU0002,SKU0003,..N'
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: page
+          in: query
+          description: The page selected
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: size
+          in: query
+          description: The quantity of how many items per page
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceResponseVo'
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceResponseVo'
+        '400':
+          description: Resource is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Accessing the resource you were trying to reach is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '405':
+          description: Method Not Allowed
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '503':
+          description: Service Unavailable. Please contact system administrator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+      security:
+        - Authorization: []
+  /price-service/v1/offers:
+    get:
+      tags:
+        - Prices Offers API
+      summary: Retrieves prices offers by customer ID.
+      operationId: getOffers
+      parameters:
+        - name: country
+          in: header
+          description: Country/region. ISO 3166 alpha-2 country code
+          required: true
+          schema:
+            type: string
+        - name: requestTraceId
+          in: header
+          description: Cross transaction unique ID
+          required: true
+          schema:
+            type: string
+        - name: vendorId
+          in: header
+          description: Vendor ID for filtering by vendor
+          required: false
+          schema:
+            type: string
+        - name: vendorAccountId
+          in: header
+          description: Vendor Account ID for filtering by vendor account
+          required: false
+          schema:
+            type: string
+        - name: accountId
+          in: query
+          description: AccountID for filtering by account
+          required: false
+          schema:
+            type: string
+        - name: skus
+          in: query
+          description: 'Set of SKUs to filter e.g: ?skus=SKU0001,SKU0002,SKU0003,..N'
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: vendorItemIds
+          in: query
+          description: Vendor Item ID for filtering by vendor account item
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: Successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerProductPriceResponseVo'
+        '400':
+          description: Resource is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Accessing the resource you were trying to reach is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '405':
+          description: Method Not Allowed
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '503':
+          description: Service Unavailable. Please contact system administrator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+      security:
+        - Authorization: []
+  /price-relay/v3:
+    put:
+      tags:
+        - Prices V3
+      summary: Group Pricing Creation
+      description: Create prices for multiple customers.
+      operationId: createPrices
+      parameters:
+        - name: country
+          in: header
+          description: Country/region. ISO 3166 alpha-2 country code
+          required: true
+          schema:
+            type: string
+        - name: x-timestamp
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: requestTraceId
+          in: header
+          description: Cross transaction unique ID. Used to track the request across systems.
+          required: true
+          schema:
+            type: string
+        - name: parentRequestTraceId
+          in: header
+          description: Parent Cross transaction unique ID. Used to track the request from Bees Sync.
+          required: false
+          schema:
+            type: string
+        - name: timezone
+          in: header
+          required: true
+          schema:
+            type: string
+          example: America/Los_Angeles
+        - name: vendorId
+          in: header
+          description: Field where the vendorId must be informed when it is not possible to send the token
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PricesPerIdsVoV3'
+        required: true
+      responses:
+        '202':
+          description: Accept
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '501':
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '503':
+          description: Service Unavailable. This error can be a result of queue not available. In this case, nothing will be processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+      security:
+        - Authorization: []
+    delete:
+      tags:
+        - Prices V3
+      summary: Price Deletion
+      description: Delete price information for specific customers by SKU.
+      operationId: deletePricesV3
+      parameters:
+        - name: country
+          in: header
+          description: Country/region. ISO 3166 alpha-2 country code
+          required: true
+          schema:
+            type: string
+        - name: x-timestamp
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: requestTraceId
+          in: header
+          description: Cross transaction unique ID. Used to track the request across systems.
+          required: true
+          schema:
+            type: string
+        - name: parentRequestTraceId
+          in: header
+          description: Parent Cross transaction unique ID. Used to track the request from Bees Sync.
+          required: false
+          schema:
+            type: string
+        - name: vendorId
+          in: header
+          description: Field where the vendorId must be informed when it is not possible to send the token
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletePricesVoV3'
+        required: true
+      responses:
+        '202':
+          description: Accept
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '405':
+          description: Method Not Allowed
+        '500':
+          description: Internal Server Error
+        '501':
+          description: Not Implemented
+        '503':
+          description: Service Unavailable. This error can be a result of queue not available. In this case, nothing will be processed.
+      security:
+        - Authorization: []
+  /price-relay/v2:
+    put:
+      tags:
+        - Prices V2
+      summary: Group Pricing Creation
+      description: Create prices for multiple customers.
+      operationId: createPrices_1
+      parameters:
+        - name: country
+          in: header
+          description: Country/region. ISO 3166 alpha-2 country code
+          required: true
+          schema:
+            type: string
+        - name: x-timestamp
+          in: header
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: requestTraceId
+          in: header
+          description: Cross transaction unique ID. Used to track the request across systems.
+          required: true
+          schema:
+            type: string
+        - name: parentRequestTraceId
+          in: header
+          description: Parent Cross transaction unique ID. Used to track the request from Bees Sync.
+          required: false
+          schema:
+            type: string
+        - name: timezone
+          in: header
+          required: true
+          schema:
+            type: string
+          example: America/Los_Angeles
+        - name: vendorId
+          in: header
+          description: Field where the vendorId must be informed when it is not possible to send the token
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PricesPerAccountsVoV2'
+        required: true
+      responses:
+        '202':
+          description: Accept
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '501':
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '503':
+          description: Service Unavailable. This error can be a result of queue not available. In this case, nothing will be processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+      security:
+        - Authorization: []
+    delete:
+      tags:
+        - Prices V2
+      summary: Price Deletion
+      description: Delete price information for specific customers by SKU.
+      operationId: deletePrices
+      parameters:
+        - name: country
+          in: header
+          description: Country/region. ISO 3166 alpha-2 country code
+          required: true
+          schema:
+            type: string
+        - name: x-timestamp
+          in: header
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: requestTraceId
+          in: header
+          description: Cross transaction unique ID. Used to track the request across systems.
+          required: true
+          schema:
+            type: string
+        - name: parentRequestTraceId
+          in: header
+          description: Parent Cross transaction unique ID. Used to track the request from Bees Sync.
+          required: false
+          schema:
+            type: string
+        - name: vendorId
+          in: header
+          description: Field where the vendorId must be informed when it is not possible to send the token
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletePricesVoV2'
+        required: true
+      responses:
+        '202':
+          description: Accept
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '405':
+          description: Method Not Allowed
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable. This error can be a result of queue not available. In this case, nothing will be processed.
+      security:
+        - Authorization: []
+  /price-relay/v1:
+    put:
+      tags:
+        - Prices
+      summary: Group Pricing Creation
+      description: Create prices for multiple customers.
+      operationId: createPrices_2
+      parameters:
+        - name: country
+          in: header
+          description: Country/region. ISO 3166 alpha-2 country code
+          required: true
+          schema:
+            type: string
+        - name: x-timestamp
+          in: header
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: requestTraceId
+          in: header
+          description: Cross transaction unique ID. Used to track the request across systems.
+          required: true
+          schema:
+            type: string
+        - name: timezone
+          in: header
+          required: true
+          schema:
+            type: string
+          example: Africa/Johannesburg
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PricesPerAccountsVo'
+        required: true
+      responses:
+        '202':
+          description: Accept
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '501':
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '503':
+          description: Service Unavailable. This error can be a result of queue not available. In this case, nothing will be processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+      security:
+        - Authorization: []
+    delete:
+      tags:
+        - Prices
+      summary: Price Deletion
+      description: Delete price information for specific customers by SKU.
+      operationId: deletePrices_1
+      parameters:
+        - name: country
+          in: header
+          description: Country/region. ISO 3166 alpha-2 country code
+          required: true
+          schema:
+            type: string
+        - name: x-timestamp
+          in: header
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: requestTraceId
+          in: header
+          description: Cross transaction unique ID. Used to track the request across systems.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletePricesVo'
+        required: true
+      responses:
+        '202':
+          description: Accept
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '405':
+          description: Method Not Allowed
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable. This error can be a result of queue not available. In this case, nothing will be processed.
+      security:
+        - Authorization: []
+components:
+  schemas:
+    MessageResponse:
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: Code of response
+          format: int32
+        message:
+          type: string
+          description: Message of response
+        details:
+          type: array
+          description: Details of response
+          items:
+            type: string
+            description: Detail
+    ChargeResponseVoV3:
+      required:
+        - chargeId
+        - type
+        - value
+      type: object
+      properties:
+        chargeId:
+          type: string
+          description: The charge alphanumeric identifier
+          example: LOGISTIC_COST
+        type:
+          type: string
+          description: The charge type represents the way it's going to be calculated. It can be percent or cash
+          example: $ or %
+        value:
+          type: number
+          description: The value of the charge. Its application depends on the type and it is a financial value with the max number of decimal places as 15
+          example: 20.99
+        base:
+          type: number
+          description: The base replaces the base price of the sku in the charge calculation. It is a financial value with the max number of decimal places as 15
+          example: 10.99
+      description: ChargeResponseVoV3
+    PriceResponseVoV3:
+      required:
+        - basePrice
+        - vendorItemId
+      type: object
+      properties:
+        vendorItemId:
+          type: string
+          description: The vendor item identifier. It can have special characters
+          example: SKU0001-CASE
+        sku:
+          type: string
+          description: The sku alphanumeric identifier. It can have special characters but not dot
+          example: SKU0001
+        itemId:
+          type: string
+          description: The unique identifier of the Item
+          example: VkVORE9SX0lEO0lURU1fSUQ=
+        contractId:
+          type: string
+          description: The identifier of the Vendor and Account
+          example: VkVORE9SX0lEO0NPTlRSQUNUX0lE
+        deliveryCenterId:
+          type: string
+          description: The identifier of the Vendor´s Delivery Center
+          example: VkVORE9SX0lEO0RFTElWRVJZX0NFTlRFUl9JRA==
+        basePrice:
+          type: number
+          description: The base price for the current sku represented by a financial amount. The max number of decimal places is 15
+          example: 20.99
+        minimumPrice:
+          type: number
+          description: The minimum price for the current sku represented by a financial amount. The max number of decimal places is 15
+          example: 5.99
+        measureUnit:
+          type: string
+          description: The measure unit for the current sku
+          example: CS
+        type:
+          type: string
+          description: The type of the price measure unit
+          example: PER_UNIT or PER_UOM
+        deposit:
+          type: number
+          description: The deposit represents the can/cask price. It's represented by a financial amount and the max number of decimal places is 15
+          example: 3.99
+        consignment:
+          type: number
+          description: The deposit fee for kegs.
+          example: 0.75
+        quantityPerPallet:
+          type: integer
+          description: The quantity of the current sku that fit in a pallet. Used for the calculations of pallet deals
+          format: int32
+          example: 88
+        suggestedRetailPrice:
+          type: number
+          description: The suggested sales price for the POC applies to the final consumer, also known as PTC. The zone or partner define/ingest it and the Pricing ms´s doesn´t make any calculation. It´s also used to calculate the profitMargin parameter
+          example: 39.99
+        timezone:
+          type: string
+          description: A geographic region within which the same standard time is used.
+          example: America/Los_Angeles
+        validFrom:
+          type: string
+          description: The valid from date on format 'yyyy-MM-dd'. Indicates when this price starts to be used in the calculation process.
+          example: '2020-12-31'
+        taxes:
+          type: array
+          description: List of taxes
+          items:
+            $ref: '#/components/schemas/TaxResponseVoV3'
+        promotionalPrice:
+          $ref: '#/components/schemas/PromotionalPriceResponseVoV3'
+        charges:
+          type: array
+          description: List of charges
+          items:
+            $ref: '#/components/schemas/ChargeResponseVoV3'
+    PromotionalPriceResponseVoV3:
+      type: object
+      properties:
+        price:
+          type: number
+          description: The value for the promotional price which is represented by a financial amount with the max number of decimal places as 15
+          example: 10.99
+        externalId:
+          type: string
+          description: External Id for promotional price which is represented by an alphanumeric identifier
+          example: ZTPM
+        validUntil:
+          type: string
+          description: String to inform the expiration promotion date on format 'yyyy-MM-dd'.
+          example: '2021-12-31'
+      description: The promotional price
+    TaxAmountResponseVoV3:
+      type: object
+      properties:
+        taxId:
+          type: string
+          description: The id of the tax that is in the condition
+          example: IVA
+        threshold:
+          type: number
+          description: The value that will be used to compare the sum of the given tax id
+          example: 1000
+        scope:
+          type: string
+          description: Level which the Amount of tax will be compared to the threshold
+          example: ORDER
+        operator:
+          type: string
+          description: This is the operator indicating the type of comparison that is necessary to be done between scope and threshold
+          example: GE
+      description: The tax amount condition for the order
+    TaxBaseChangesCompareWithResponseVoV3:
+      required:
+        - base
+        - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: If it is an amount per unit of measurement or per item.
+          example: $
+        base:
+          type: number
+          description: The value of the base to be compared against the original tax base.
+          example: 5.99
+      description: In case vendors want to compare tax bases before applying the tax percentage.
+    TaxBaseChangesResponseVoV3:
+      type: object
+      properties:
+        reduction:
+          type: number
+          description: 'A percentage to decrease the value of the tax base mentioned on "taxes.baseChanges". Ex.: if sent 5, it will decrease the base by 5%.'
+          example: 5
+        increase:
+          type: number
+          description: 'A percentage to increase the value of the tax base mentioned on "taxes.baseChanges". Ex.: if sent 5, it will increase the base by 5%.'
+          example: 5
+        compareWith:
+          $ref: '#/components/schemas/TaxBaseChangesCompareWithResponseVoV3'
+      description: When sent, the tax will have the subtotal, other taxes, and charges as the base value for applying percentage tax.
+    TaxConditionResponseVoV3:
+      type: object
+      properties:
+        orderSubTotal:
+          $ref: '#/components/schemas/TaxOrderSubTotalResponseVoV3'
+        taxAmount:
+          $ref: '#/components/schemas/TaxAmountResponseVoV3'
+      description: The tax conditions
+    TaxDeductionBaseChangesResponseVoV3:
+      required:
+        - reduction
+      type: object
+      properties:
+        reduction:
+          type: number
+          description: The percentage to decrease the deduction base before calculating the actual deduction value when sent "taxes.deduction.type":"%".
+          example: 5
+      description: When the base for the deduction is meant to change before calculating the actual deduction value, when sent "taxes.deduction.type":"%".
+    TaxDeductionResponseVoV3:
+      required:
+        - type
+        - value
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'Two possible types, Amount($) or Percentage(%). When sent in Amount, the value is applied directly, with no secondary calculations. While percentage will be calculated based on the item subtotal and charges. '
+          example: $
+        value:
+          type: number
+          description: The value deducted when sent "taxes.deduction.type":"$"; when "taxes.deduction.type":"%", the percentage to be applied over the base explained on the "taxes.deduction".
+          example: 5
+        baseChanges:
+          $ref: '#/components/schemas/TaxDeductionBaseChangesResponseVoV3'
+      description: 'A deduction on the tax value. The base for deduction is the same one of the “taxes.BaseChanges”. Ex.: if the tax value = $10 and Deduction = $1, the new tax value = $9.'
+    TaxOrderSubTotalResponseVoV3:
+      type: object
+      properties:
+        minimumValue:
+          type: number
+          description: The minimum value represents the minimum order subtotal to this tax to be applied. It's a financial value with the max number of decimal places as 15
+          example: 2000.99
+      description: The order subtotal
+    TaxResponseVoV3:
+      required:
+        - hidden
+        - taxBaseInclusionIds
+        - taxId
+        - type
+        - value
+      type: object
+      properties:
+        taxId:
+          type: string
+          description: The taxId is an alphanumeric identifier for the current tax
+          example: IVA
+        type:
+          type: string
+          description: The tax type can be percent or cash and define how this tax will be calculated and applied
+          example: $ or %
+        value:
+          type: number
+          description: The value of the tax is a financial amount with the max number of decimal places as 15. Its application depends on the type
+          example: 20.99
+        taxBaseInclusionIds:
+          type: array
+          description: The tax base inclusion ids is a list of the dependent taxes. If all the taxes inside it are eligible to be applied then the current tax has this condition satisfied
+          example:
+            - IVA
+          items:
+            type: string
+            description: tax base inclusion id
+        hidden:
+          type: boolean
+          description: Indicates whether the tax is hidden
+          example: false
+        base:
+          type: number
+          description: The base value replaces the base price of the sku in the tax calculation. It's a financial value with the max number of decimal places as 15
+          example: 10.99
+        conditions:
+          $ref: '#/components/schemas/TaxConditionResponseVoV3'
+        proportional:
+          type: boolean
+          description: this property show when the tax should be reduced proportionately when a discount is applied
+        baseChanges:
+          $ref: '#/components/schemas/TaxBaseChangesResponseVoV3'
+        deduction:
+          $ref: '#/components/schemas/TaxDeductionResponseVoV3'
+      description: TaxResponseVoV3
+    PriceRequestV3:
+      required:
+        - itemId
+      type: object
+      properties:
+        itemId:
+          type: string
+          description: The unique identifier of the Item.
+        contractId:
+          type: string
+          description: The identifier of the Vendor and Account. Is required if priceListId is sent
+        deliveryCenterId:
+          type: string
+          description: The identifier of the Vendor´s Delivery Center
+        priceListId:
+          type: string
+          description: PRICE LIST ID for filtering by price list
+    PaginationResponseVoV2:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number. The first page is zero
+          format: int32
+          example: 4
+        size:
+          type: integer
+          description: Size of each page
+          format: int32
+          example: 20
+        totalPages:
+          type: integer
+          description: Total number of pages
+          format: int32
+          example: 5
+        totalElements:
+          type: integer
+          description: Total number of elements
+          format: int64
+          example: 100
+      description: pagination
+    PriceResponseVoV2:
+      required:
+        - prices
+      type: object
+      properties:
+        prices:
+          type: array
+          description: List of products
+          items:
+            $ref: '#/components/schemas/PriceVoV2'
+        pagination:
+          $ref: '#/components/schemas/PaginationResponseVoV2'
+    PriceVoV2:
+      required:
+        - basePrice
+        - vendorItemId
+      type: object
+      properties:
+        vendorAccountId:
+          type: string
+          description: The vendor account identifier.
+          example: '123456'
+        vendorId:
+          type: string
+          description: The vendor identifier.
+          example: '123456'
+        vendorItemId:
+          type: string
+          description: The vendor item identifier. It can have special characters
+          example: SKU0001-CASE
+        sku:
+          type: string
+          description: The sku alphanumeric identifier. It can have special characters but not dot
+          example: SKU0001
+        basePrice:
+          type: number
+          description: The base price for the current sku represented by a financial amount. The max number of decimal places is 15
+          example: 20.99
+        minimumPrice:
+          type: number
+          description: The minimum price for the current sku represented by a financial amount. The max number of decimal places is 15
+          example: 5.99
+        measureUnit:
+          type: string
+          description: The measure unit for the current sku
+          example: CS
+        type:
+          type: string
+          description: The type of the price measure unit
+          example: PER_UNIT or PER_UOM
+        deposit:
+          type: number
+          description: The deposit represents the can/cask price. It's represented by a financial amount and the max number of decimal places is 15
+          example: 3.99
+        consignment:
+          type: number
+          description: The deposit fee for kegs.
+          example: 0.75
+        quantityPerPallet:
+          type: integer
+          description: The quantity of the current sku that fit in a pallet. Used for the calculations of pallet deals
+          format: int32
+          example: 88
+        timezone:
+          type: string
+          description: A geographic region within which the same standard time is used.
+          example: America/Los_Angeles
+        validFrom:
+          type: string
+          description: The valid from date on format 'yyyy-MM-dd'. Indicates when this price starts to be used in the calculation process.
+          example: '2020-12-31'
+        promotionalPrice:
+          $ref: '#/components/schemas/PromotionalPriceResponseVoV2'
+      description: PriceVoV2
+    PromotionalPriceResponseVoV2:
+      type: object
+      properties:
+        price:
+          type: number
+          description: The value for the promotional price which is represented by a financial amount with the max number of decimal places as 15
+          example: 10.99
+        externalId:
+          type: string
+          description: External Id for promotional price which is represented by an alphanumeric identifier
+          example: ZTPM
+        validUntil:
+          type: string
+          description: String to inform the expiration promotion date on format 'yyyy-MM-dd'.
+          example: '2021-12-31'
+      description: The promotional price
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number. The first page is zero
+          format: int32
+          example: 4
+        size:
+          type: integer
+          description: Size of each page
+          format: int32
+          example: 20
+        totalPages:
+          type: integer
+          description: Total number of pages
+          format: int32
+          example: 5
+        totalElements:
+          type: integer
+          description: Total number of elements
+          format: int64
+          example: 100
+      description: pagination
+    PriceCompoundKey:
+      type: object
+      properties:
+        accountId:
+          type: string
+        sku:
+          type: string
+        validFrom:
+          type: string
+          format: date-time
+    PriceEntity:
+      type: object
+      properties:
+        basePrice:
+          type: number
+        measureUnit:
+          type: string
+        minimumPrice:
+          type: number
+        deposit:
+          type: number
+        quantityPerPallet:
+          type: integer
+          format: int32
+        promotionalPrice:
+          $ref: '#/components/schemas/PromotionalPrice'
+        sku:
+          type: string
+        validFrom:
+          type: string
+        consignment:
+          type: number
+        id:
+          $ref: '#/components/schemas/PriceCompoundKey'
+        deleted:
+          type: boolean
+        country:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+        timezone:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        updatedDate:
+          type: string
+          format: date-time
+        deletedDate:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+        accountId:
+          type: string
+      description: product
+    PriceResponseVo:
+      required:
+        - prices
+      type: object
+      properties:
+        prices:
+          type: array
+          description: List of products
+          items:
+            $ref: '#/components/schemas/PriceEntity'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    PromotionalPrice:
+      type: object
+      properties:
+        price:
+          type: number
+        externalId:
+          type: string
+        validUntil:
+          type: string
+    CustomerProductPriceResponseVo:
+      type: object
+      properties:
+        sku:
+          type: string
+          description: The product's alphanumeric identifier SKU for V1
+          example: '000000000000000099'
+        vendorItemId:
+          type: string
+          description: The product's alphanumeric item identifier for V2
+          example: '000000000000000099'
+        price:
+          type: number
+          description: The price for this product represented by a financial amount.
+          example: 25.28
+        originalPrice:
+          type: number
+          description: The full price for this product. It is a financial amount and will be null when there is no promotional price.
+          example: 30.28
+        validUntil:
+          type: string
+          description: Indicates the date until the promotional price is valid
+          example: '2021-12-15'
+    ChargeVoV2:
+      required:
+        - chargeId
+        - type
+        - value
+      type: object
+      properties:
+        chargeId:
+          type: string
+          description: The charge alphanumeric identifier
+          example: LOGISTIC_COST
+        type:
+          type: string
+          description: The charge type represents the way it's going to be calculated. It can be percent or cash
+          example: $ or %
+        value:
+          type: number
+          description: The value of the charge. Its application depends on the type and it is a financial value with the max number of decimal places as 15
+          example: 20.99
+        base:
+          type: number
+          description: The base replaces the base price of the sku in the charge calculation. It is a financial value with the max number of decimal places as 15
+          example: 10.99
+      description: ChargeVoV2
+    PriceVoV3:
+      required:
+        - basePrice
+        - measureUnit
+        - minimumPrice
+        - quantityPerPallet
+        - sku
+        - type
+        - vendorItemId
+      type: object
+      properties:
+        vendorItemId:
+          type: string
+          description: The vendor item identifier. It can have special characters
+          example: SKU0001-CASE
+        sku:
+          type: string
+          description: The sku alphanumeric identifier. It can have special characters but not dot
+          example: SKU0001
+        basePrice:
+          minimum: 0
+          type: number
+          description: The base price for the current sku represented by a financial amount. The max number of decimal places is 15
+          example: 20.99
+        measureUnit:
+          type: string
+          description: The measure unit for the current sku
+          example: CS
+        minimumPrice:
+          minimum: 0
+          type: number
+          description: The minimum price for the current sku represented by a financial amount. The max number of decimal places is 15
+          example: 5.99
+        deposit:
+          minimum: 0
+          type: number
+          description: The deposit represents the can/cask price. It's represented by a financial amount and the max number of decimal places is 15
+          example: 3.99
+        consignment:
+          minimum: 0
+          type: number
+          description: The deposit fee for kegs.
+          example: 0.75
+        quantityPerPallet:
+          minimum: 0
+          type: integer
+          description: The quantity of the current sku that fit in a pallet. Used for the calculations of pallet deals
+          format: int32
+          example: 88
+        suggestedRetailPrice:
+          minimum: 0
+          type: number
+          description: The suggested sales price for the POC applies to the final consumer, also known as PTC. The zone or partner define/ingest it and the Pricing ms´s doesn´t make any calculation. It´s also used to calculate the profitMargin parameter
+          example: 39.99
+        promotionalPrice:
+          $ref: '#/components/schemas/PromotionalPriceVoV2'
+        taxes:
+          type: array
+          description: List of taxes
+          items:
+            $ref: '#/components/schemas/TaxVoV2'
+        charges:
+          type: array
+          description: List of charges
+          items:
+            $ref: '#/components/schemas/ChargeVoV2'
+        validFrom:
+          type: string
+          description: The valid from date on format 'yyyy-MM-dd'. Indicates when this price starts to be used in the calculation process
+          example: '2020-12-31'
+        type:
+          type: string
+          description: The type of the price measure unit
+          example: PER_UNIT or PER_UOM
+      description: PriceVoV3
+    PricesPerIdsVoV3:
+      required:
+        - ids
+        - prices
+        - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type provide information of the data for a price list or of accounts.
+          example: ACCOUNT | PRICE_LIST | VENDOR | DELIVERY_CENTER
+        ids:
+          type: array
+          description: The list of Ids by type.
+          example:
+            - PRICELIST1
+            - ACCOUNT01
+            - VENDOR01
+            - DELIVERY_CENTER01
+          items:
+            type: string
+            description: id
+        prices:
+          type: array
+          description: Prices available for vendor accounts, price lists, vendor or delivery center.
+          items:
+            $ref: '#/components/schemas/PriceVoV3'
+    PromotionalPriceVoV2:
+      required:
+        - externalId
+        - price
+      type: object
+      properties:
+        price:
+          minimum: 0
+          type: number
+          description: The value for the promotional price which is represented by a financial amount with the max number of decimal places as 15
+          example: 10.99
+        externalId:
+          type: string
+          description: External Id for promotional price which is represented by an alphanumeric identifier
+          example: ZTPM
+        validUntil:
+          type: string
+          description: String to inform the expiration promotion date on format 'yyyy-MM-dd'.
+          example: '2021-12-31'
+      description: The promotional price
+    TaxBaseChangesCompareWithVoV2:
+      required:
+        - base
+        - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: If it is an amount per unit of measurement or per item.
+          example: AMOUNT_PER_UOM
+        base:
+          type: number
+          description: The value of the base to be compared against the original tax base.
+          example: 5.99
+      description: In case vendors want to compare tax bases before applying the tax percentage.
+    TaxBaseChangesVoV2:
+      type: object
+      properties:
+        reduction:
+          type: number
+          description: 'A percentage to decrease the value of the tax base mentioned on “taxes.baseChanges”. Ex.: if sent 5, it will decrease the base by 5%.'
+          example: 5.99
+        increase:
+          type: number
+          description: 'A percentage to increase the value of the tax base mentioned on “taxes.baseChanges”. Ex.: if sent 5, it will increase the base by 5%.'
+          example: 5.99
+        compareWith:
+          $ref: '#/components/schemas/TaxBaseChangesCompareWithVoV2'
+      description: When sent, the tax will have the subtotal, other taxes, and charges as the base value for applying percentage tax.
+    TaxConditionVoV2:
+      type: object
+      properties:
+        orderSubTotal:
+          $ref: '#/components/schemas/TaxOrderSubTotalVoV2'
+        taxAmount:
+          $ref: '#/components/schemas/taxAmount'
+      description: The tax conditions
+    TaxDeductionBaseChangesVoV2:
+      required:
+        - reduction
+      type: object
+      properties:
+        reduction:
+          type: number
+          description: The percentage to decrease the deduction base before calculating the actual deduction value when sent “taxes.deduction.type”:”%”.
+          example: 5.99
+      description: When the base for the deduction is meant to change before calculating the actual deduction value, when sent “taxes.deduction.type”:”%”.
+    TaxDeductionVoV2:
+      required:
+        - type
+        - value
+      type: object
+      properties:
+        type:
+          pattern: '[%$]'
+          type: string
+          description: 'Two possible types, Amount($) or Percentage(%). When sent in Amount, the value is applied directly, with no secondary calculations. While percentage will be calculated based on the item subtotal and charges. '
+          example: $
+        value:
+          type: number
+          description: The value deducted when sent “taxes.deduction.type”:”$”; when “taxes.deduction.type”:”%”, the percentage to be applied over the base explained on the “taxes.deduction”.
+          example: 5.99
+        baseChanges:
+          $ref: '#/components/schemas/TaxDeductionBaseChangesVoV2'
+      description: 'A deduction on the tax value. The base for deduction is the same one of the “taxes.BaseChanges”. Ex.: if the tax value = $10 and Deduction = $1, the new tax value = $9.'
+    TaxOrderSubTotalVoV2:
+      required:
+        - minimumValue
+      type: object
+      properties:
+        minimumValue:
+          minimum: 0
+          type: number
+          description: The minimum value represents the minimum order subtotal to this tax to be applied. It's a financial value with the max number of decimal places as 15
+          example: 2000.99
+      description: The order subtotal
+    TaxVoV2:
+      required:
+        - hidden
+        - taxBaseInclusionIds
+        - taxId
+        - type
+        - value
+      type: object
+      properties:
+        taxId:
+          type: string
+          description: The taxId is an alphanumeric identifier for the current tax
+          example: IVA
+        type:
+          type: string
+          description: The tax type can be percent or cash and define how this tax will be calculated and applied
+          example: $ or %
+        value:
+          type: number
+          description: The value of the tax is a financial amount with the max number of decimal places as 15. Its application depends on the type
+          example: 20.99
+        taxBaseInclusionIds:
+          type: array
+          description: The tax base inclusion ids is a list of the dependent taxes. If all the taxes inside it are eligible to be applied then the current tax has this condition satisfied
+          example:
+            - IVA
+          items:
+            type: string
+            description: tax base inclusion id
+        hidden:
+          type: boolean
+          description: Indicates whether the tax is hidden
+          example: false
+        base:
+          type: number
+          description: The base value replaces the base price of the sku in the tax calculation. It's a financial value with the max number of decimal places as 15
+          example: 10.99
+        conditions:
+          $ref: '#/components/schemas/TaxConditionVoV2'
+        proportional:
+          type: boolean
+        baseChanges:
+          $ref: '#/components/schemas/TaxBaseChangesVoV2'
+        deduction:
+          $ref: '#/components/schemas/TaxDeductionVoV2'
+      description: TaxVoV2
+    taxAmount:
+      required:
+        - operator
+        - scope
+        - taxId
+        - threshold
+      type: object
+      properties:
+        taxId:
+          type: string
+          description: The id of the tax that is in the condition
+          example: IVA
+        threshold:
+          type: number
+          description: The value that will be used to compare the sum of the given tax id
+          example: 1000
+        scope:
+          type: string
+          description: Level which the Amount of tax will be compared to the threshold
+          example: ORDER
+        operator:
+          type: string
+          description: This is the operator indicating the type of comparison that is necessary to be done between scope and threshold
+          example: GE
+      description: This new condition is not a requirement for the ingestion i.e. if it is not sent, the ingestion should still work as is. However, if the country/vendor would like to apply this tax, all the fields are required
+    PricesPerAccountsVoV2:
+      required:
+        - prices
+        - vendorAccountIds
+      type: object
+      properties:
+        vendorAccountIds:
+          type: array
+          description: The list of vendorAccountIds
+          example:
+            - '1234567'
+            - '4567123'
+            - '789785'
+          items:
+            type: string
+            description: vendorAccountId
+        prices:
+          type: array
+          description: Available prices for the incoming vendor accounts.
+          items:
+            $ref: '#/components/schemas/PriceVoV2'
+    ChargeVo:
+      required:
+        - chargeId
+        - type
+        - value
+      type: object
+      properties:
+        chargeId:
+          type: string
+          description: The charge alphanumeric identifier
+          example: LOGISTIC_COST
+        type:
+          type: string
+          description: The charge type represents the way it's going to be calculated. It can be percent or cash
+          example: $ or %
+        value:
+          type: number
+          description: The value of the charge. Its application depends on the type and it is a financial value with the max number of decimal places as 15
+          example: 20.99
+        base:
+          type: number
+          description: The base replaces the base price of the sku in the charge calculation. It is a financial value with the max number of decimal places as 15
+          example: 10.99
+      description: ChargeVo
+    PriceVo:
+      required:
+        - basePrice
+        - measureUnit
+        - minimumPrice
+        - quantityPerPallet
+        - sku
+      type: object
+      properties:
+        sku:
+          type: string
+          description: The sku alphanumeric identifier. It can have special characters but not dot
+          example: SKU0001
+        basePrice:
+          type: number
+          description: The base price for the current sku represented by a financial amount. The max number of decimal places is 15
+          example: 20.99
+        measureUnit:
+          type: string
+          description: The measure unit for the current sku
+          example: CS
+        minimumPrice:
+          type: number
+          description: The minimum price for the current sku represented by a financial amount. The max number of decimal places is 15
+          example: 5.99
+        deposit:
+          type: number
+          description: The deposit represents the can/cask price. It's represented by a financial amount and the max number of decimal places is 15
+          example: 3.99
+        quantityPerPallet:
+          type: integer
+          description: The quantity of the current sku that fit in a pallet. Used for the calculations of pallet deals
+          format: int32
+          example: 88
+        promotionalPrice:
+          $ref: '#/components/schemas/PromotionalPriceVo'
+        taxes:
+          type: array
+          description: List of taxes
+          items:
+            $ref: '#/components/schemas/TaxVo'
+        charges:
+          type: array
+          description: List of charges
+          items:
+            $ref: '#/components/schemas/ChargeVo'
+        validFrom:
+          type: string
+          description: The valid from date on format 'yyyy-MM-dd'. Indicates when this price starts to be used in the calculation process
+          example: '2020-12-31'
+        consignment:
+          minimum: 0
+          type: number
+          description: Consignment is a deposit fee for non-returnable items
+      description: PriceVo
+    PricesPerAccountsVo:
+      required:
+        - accounts
+        - prices
+      type: object
+      properties:
+        accounts:
+          uniqueItems: true
+          type: array
+          description: The list of accounts
+          example:
+            - '1234567'
+            - '4567123'
+            - '789785'
+          items:
+            type: string
+            description: account
+        prices:
+          type: array
+          description: Available prices for the incoming accounts.
+          items:
+            $ref: '#/components/schemas/PriceVo'
+    PromotionalPriceVo:
+      required:
+        - externalId
+        - price
+      type: object
+      properties:
+        price:
+          type: number
+          description: The value for the promotional price which is represented by a financial amount with the max number of decimal places as 15
+          example: 10.99
+        externalId:
+          type: string
+          description: External Id for promotional price which is represented by an alphanumeric identifier
+          example: ZTPM
+        validUntil:
+          type: string
+          description: The valid until date on format 'yyyy-MM-dd'. Indicates the deadline that this promotional price is valid to be used in the calculation process
+          example: '2020-12-31'
+      description: The promotional price
+    TaxConditionVo:
+      type: object
+      properties:
+        orderSubTotal:
+          $ref: '#/components/schemas/TaxOrderSubTotalVo'
+      description: The tax conditions
+    TaxOrderSubTotalVo:
+      type: object
+      properties:
+        minimumValue:
+          minimum: 0
+          type: number
+          description: The minimum value represents the minimum order subtotal to this tax to be applied. It's a financial value with the max number of decimal places as 15
+          example: 2000.99
+      description: The order subtotal
+    TaxVo:
+      required:
+        - hidden
+        - taxBaseInclusionIds
+        - taxId
+        - type
+        - value
+      type: object
+      properties:
+        taxId:
+          type: string
+          description: The taxId is an alphanumeric identifier for the current tax
+          example: IVA
+        type:
+          type: string
+          description: The tax type can be percent or cash and define how this tax will be calculated and applied
+          example: $ or %
+        value:
+          type: number
+          description: The value of the tax is a financial amount with the max number of decimal places as 15. Its application depends on the type
+          example: 20.99
+        taxBaseInclusionIds:
+          type: array
+          description: The tax base inclusion ids is a list of the dependent taxes. If all the taxes inside it are eligible to be applied then the current tax has this condition satisfied
+          example:
+            - IVA
+          items:
+            type: string
+            description: tax base inclusion id
+        hidden:
+          type: boolean
+          description: Indicates whether the tax is hidden
+          example: false
+        base:
+          type: number
+          description: The base value replaces the base price of the sku in the tax calculation. It's a financial value with the max number of decimal places as 15
+          example: 10.99
+        conditions:
+          $ref: '#/components/schemas/TaxConditionVo'
+      description: TaxVo
+    DeletePricesVoV3:
+      required:
+        - ids
+        - type
+        - vendorItemIds
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type provide information of the data for a price list or of accounts.
+          example: ACCOUNT | PRICE_LIST | VENDOR | DELIVERY_CENTER
+        ids:
+          type: array
+          description: The list of ids for type
+          example:
+            - '1234567'
+            - '4567123'
+            - '789785'
+          items:
+            type: string
+            description: id
+        vendorItemIds:
+          type: array
+          description: The list of vendorItemIds to be deleted.
+          example:
+            - CORONA-CASE
+            - CORONA-CAN
+          items:
+            type: string
+            description: vendorItemId
+    DeletePricesVoV2:
+      required:
+        - vendorAccountIds
+        - vendorItemIds
+      type: object
+      properties:
+        vendorAccountIds:
+          type: array
+          description: The list of vendorAccountIds.
+          example:
+            - '1234567'
+            - '4567123'
+            - '789785'
+          items:
+            type: string
+            description: vendorAccountId
+        vendorItemIds:
+          type: array
+          description: The list of vendorItemIds to be deleted.
+          example:
+            - CORONA-CASE
+            - CORONA-CAN
+          items:
+            type: string
+            description: vendorItemId
+    DeletePricesVo:
+      required:
+        - accounts
+        - skus
+      type: object
+      properties:
+        accounts:
+          uniqueItems: true
+          type: array
+          description: The list of accountIds.
+          example:
+            - '1234567'
+            - '4567123'
+            - '789785'
+          items:
+            type: string
+            description: account
+        skus:
+          uniqueItems: true
+          type: array
+          description: The list of skus to be deleted.
+          example:
+            - SKU0001
+            - SKU0002
+            - SKU0003
+          items:
+            type: string
+            description: sku
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
