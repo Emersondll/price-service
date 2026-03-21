@@ -1,0 +1,14 @@
+---
+apiVersion: bees-platform.com/v1alpha1
+kind: APIConfig
+metadata:
+  name: price-service
+  display: Price Service
+spec:
+  path: price-service-apim
+  environments:
+    - global
+    - dtc
+  apiSpec:
+    format: "swagger-link-json"
+    source: "http://conferenceapi.azurewebsites.net/?format=json"
