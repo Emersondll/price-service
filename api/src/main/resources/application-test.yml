@@ -1,0 +1,5 @@
+# Pact.io configuration
+pactbroker:
+  host: ${PACT_HOST:ab-inbev.pactflow.io}
+  auth:
+    token: ${PACT_TOKEN:ep_slrX3zdQF3SHD6D6wgA}
