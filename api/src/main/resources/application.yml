@@ -1,0 +1,374 @@
+server:
+  tomcat:
+    accept-count: ${TOMCAT_QUEUE:200}
+    min-spare-threads: ${TOMCAT_MIN_THREAD:10}
+    max-threads: ${TOMCAT_MAX_THREAD:200}
+    threads:
+      max: ${TOMCAT_MAX_THREAD:200}
+      min-spare: ${TOMCAT_MIN_THREAD:10}
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+  http2:
+    enabled: true
+  compression:
+    enabled: true
+    mime-types: application/json
+    min-response-size: 1024
+  max-http-header-size: ${MAX_HTTP_HEADER_SIZE:2097152}
+
+#Logs
+logging:
+  newRelic:
+    appender:
+      enabled: ${NEW_RELIC_APPENDER_ENABLED:false}
+  level:
+    ROOT: ${LOG_ROOT_LEVEL:INFO}
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: ${LOG_REQUEST_LEVEL:DEBUG}
+  request-payload:
+    enabled: ${LOG_REQUEST_ENABLED:true}
+    max-payload-length: ${LOG_REQUEST_MAX_PAYLOAD_LENGTH:1000}
+
+spring:
+  application:
+    name: price-service
+  lifecycle:
+    timeout-per-shutdown-phase: ${SPRING_TIMEOUT_SHUTDOWN_PHASE:18s}
+  data:
+    mongodb:
+      uri: ${MONGO_CONNECTION_STRING:mongodb://emerson_lima_ab_inbev_com:woeVzAK9HoR9M9Xtw04l@cos-us-uat-eus2-plt-prc-prices.mongo.cosmos.azure.com:10255/?ssl=true&readPreference=secondaryPreferred&authSource=Prices&authMechanism=SCRAM-SHA-256&appName=emerson_lima_ab_inbev_com}
+      database: ${MONGO_DATABASE_NAME:Prices}
+
+security:
+  enabled: ${ENABLE_VALIDATION_JWT:false}
+  jwtApps: ${JWT_APPS:oncustomer,ontap,supplier}
+
+database:
+  queryTimeoutMS: ${QUERY_TIMEOUT_MS:10000}
+  zone:
+    collections:
+      AR: ARPrices
+      BR: BRPrices
+      CL: CLPrices
+      CO: COPrices
+      DO: DOPrices
+      EC: ECPrices
+      MX: MXPrices
+      PA: PAPrices
+      PY: PYPrices
+      SV: SVPrices
+      TZ: TZPrices
+      UY: UYPrices
+      ZA: ZAPrices
+    collectionsV2:
+      AR: ARPrices_V2
+      BE: BEPrices_V2
+      BR: BRPrices_V2
+      CA: CAPrices_V2
+      CL: CLPrices_V2
+      DE: DEPrices_V2
+      ID: IDPrices_V2
+      NL: NLPrices_V2
+      PE: PEPrices_V2
+      PH: PHPrices_V2
+      SV: SVPrices_V2
+      US: USPrices_V2
+
+# Swagger configurations
+swagger:
+  url: ${SWAGGER_BASE_URL:http://localhost:${server.port}}
+  username: ${SWAGGER_USERNAME:pricing}
+  password: ${SWAGGER_PASSWORD:pricing}
+
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_API_DOCS_ENABLED:true}
+  swagger-ui:
+    url: ${swagger.url}/v3/api-docs
+    configUrl: ${swagger.url}/v3/api-docs/swagger-config
+    displayRequestDuration: true
+    validatorUrl: none
+
+threadPoolSize: ${BUSINESS_RULE_THREAD_POOL_SIZE:4}
+
+# Enable the "/refresh" endpoint for dynamic configuration changes
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    enabled-by-default: false
+  health:
+    mongo:
+      enabled: ${HEALTH_CHECK_MONGO_DEFAULT_ENABLED:false}
+    customMongoHealth:
+      enabled: ${HEALTH_CHECK_MONGO_ENABLED:true}
+    probes:
+      enabled: true
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+      validate-group-membership: false
+      enabled: true
+      group:
+        liveness:
+          include: livenessState,customMongoHealth
+        readiness:
+          include: readinessState
+
+threadPool:
+  pricing:
+    corePoolSize: 10
+    maxPoolSize: 50
+    queueCapacity: 500
+
+service:
+  timeout: ${TIMEOUT_REQUEST_SERVICE:2000}
+
+priceupfront:
+  countriesEnabled: ${UPCOMING_PRICES_COUNTRIES:AR,PY}
+
+supportedproperties:
+  countries: ${SUPPORTED_COUNTRIES:AR,BR,CO,DO,EC,MX,PA,PY,SV,TZ,UY,ZA}
+  countriesV2: ${SUPPORTED_COUNTRIES_V2:BE,BR,CA,DE,NL,PE,US}
+  countriesV3: ${SUPPORTED_COUNTRIES_V3:AR,BE,BR,CA,CL,DE,NL,SV,US}
+
+offerspointtov2:
+  enabledCountries: ${OFFERS_POINT_TO_V2:CA,US,PE}
+
+pricelistpriority:
+  countriesEnabled: ${COUNTRIES_WITH_PRICE_LIST_PRIORITY:}
+
+pricing:
+  configuration:
+    default:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    ar:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: ON_EACH_TAX
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    be:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    br:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: ON_EACH_TAX
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    ca:
+      pricesIgnoreTaxCondition: false
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: false
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: true
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    cl:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    co:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    de:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: true
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    do:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    ec:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    mx:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: ON_EACH_TAX
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    nl:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    pa:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: true
+      excludeChargeFromBrowsePrice: true
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    pe:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: ON_EACH_TAX
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    ph:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: true
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    py:
+      pricesIgnoreTaxCondition: false
+      whenApplyRoundingOnTaxes: ON_EACH_TAX
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    sv:
+      pricesIgnoreTaxCondition: false
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: true
+    tz:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: NONE
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: true
+      taxIncludesDeposit: true
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    us:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: true
+      excludeChargeFromBrowsePrice: true
+      daysBehindToShowValidUntil: 14
+      excludeConditionalTaxesFromBrowsePrice: false
+    uy:
+      pricesIgnoreTaxCondition: false
+      whenApplyRoundingOnTaxes: IN_THE_END
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: false
+      taxIncludesDeposit: false
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+    za:
+      pricesIgnoreTaxCondition: true
+      whenApplyRoundingOnTaxes: NONE
+      roundTaxesAndDiscountBeforeSubtotalAndTotal: true
+      priceIncludeDeposit: true
+      taxIncludesDeposit: true
+      excludeTaxesFromBrowsePrice: false
+      excludeChargeFromBrowsePrice: false
+      daysBehindToShowValidUntil: 0
+      excludeConditionalTaxesFromBrowsePrice: false
+
+api:
+  defaultVendorId:
+    BR: 44092477-b173-477a-a24a-25eeab20fccb
+    CA: 86e691a4-16a8-4478-bc43-461c76fad14b
+    PE: 1769e9ef-722b-4c19-b136-b3fc69ea15e8
+  useDefaultVendorId: ${COUNTRIES_WITH_DEFAULT_VENDOR_ID:PE}
+  priceV3RequestBodyItemsLimit: ${PRICE_V3_REQUEST_BODY_ITEMS_LIMIT:50}
+  excludeDDCAndVendorIdFromQuery: ${VENDOR_ID_LIST_WITH_SOME_PARAMETERS_NOT_INCLUDED_IN_QUERY:58870cbc-7809-4e18-ba59-986b4992c842}
+
+toggle:
+  code:
+    BEESPR_19558: ${BEESPR_19558:false}
+    BEESPR_22389: ${BEESPR_22389:false}
