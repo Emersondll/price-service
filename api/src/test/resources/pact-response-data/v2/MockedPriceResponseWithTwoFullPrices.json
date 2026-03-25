@@ -1,0 +1,140 @@
+{
+  "priceEntities": [
+    {
+      "id": {
+        "id": "100013100013",
+        "type": "ACCOUNT",
+        "vendorItemId": "SKOL-BOTTLE",
+        "vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"
+      },
+      "sku": "SKOL",
+      "basePrice": 12.90,
+      "measureUnit": "CS",
+      "type": "PER_UOM",
+      "minimumPrice": 10.00,
+      "deposit": 0.00,
+      "consignment": 0.00,
+      "quantityPerPallet": 1,
+      "taxes": {
+        "IVA": {
+          "taxId": "IVA",
+          "type": "%",
+          "value": 20,
+          "taxBaseInclusionIds": [],
+          "hidden": false,
+          "base": 10.0,
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": 1000.05
+            }
+          }
+        },
+        "IEPS": {
+          "taxId": "IEPS",
+          "type": "%",
+          "value": 3.15,
+          "taxBaseInclusionIds": [
+            "IVA-2"
+          ],
+          "hidden": false,
+          "base": 1.70,
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": 1000.05
+            }
+          }
+        }
+      },
+      "charges": {
+        "LOGISTIC_COST": {
+          "chargeId": "LOGISTIC_COST",
+          "type": "$",
+          "value": 20.0,
+          "base": 0
+        }
+      },
+      "promotionalPrice": {
+        "price": 10.19,
+        "externalId": "PROMOTIONAL_PRICE"
+      },
+      "deleted": false,
+      "timezone": "America/New_York",
+      "country": "US",
+      "timestamp": 1590386162572,
+      "createdDate": "2020-07-10T17:31:34.010+00:00",
+      "updatedDate": "2020-07-14T14:09:33.246+00:00",
+      "validTo": "2999-07-14T14:09:33.246+00:00"
+    },
+    {
+      "id": {
+        "id": "100013100013",
+        "type": "ACCOUNT",
+        "vendorItemId": "BRAHMA-BOTTLE",
+        "vendorId": "9d72627a-02ea-4754-986b-0b29d741f5f0"
+      },
+      "sku": "BRAHMA",
+      "basePrice": 13.90,
+      "measureUnit": "CS",
+      "type": "PER_UOM",
+      "minimumPrice": 10.00,
+      "deposit": 0.00,
+      "consignment": 0.00,
+      "quantityPerPallet": 1,
+      "taxes": {
+        "IVA": {
+          "taxId": "IVA",
+          "type": "%",
+          "value": 20,
+          "taxBaseInclusionIds": [],
+          "hidden": false,
+          "base": 10.0,
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": 1000.05
+            }
+          }
+        },
+        "IEPS": {
+          "taxId": "IEPS",
+          "type": "%",
+          "value": 3.15,
+          "taxBaseInclusionIds": [
+            "IVA-2"
+          ],
+          "hidden": false,
+          "base": 1.70,
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": 1000.05
+            }
+          }
+        }
+      },
+      "charges": {
+        "LOGISTIC_COST": {
+          "chargeId": "LOGISTIC_COST",
+          "type": "$",
+          "value": 20.0,
+          "base": 0
+        }
+      },
+      "promotionalPrice": {
+        "price": 11.19,
+        "externalId": "PROMOTIONAL_PRICE"
+      },
+      "deleted": false,
+      "timezone": "America/New_York",
+      "country": "US",
+      "timestamp": 1590386162572,
+      "createdDate": "2020-07-10T17:31:34.010+00:00",
+      "updatedDate": "2020-07-14T14:09:33.246+00:00",
+      "validTo": "2999-07-14T14:09:33.246+00:00"
+    }
+  ],
+  "pagination": {
+    "page": 0,
+    "size": 2,
+    "totalElements": 2,
+    "totalPages": 1
+  }
+}
