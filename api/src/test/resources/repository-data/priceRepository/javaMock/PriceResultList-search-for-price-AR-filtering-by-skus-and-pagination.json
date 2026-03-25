@@ -1,0 +1,87 @@
+{
+  "pagination": {
+    "page": 0,
+    "size": 2,
+    "totalPages": 2,
+    "totalElements": 3
+  },
+  "priceEntities": [
+    {
+      "id": {
+        "accountId": "ACCOUNT_ID-1",
+        "sku": "SKU_1-1",
+        "validFrom": "2031-12-31"
+      },
+      "basePrice": "10.00",
+      "country": "AR",
+      "createdDate": "2000-12-30T23:59:59+00:00",
+      "deleted": false,
+      "measureUnit": "CS",
+      "minimumPrice": "8.40",
+      "sku": "SKU_1-1",
+      "timestamp": 1617628719,
+      "timezone": "America/Buenos_Aires",
+      "updatedDate": "2000-12-30T23:59:59+00:00",
+      "deposit": "2.99",
+      "consignment": "0.85",
+      "quantityPerPallet": 78,
+      "promotionalPrice": {
+        "price": "11.99",
+        "externalId": "ZTPM",
+        "validUntil": "2032-12-31"
+      },
+      "taxes": {
+        "VALID_tax-1": {
+          "taxId": "VALID_tax-1",
+          "type": "$",
+          "value": "20.19",
+          "hidden": false,
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": "2000.19"
+            }
+          }
+        },
+        "VALID_tax-2": {
+          "taxId": "VALID_tax-2",
+          "type": "%",
+          "taxBaseInclusionIds": [
+            "VALID_tax-1"
+          ],
+          "hidden": false,
+          "base": "10.19",
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": "2000.19"
+            }
+          }
+        }
+      },
+      "charges": {
+        "VALID_CHARGE-1": {
+          "chargeId": "VALID_CHARGE-1",
+          "type": "$",
+          "value": "20.19"
+        }
+      }
+    },
+    {
+      "id": {
+        "accountId": "ACCOUNT_ID-1",
+        "sku": "SKU_1-2",
+        "validFrom": "2035-12-31"
+      },
+      "basePrice": "20.02",
+      "country": "AR",
+      "createdDate": "2000-12-30T23:59:59+00:00",
+      "deleted": false,
+      "measureUnit": "CS",
+      "minimumPrice": "19.22",
+      "sku": "SKU_1-2",
+      "timestamp": 1617628719,
+      "timezone": "America/Buenos_Aires",
+      "updatedDate": "2000-12-30T23:59:59+00:00",
+      "validTo": "2040-12-30T23:59:59+00:00"
+    }
+  ]
+}
