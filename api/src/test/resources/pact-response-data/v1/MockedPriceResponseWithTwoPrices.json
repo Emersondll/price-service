@@ -1,0 +1,89 @@
+{
+  "priceEntities": [
+    {
+      "id": {
+        "accountId": "0000100004",
+        "sku": "sku0001"
+      },
+      "basePrice": "100.00",
+      "minimumPrice": "10.00",
+      "measureUnit": "CS",
+      "deposit": "0.00",
+      "consignment": "0.00",
+      "deleted": false,
+      "quantityPerPallet": 1,
+      "timezone": "America/Sao_Paulo",
+      "country": "BR",
+      "timestamp": 1590386162572,
+      "createdDate": "2020-07-10T17:31:34.010+00:00",
+      "updatedDate": "2020-07-14T14:09:33.246+00:00",
+      "taxes": {
+        "IVA": {
+          "taxId": "IVA",
+          "type": "%",
+          "value": 20.0,
+          "taxBaseInclusionIds": [],
+          "hidden": false,
+          "base": 10.0
+        }
+      },
+      "promotionalPrice": {
+        "price": 10.19,
+        "externalId": "ZTPM"
+      },
+      "charges": {
+        "LOGISTIC_COST": {
+          "chargeId": "LOGISTIC_COST",
+          "type": "$",
+          "value": 20.0,
+          "base": 0
+        }
+      }
+    },
+    {
+      "id": {
+        "accountId": "0000100004",
+        "sku": "sku0002"
+      },
+      "basePrice": "150.00",
+      "minimumPrice": "15.00",
+      "measureUnit": "CS",
+      "deposit": "0.00",
+      "deleted": false,
+      "quantityPerPallet": 1,
+      "timezone": "America/Sao_Paulo",
+      "country": "BR",
+      "timestamp": 1590386162572,
+      "createdDate": "2020-07-10T17:31:34.010+00:00",
+      "updatedDate": "2020-07-14T14:09:33.246+00:00",
+      "taxes": {
+        "IVA": {
+          "taxId": "IVA",
+          "type": "%",
+          "value": 20.0,
+          "taxBaseInclusionIds": [],
+          "hidden": false,
+          "base": 12.5
+        }
+      },
+      "promotionalPrice": {
+        "price": 10.19,
+        "externalId": "ZTPM"
+      },
+      "charges": {
+        "LOGISTIC_COST": {
+          "chargeId": "LOGISTIC_COST",
+          "type": "$",
+          "value": 20.0,
+          "base": 0
+        }
+      }
+    }
+  ],
+  "pagination": {
+    "page": 0,
+    "size": 50,
+    "totalElements": 100,
+    "totalPages": 5
+  }
+}
