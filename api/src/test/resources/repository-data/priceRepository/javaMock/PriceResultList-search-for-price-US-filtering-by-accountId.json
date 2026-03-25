@@ -1,0 +1,117 @@
+{
+  "pagination": {
+    "page": 0,
+    "size": 4,
+    "totalPages": 1,
+    "totalElements": 4
+  },
+  "priceEntities": [
+    {
+      "id": {
+        "accountId": "ACCOUNT_ID-1",
+        "sku": "SKU_1-2",
+        "validFrom": null
+      },
+      "basePrice": "10.02",
+      "country": "US",
+      "createdDate": "2000-12-30T23:59:59+00:00",
+      "deleted": false,
+      "measureUnit": "CS",
+      "minimumPrice": "8.42",
+      "sku": "SKU_1-2",
+      "timestamp": 1617628719,
+      "timezone": "America/Sao_Paulo",
+      "updatedDate": "2000-12-30T23:59:59+00:00",
+      "deposit": "2.99",
+      "consignment": "0.85",
+      "quantityPerPallet": 78,
+      "promotionalPrice": {
+        "price": "11.99",
+        "externalId": "ZTPM",
+        "validUntil": "2032-12-31"
+      },
+      "taxes": {
+        "VALID_tax-1": {
+          "taxId": "VALID_tax-1",
+          "type": "$",
+          "value": "20.19",
+          "hidden": false,
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": "2000.19"
+            }
+          }
+        },
+        "VALID_tax-2": {
+          "taxId": "VALID_tax-2",
+          "type": "%",
+          "taxBaseInclusionIds": [
+            "VALID_tax-1"
+          ],
+          "hidden": false,
+          "base": "10.19",
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": "2000.19"
+            }
+          }
+        }
+      },
+      "charges": {
+        "VALID_CHARGE-1": {
+          "chargeId": "VALID_CHARGE-1",
+          "type": "$",
+          "value": "20.19"
+        }
+      }
+    },
+    {
+      "id": {
+        "accountId": "ACCOUNT_ID-1",
+        "sku": "SKU_1-3",
+        "validFrom": null
+      },
+      "basePrice": "10.03",
+      "country": "US",
+      "createdDate": "2000-12-30T23:59:59+00:00",
+      "deleted": false,
+      "measureUnit": "CS",
+      "minimumPrice": "8.43",
+      "timestamp": 1617628719,
+      "timezone": "America/New_York",
+      "updatedDate": "2000-12-30T23:59:59+00:00"
+    },
+    {
+      "id": {
+        "accountId": "ACCOUNT_ID-1",
+        "sku": "SKU_1-4",
+        "validFrom": null
+      },
+      "basePrice": "10.04",
+      "country": "US",
+      "createdDate": "2000-12-30T23:59:59+00:00",
+      "deleted": false,
+      "measureUnit": "CS",
+      "minimumPrice": "8.44",
+      "timestamp": 1617628719,
+      "timezone": "America/New_York",
+      "updatedDate": "2000-12-30T23:59:59+00:00"
+    },
+    {
+      "id": {
+        "accountId": "ACCOUNT_ID-1",
+        "sku": "SKU_1-5",
+        "validFrom": null
+      },
+      "basePrice": "10.05",
+      "country": "US",
+      "createdDate": "2000-12-30T23:59:59+00:00",
+      "deleted": false,
+      "measureUnit": "CS",
+      "minimumPrice": "8.45",
+      "timestamp": 1617628719,
+      "timezone": "America/New_York",
+      "updatedDate": "2000-12-30T23:59:59+00:00"
+    }
+  ]
+}
