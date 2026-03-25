@@ -1,0 +1,42 @@
+{
+  "pagination": {
+    "page": 1,
+    "size": 2,
+    "totalPages": 2,
+    "totalElements": 4
+  },
+  "priceEntities": [
+    {
+      "id": {
+        "accountId": "ACCOUNT_ID-1",
+        "sku": "SKU_1-4",
+        "validFrom": null
+      },
+      "basePrice": "10.04",
+      "country": "US",
+      "createdDate": "2000-12-30T23:59:59+00:00",
+      "deleted": false,
+      "measureUnit": "CS",
+      "minimumPrice": "8.44",
+      "timestamp": 1617628719,
+      "timezone": "America/New_York",
+      "updatedDate": "2000-12-30T23:59:59+00:00"
+    },
+    {
+      "id": {
+        "accountId": "ACCOUNT_ID-1",
+        "sku": "SKU_1-5",
+        "validFrom": null
+      },
+      "basePrice": "10.05",
+      "country": "US",
+      "createdDate": "2000-12-30T23:59:59+00:00",
+      "deleted": false,
+      "measureUnit": "CS",
+      "minimumPrice": "8.45",
+      "timestamp": 1617628719,
+      "timezone": "America/New_York",
+      "updatedDate": "2000-12-30T23:59:59+00:00"
+    }
+  ]
+}
