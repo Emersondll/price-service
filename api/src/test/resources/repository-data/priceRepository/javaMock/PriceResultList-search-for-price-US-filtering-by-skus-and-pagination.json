@@ -1,0 +1,26 @@
+{
+  "pagination": {
+    "page": 2,
+    "size": 1,
+    "totalPages": 3,
+    "totalElements": 3
+  },
+  "priceEntities": [
+    {
+      "id": {
+        "accountId": "ACCOUNT_ID-1",
+        "sku": "SKU_1-5",
+        "validFrom": null
+      },
+      "basePrice": "10.05",
+      "country": "US",
+      "createdDate": "2000-12-30T23:59:59+00:00",
+      "deleted": false,
+      "measureUnit": "CS",
+      "minimumPrice": "8.45",
+      "timestamp": 1617628719,
+      "timezone": "America/New_York",
+      "updatedDate": "2000-12-30T23:59:59+00:00"
+    }
+  ]
+}
