@@ -1,0 +1,48 @@
+[
+  {
+    "vendorItemId": "VENDOR_ITEM_1",
+    "sku": "SKU_1",
+    "itemId": "NWRhZTJjNWEtOGYwMS00YTA1LTgyNjQtMDRlZjZiMDIyZWExO1ZFTkRPUl9JVEVNXzAx",
+    "contractId": "MGQwMDBjN2UtZGMyOS00ZDU0LWFlZWMtZGI1MTgzYjc5YjQyO0FDQ09VTlRfMDE=",
+    "basePrice": 20.99,
+    "minimumPrice": 5.99,
+    "measureUnit": "CS",
+    "type": "PER_UNIT",
+    "deposit": 3.99,
+    "consignment": 0.75,
+    "quantityPerPallet": 10,
+    "timezone": "America/Sao_Paulo",
+    "validFrom": "2022-04-06",
+    "taxes": [
+      {
+        "taxId": "TAX_1",
+        "type": "$",
+        "value": 10.99,
+        "taxBaseInclusionIds": [
+          "TAX_2"
+        ],
+        "hidden": false,
+        "base": 2.99,
+        "conditions": {
+          "orderSubTotal": {
+            "minimumValue": 2000.99
+          }
+        },
+        "proportional": true
+      }
+    ],
+    "promotionalPrice": {
+      "price": 9.99,
+      "externalId": "EXTERNAL_1",
+      "validUntil": "2023-04-06"
+    },
+    "charges": [
+      {
+        "chargeId": "CHARGE_01",
+        "type": "$",
+        "value": 11.77,
+        "base": 1.11
+      }
+    ]
+  }
+]
