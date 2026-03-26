@@ -1,0 +1,80 @@
+{
+  "prices": [
+    {
+      "vendorAccountId": "VENDOR_ACCOUNT_ID-1",
+      "vendorId": "VENDOR_ID-1",
+      "vendorItemId": "VENDOR_ITEM_ID-1",
+      "sku": "SKU-1",
+      "basePrice": 10.00,
+      "minimumPrice": 8.40,
+      "measureUnit": "CS",
+      "type": "PER_UNIT",
+      "deposit": 1.80,
+      "consignment": 2.00,
+      "quantityPerPallet": 4,
+      "timezone": "America/Sao_Paulo",
+      "validFrom": "2021-04-01",
+      "taxes": {
+        "TAX_ID-3": {
+          "taxId": "TAX_ID-3",
+          "type": "$",
+          "value": 20.50,
+          "taxBaseInclusionIds": null,
+          "hidden": false,
+          "base": null,
+          "conditions": null
+        },
+        "TAX_ID-2": {
+          "taxId": "TAX_ID-2",
+          "type": "$",
+          "value": 10.20,
+          "taxBaseInclusionIds": null,
+          "hidden": false,
+          "base": null,
+          "conditions": null
+        },
+        "TAX_ID-1": {
+          "taxId": "TAX_ID-1",
+          "type": "%",
+          "value": 3.15,
+          "taxBaseInclusionIds": [
+            "TAX_ID-2",
+            "TAX_ID-3"
+          ],
+          "hidden": false,
+          "base": 1.70,
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": 1.05
+            }
+          }
+        }
+      },
+      "promotionalPrice": {
+        "price": 9.40,
+        "externalId": "PP_ID-1",
+        "validUntil": "2021-12-31"
+      },
+      "charges": {
+        "CHARGE_ID-1": {
+          "chargeId": "CHARGE_ID-1",
+          "type": "$",
+          "value": 2.01,
+          "base": null
+        },
+        "CHARGE_ID-2": {
+          "chargeId": "CHARGE_ID-2",
+          "type": "%",
+          "value": null,
+          "base": 2.40
+        }
+      }
+    }
+  ],
+  "pagination": {
+    "page": 0,
+    "size": 1,
+    "totalPages": 1,
+    "totalElements": 1
+  }
+}
