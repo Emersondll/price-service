@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maven-antrun-" default="main">
+  <target name="main">
+    <echo file="/home/emerson/IdeaProjects/price-service/api/target/docker-images.txt" message="price-service:1.0.0-SNAPSHOT&#10;" />
+  </target>
+</project>
