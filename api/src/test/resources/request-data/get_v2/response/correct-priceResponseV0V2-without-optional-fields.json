@@ -1,0 +1,46 @@
+{
+  "prices": [
+    {
+      "vendorAccountId": "VENDOR_ACCOUNT_ID-1",
+      "vendorId": "VENDOR_ID-1",
+      "vendorItemId": "VENDOR_ITEM_ID-1",
+      "sku": "SKU-1",
+      "basePrice": 10.00,
+      "minimumPrice": 8.40,
+      "measureUnit": "CS",
+      "type": "PER_UNIT",
+      "deposit": null,
+      "consignment": null,
+      "quantityPerPallet": null,
+      "timezone": "America/Sao_Paulo",
+      "validFrom": null,
+      "taxes": null,
+      "promotionalPrice": null,
+      "charges": null
+    },
+    {
+      "vendorAccountId": "VENDOR_ACCOUNT_ID-1",
+      "vendorId": "VENDOR_ID-1",
+      "vendorItemId": "VENDOR_ITEM_ID-2",
+      "sku": "SKU-2",
+      "basePrice": 20.00,
+      "minimumPrice": 19.20,
+      "measureUnit": "CS",
+      "type": "PER_UNIT",
+      "deposit": null,
+      "consignment": null,
+      "quantityPerPallet": null,
+      "timezone": "America/Sao_Paulo",
+      "validFrom": null,
+      "taxes": null,
+      "promotionalPrice": null,
+      "charges": null
+    }
+  ],
+  "pagination": {
+    "page": 0,
+    "size": 2,
+    "totalPages": 1,
+    "totalElements": 2
+  }
+}
