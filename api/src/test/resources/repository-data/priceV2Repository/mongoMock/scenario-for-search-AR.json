@@ -1,0 +1,216 @@
+[
+  {
+    "_id": {
+      "id": "ACCOUNT_ID-1",
+      "type": "ACCOUNT",
+      "vendorItemId": "SKU_1-1",
+      "vendorId": "Vendor-1",
+      "validFrom": "2025-12-31"
+    },
+    "sku": "SKU_1-1",
+    "deleted": true,
+    "timestamp": 1617628718,
+    "updatedDate": "2000-12-30T23:59:59+00:00",
+    "deletedDate": "2000-12-30T23:59:59+00:00"
+  },
+  {
+    "_id": {
+      "id": "ACCOUNT_ID-1",
+      "type": "ACCOUNT",
+      "vendorItemId": "SKU_1-1",
+      "vendorId": "Vendor-1",
+      "validFrom": "2031-12-31"
+    },
+    "basePrice": "10.00",
+    "country": "AR",
+    "createdDate": "2000-12-30T23:59:59+00:00",
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": "8.40",
+    "sku": "SKU_1-1",
+    "timestamp": 1617628719,
+    "timezone": "America/Buenos_Aires",
+    "updatedDate": "2000-12-30T23:59:59+00:00",
+    "deposit": "2.99",
+    "consignment": "0.85",
+    "quantityPerPallet": 78,
+    "promotionalPrice": {
+      "price": "11.99",
+      "externalId": "ZTPM",
+      "validUntil": "2032-12-31"
+    },
+    "taxes": {
+      "VALID_tax-1": {
+        "taxId": "VALID_tax-1",
+        "type": "$",
+        "value": "20.19",
+        "hidden": false,
+        "conditions": {
+          "orderSubTotal": {
+            "minimumValue": "2000.19"
+          }
+        }
+      },
+      "VALID_tax-2": {
+        "taxId": "VALID_tax-2",
+        "type": "%",
+        "taxBaseInclusionIds": [
+          "VALID_tax-1"
+        ],
+        "hidden": false,
+        "base": "10.19",
+        "conditions": {
+          "orderSubTotal": {
+            "minimumValue": "2000.19"
+          }
+        }
+      }
+    },
+    "charges": {
+      "VALID_CHARGE-1": {
+        "chargeId": "VALID_CHARGE-1",
+        "type": "$",
+        "value": "20.19"
+      }
+    }
+  },
+  {
+    "_id": {
+      "id": "ACCOUNT_ID-1",
+      "type": "ACCOUNT",
+      "vendorItemId": "SKU_1-2",
+      "vendorId": "Vendor-1",
+      "validFrom": "2030-12-31"
+    },
+    "basePrice": "20.00",
+    "country": "AR",
+    "createdDate": "2000-12-30T23:59:59+00:00",
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": "19.20",
+    "sku": "SKU_1-2",
+    "timestamp": 1617628719,
+    "timezone": "America/Buenos_Aires",
+    "updatedDate": "2000-12-30T23:59:59+00:00",
+    "deposit": "3.99",
+    "consignment": "0.75",
+    "quantityPerPallet": 88,
+    "promotionalPrice": {
+      "price": "10.99",
+      "externalId": "ZTPM",
+      "validUntil": "2031-12-31"
+    },
+    "taxes": {
+      "VALID_tax-1": {
+        "taxId": "VALID_tax-1",
+        "type": "$",
+        "value": "20.99",
+        "hidden": false,
+        "conditions": {
+          "orderSubTotal": {
+            "minimumValue": "2000.99"
+          }
+        }
+      },
+      "VALID_tax-2": {
+        "taxId": "VALID_tax-2",
+        "type": "%",
+        "taxBaseInclusionIds": [
+          "VALID_tax-1"
+        ],
+        "hidden": false,
+        "base": "10.99",
+        "conditions": {
+          "orderSubTotal": {
+            "minimumValue": "2000.99"
+          }
+        }
+      }
+    },
+    "charges": {
+      "VALID_CHARGE-1": {
+        "chargeId": "VALID_CHARGE-1",
+        "type": "%",
+        "base": "10.99"
+      }
+    },
+    "validTo": "2035-12-30T23:59:59+00:00"
+  },
+  {
+    "_id": {
+      "id": "ACCOUNT_ID-1",
+      "type": "ACCOUNT",
+      "vendorItemId": "SKU_1-2",
+      "vendorId": "Vendor-1",
+      "validFrom": "2035-12-31"
+    },
+    "basePrice": "20.02",
+    "country": "AR",
+    "createdDate": "2000-12-30T23:59:59+00:00",
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": "19.22",
+    "sku": "SKU_1-2",
+    "timestamp": 1617628719,
+    "timezone": "America/Buenos_Aires",
+    "updatedDate": "2000-12-30T23:59:59+00:00",
+    "validTo": "2040-12-30T23:59:59+00:00"
+  },
+  {
+    "_id": {
+      "id": "ACCOUNT_ID-1",
+      "type": "ACCOUNT",
+      "vendorItemId": "SKU_1-2",
+      "vendorId": "Vendor-1",
+      "validFrom": "2040-12-31"
+    },
+    "basePrice": "20.03",
+    "country": "AR",
+    "createdDate": "2000-12-30T23:59:59+00:00",
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": "19.23",
+    "sku": "SKU_1-2",
+    "timestamp": 1617628719,
+    "timezone": "America/Buenos_Aires",
+    "updatedDate": "2000-12-30T23:59:59+00:00"
+  },
+  {
+    "_id": {
+      "id": "ACCOUNT_ID-1",
+      "type": "ACCOUNT",
+      "vendorItemId": "SKU_1-3",
+      "vendorId": "Vendor-1",
+      "validFrom": "2035-12-31"
+    },
+    "basePrice": "20.02",
+    "country": "AR",
+    "createdDate": "2000-12-30T23:59:59+00:00",
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": "19.22",
+    "sku": "SKU_1-3",
+    "timestamp": 1617628719,
+    "timezone": "America/Buenos_Aires",
+    "updatedDate": "2000-12-30T23:59:59+00:00"
+  },
+  {
+    "_id": {
+      "id": "ACCOUNT_ID-2",
+      "type": "ACCOUNT",
+      "vendorItemId": "SKU_2-1",
+      "vendorId": "Vendor-1",
+      "validFrom": "2040-12-31"
+    },
+    "basePrice": "30.03",
+    "country": "AR",
+    "createdDate": "2000-12-30T23:59:59+00:00",
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": "29.23",
+    "sku": "SKU_2-1",
+    "timestamp": 1617628719,
+    "timezone": "America/Buenos_Aires",
+    "updatedDate": "2000-12-30T23:59:59+00:00"
+  }
+]
