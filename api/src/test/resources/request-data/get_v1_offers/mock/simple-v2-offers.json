@@ -1,0 +1,20 @@
+[
+  {
+    "vendorItemId": "VENDOR_ITEM_ID_001",
+    "price": "100.00",
+    "originalPrice": "100.00",
+    "validUntil": null
+  },
+  {
+    "vendorItemId": "VENDOR_ITEM_ID_002",
+    "price": "200.02",
+    "originalPrice": "202.02",
+    "validUntil": null
+  },
+  {
+    "vendorItemId": "VENDOR_ITEM_ID_003",
+    "price": "300.30",
+    "originalPrice": "300.30",
+    "validUntil": null
+  }
+]
