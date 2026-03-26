@@ -1,0 +1,64 @@
+{
+  "priceEntities": [
+    {
+      "id": {
+        "id": "VENDOR_ACCOUNT_ID-1",
+        "vendorItemId": "VENDOR_ITEM_ID-1",
+        "vendorId": "VENDOR_ID-1",
+        "type": "ACCOUNT",
+        "validFrom": null
+      },
+      "deleted": false,
+      "country": "US",
+      "timestamp": 1617628719,
+      "timezone": "America/Sao_Paulo",
+      "createdDate": "2021-04-05T13:47:36+0000",
+      "updatedDate": "2021-04-05T13:47:36+0000",
+      "deletedDate": null,
+      "validTo": null,
+      "basePrice": 10.00,
+      "measureUnit": "CS",
+      "minimumPrice": 8.40,
+      "deposit": null,
+      "consignment": null,
+      "quantityPerPallet": null,
+      "promotionalPrice": null,
+      "taxes": null,
+      "charges": null,
+      "sku": "SKU-1"
+    },
+    {
+      "id": {
+        "id": "VENDOR_ACCOUNT_ID-1",
+        "vendorItemId": "VENDOR_ITEM_ID-2",
+        "vendorId": "VENDOR_ID-1",
+        "type": "ACCOUNT",
+        "validFrom": null
+      },
+      "deleted": false,
+      "country": "US",
+      "timestamp": 1617628719,
+      "timezone": "America/Sao_Paulo",
+      "createdDate": "2021-04-05T13:47:36+0000",
+      "updatedDate": "2021-04-05T13:47:36+0000",
+      "deletedDate": null,
+      "validTo": null,
+      "basePrice": 20.00,
+      "measureUnit": "CS",
+      "minimumPrice": 19.20,
+      "deposit": null,
+      "consignment": null,
+      "quantityPerPallet": null,
+      "promotionalPrice": null,
+      "taxes": null,
+      "charges": null,
+      "sku": "SKU-2"
+    }
+  ],
+  "pagination": {
+    "page": 0,
+    "size": 2,
+    "totalPages": 1,
+    "totalElements": 2
+  }
+}
