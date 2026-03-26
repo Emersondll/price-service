@@ -1,0 +1,288 @@
+[
+  {
+    "id": {
+      "id": "ACCOUNT_ID_1",
+      "type": "ACCOUNT",
+      "vendorId": "VENDOR_ID_1",
+      "vendorItemId": "VENDOR_ITEM_1"
+    },
+    "basePrice": 10.00,
+    "charges": {
+      "VALID_CHARGE-1": {
+        "chargeId": "VALID_CHARGE-1",
+        "type": "$",
+        "value": 20.19
+      }
+    },
+    "country": "BR",
+    "createdDate": 978220799000,
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 1,
+    "promotionalPrice": {
+      "externalId": "ZTPM",
+      "price": 11.99,
+      "validUntil": "2032-12-31"
+    },
+    "quantityPerPallet": 11,
+    "sku": "SKU_1",
+    "taxes": {
+      "VALID_tax-1": {
+        "conditions": {
+          "orderSubTotal": {
+            "minimumValue": 2000.19
+          }
+        },
+        "hidden": false,
+        "taxId": "VALID_tax-1",
+        "type": "$",
+        "value": 20.19
+      },
+      "VALID_tax-2": {
+        "base": 10.19,
+        "conditions": {
+          "orderSubTotal": {
+            "minimumValue": 2000.19
+          }
+        },
+        "hidden": false,
+        "taxBaseInclusionIds": [
+          "VALID_tax-1"
+        ],
+        "taxId": "VALID_tax-2",
+        "type": "%"
+      }
+    },
+    "timestamp": 1617628719,
+    "timezone": "America/Sao_Paulo",
+    "updatedDate": 978220799000
+  },
+  {
+    "id": {
+      "id": "DELIVERY_CENTER_ID_1",
+      "type": "DELIVERY_CENTER",
+      "vendorId": "VENDOR_ID_1",
+      "vendorItemId": "VENDOR_ITEM_1"
+    },
+    "basePrice": 40.00,
+    "country": "BR",
+    "createdDate": 1041292799000,
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 3,
+    "quantityPerPallet": 33,
+    "sku": "SKU_1",
+    "timestamp": 1617628892,
+    "timezone": "America/Sao_Paulo",
+    "updatedDate": 1041292799000
+  },
+  {
+    "id": {
+      "id": "VENDOR_ID_1",
+      "type": "VENDOR",
+      "vendorId": "VENDOR_ID_1",
+      "vendorItemId": "VENDOR_ITEM_1"
+    },
+    "basePrice": 50.00,
+    "country": "BR",
+    "createdDate": 1072828799000,
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 4,
+    "quantityPerPallet": 44,
+    "sku": "SKU_1",
+    "timestamp": 1617628892,
+    "timezone": "America/Sao_Paulo",
+    "updatedDate": 1072828799000
+  },
+  {
+    "id": {
+      "id": "ACCOUNT_ID_2",
+      "type": "ACCOUNT",
+      "vendorId": "VENDOR_ID_3",
+      "vendorItemId": "VENDOR_ITEM_2"
+    },
+    "basePrice": 10.00,
+    "country": "BR",
+    "createdDate": 1104451199000,
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 1,
+    "quantityPerPallet": 11,
+    "sku": "SKU_2",
+    "timestamp": 1617628892,
+    "timezone": "America/Sao_Paulo",
+    "updatedDate": 1104451199000
+  },
+  {
+    "id": {
+      "id": "PRICE_LIST_ID_2",
+      "type": "PRICE_LIST",
+      "vendorId": "VENDOR_ID_3",
+      "vendorItemId": "VENDOR_ITEM_2"
+    },
+    "basePrice": 20.00,
+    "country": "BR",
+    "createdDate": 1104451199000,
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 2,
+    "quantityPerPallet": 22,
+    "sku": "SKU_2",
+    "timestamp": 1617628892,
+    "timezone": "America/Sao_Paulo",
+    "updatedDate": 1104451199000
+  },
+  {
+    "id": {
+      "id": "ACCOUNT_ID_3",
+      "type": "ACCOUNT",
+      "vendorId": "VENDOR_ID_3",
+      "vendorItemId": "VENDOR_ITEM_2"
+    },
+    "basePrice": 40.00,
+    "country": "BR",
+    "createdDate": 1104451199000,
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 4,
+    "quantityPerPallet": 44,
+    "sku": "SKU_2",
+    "timestamp": 1617628892,
+    "timezone": "America/Sao_Paulo",
+    "updatedDate": 1104451199000
+  },
+  {
+    "id": {
+      "id": "ACCOUNT_ID_4",
+      "type": "ACCOUNT",
+      "vendorId": "VENDOR_ID_4",
+      "vendorItemId": "VENDOR_ITEM_3"
+    },
+    "basePrice": 10.00,
+    "country": "BR",
+    "createdDate": 1104451199000,
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 1,
+    "quantityPerPallet": 11,
+    "sku": "SKU_3",
+    "timestamp": 1617628892,
+    "timezone": "America/Sao_Paulo",
+    "updatedDate": 1104451199000
+  },
+  {
+    "id": {
+      "id": "PRICE_LIST_ID_3",
+      "type": "PRICE_LIST",
+      "vendorId": "VENDOR_ID_4",
+      "vendorItemId": "VENDOR_ITEM_3"
+    },
+    "basePrice": 20.00,
+    "country": "BR",
+    "createdDate": 1104451199000,
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 2,
+    "quantityPerPallet": 22,
+    "sku": "SKU_3",
+    "timestamp": 1617628892,
+    "timezone": "America/Sao_Paulo",
+    "updatedDate": 1104451199000
+  },
+  {
+    "id": {
+      "id": "VENDOR_ID_1",
+      "type": "VENDOR",
+      "vendorId": "VENDOR_ID_1",
+      "vendorItemId": "VENDOR_ITEM_1"
+    },
+    "basePrice": 50.00,
+    "country": "BR",
+    "createdDate": 1072828799000,
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 4,
+    "quantityPerPallet": 44,
+    "sku": "SKU_1",
+    "timestamp": 1617628892,
+    "timezone": "America/Sao_Paulo",
+    "updatedDate": 1072828799000
+  },
+  {
+    "id": {
+      "id": "VENDOR_ID_3",
+      "type": "VENDOR",
+      "vendorId": "VENDOR_ID_3",
+      "vendorItemId": "VENDOR_ITEM_2"
+    },
+    "basePrice": 30.00,
+    "country": "BR",
+    "createdDate": 1104451199000,
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 3,
+    "quantityPerPallet": 33,
+    "sku": "SKU_2",
+    "timestamp": 1617628892,
+    "timezone": "America/Sao_Paulo",
+    "updatedDate": 1104451199000
+  },
+  {
+    "id": {
+      "id": "DELIVERY_CENTER_ID_2",
+      "type": "DELIVERY_CENTER",
+      "vendorId": "VENDOR_ID_3",
+      "vendorItemId": "VENDOR_ITEM_2"
+    },
+    "basePrice": 50.00,
+    "country": "BR",
+    "createdDate": 1104451199000,
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 5,
+    "quantityPerPallet": 55,
+    "sku": "SKU_2",
+    "timestamp": 1617628892,
+    "timezone": "America/Sao_Paulo",
+    "updatedDate": 1104451199000
+  },
+  {
+    "id": {
+      "id": "DELIVERY_CENTER_ID_3",
+      "type": "DELIVERY_CENTER",
+      "vendorId": "VENDOR_ID_4",
+      "vendorItemId": "VENDOR_ITEM_3"
+    },
+    "basePrice": 30.00,
+    "country": "BR",
+    "createdDate": 1104451199000,
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 3,
+    "quantityPerPallet": 33,
+    "sku": "SKU_3",
+    "timestamp": 1617628892,
+    "timezone": "America/Sao_Paulo",
+    "updatedDate": 1104451199000
+  },
+  {
+    "id": {
+      "id": "VENDOR_ID_4",
+      "type": "VENDOR",
+      "vendorId": "VENDOR_ID_4",
+      "vendorItemId": "VENDOR_ITEM_3"
+    },
+    "basePrice": 40.00,
+    "country": "BR",
+    "createdDate": 1104451199000,
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 4,
+    "quantityPerPallet": 44,
+    "sku": "SKU_3",
+    "timestamp": 1617628892,
+    "timezone": "America/Sao_Paulo",
+    "updatedDate": 1104451199000
+  }
+]
