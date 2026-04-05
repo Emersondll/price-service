@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DatabaseCollectionPropertiesV2.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.config.properties</a> &gt; <span class="el_source">DatabaseCollectionPropertiesV2.java</span></div><h1>DatabaseCollectionPropertiesV2.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.config.properties;
+
+import java.lang.reflect.Type;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.gson.Gson;
+
+@Configuration
+@ConfigurationProperties(prefix = &quot;database.zone&quot;)
+<span class="fc" id="L16">public class DatabaseCollectionPropertiesV2 {</span>
+
+	@Value(&quot;#{environment.DATABASE_ZONE_COLLECTIONS_V2}&quot;)
+	private String collectionsEnvV2;
+
+	private Map&lt;String, String&gt; collectionsV2;
+	
+	@Value(&quot;${database.queryTimeoutMS}&quot;)
+	private Long queryTimeoutMS;
+	
+	public String getCollectionByCountryV2(final String country) {
+
+<span class="fc" id="L28">		return collectionsV2.get(country.toUpperCase());</span>
+	}
+
+	public Map&lt;String, String&gt; getCollectionsV2() {
+
+<span class="fc" id="L33">		return collectionsV2;</span>
+	}
+
+	public void setCollectionsV2(final Map&lt;String, String&gt; collections) {
+
+<span class="fc bfc" id="L38" title="All 2 branches covered.">		if (StringUtils.isNotBlank(collectionsEnvV2)) {</span>
+			try {
+<span class="fc" id="L40">				final Type type = new TypeReference&lt;Map&lt;String, String&gt;&gt;() {</span>
+<span class="fc" id="L41">				}.getType();</span>
+<span class="fc" id="L42">				collectionsV2 = new Gson().fromJson(collectionsEnvV2, type);</span>
+<span class="nc" id="L43">			} catch (final Exception e) {</span>
+<span class="nc" id="L44">				collectionsV2 = collections;</span>
+<span class="pc" id="L45">			}</span>
+		} else {
+<span class="fc" id="L47">			collectionsV2 = collections;</span>
+		}
+<span class="fc" id="L49">	}</span>
+
+	public Long getQueryTimeoutMS() {
+<span class="fc" id="L52">		return queryTimeoutMS;</span>
+	}
+
+	public void setQueryTimeoutMS(final Long queryTimeoutMS) {
+<span class="nc" id="L56">		this.queryTimeoutMS = queryTimeoutMS;</span>
+<span class="nc" id="L57">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
