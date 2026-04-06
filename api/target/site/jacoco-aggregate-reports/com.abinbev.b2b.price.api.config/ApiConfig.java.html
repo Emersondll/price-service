@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApiConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.config</a> &gt; <span class="el_source">ApiConfig.java</span></div><h1>ApiConfig.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.config;
+
+import static org.apache.commons.collections4.MapUtils.getString;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
+
+import java.util.Map;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+import com.google.gson.Gson;
+
+@Configuration
+@ConfigurationProperties(prefix = &quot;api&quot;)
+<span class="fc" id="L20">public class ApiConfig {</span>
+
+<span class="fc" id="L22">	private static final Logger log = LoggerFactory.getLogger(ApiConfig.class);</span>
+
+	@Value(&quot;#{environment.DEFAULT_VENDOR_ID}&quot;)
+	private String propertiesFromEnv;
+
+	private String useDefaultVendorId;
+
+	private Map&lt;String, String&gt; defaultVendorId;
+
+	private Integer priceV3RequestBodyItemsLimit;
+
+	public Map&lt;String, String&gt; getDefaultVendorId() {
+
+<span class="fc" id="L35">		return defaultVendorId;</span>
+	}
+
+	public void setDefaultVendorId(final Map&lt;String, String&gt; defaultVendorId) {
+
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		if (isNoneBlank(propertiesFromEnv)) {</span>
+			try {
+<span class="fc" id="L42">				this.defaultVendorId = new Gson().fromJson(propertiesFromEnv, Map.class);</span>
+<span class="nc" id="L43">			} catch (final Exception ex) {</span>
+<span class="nc" id="L44">				log.error(&quot;Error trying to get defaultVendorId from env: &quot; + ex.getMessage(), ex);</span>
+<span class="nc" id="L45">				this.defaultVendorId = defaultVendorId;</span>
+<span class="pc" id="L46">			}</span>
+		} else {
+<span class="fc" id="L48">			this.defaultVendorId = defaultVendorId;</span>
+		}
+<span class="fc" id="L50">	}</span>
+
+	public String getDefaultVendorIdByCountry(final String country) {
+
+<span class="fc" id="L54">		return getString(defaultVendorId, country.toUpperCase(), EMPTY);</span>
+	}
+
+	public String getUseDefaultVendorId() {
+
+<span class="fc" id="L59">		return useDefaultVendorId;</span>
+	}
+
+	public void setUseDefaultVendorId(final String useDefaultVendorId) {
+
+<span class="fc" id="L64">		this.useDefaultVendorId = Optional.ofNullable(useDefaultVendorId).orElse(&quot;&quot;);</span>
+<span class="fc" id="L65">	}</span>
+
+	public boolean shouldUseDefaultVendorId(final String country) {
+
+<span class="fc" id="L69">		return getUseDefaultVendorId().toUpperCase().contains(country.toUpperCase());</span>
+	}
+
+	public Integer getPriceV3RequestBodyItemsLimit() {
+
+<span class="fc" id="L74">		return priceV3RequestBodyItemsLimit;</span>
+	}
+
+	public void setPriceV3RequestBodyItemsLimit(final Integer priceV3RequestBodyItemsLimit) {
+
+<span class="fc" id="L79">		this.priceV3RequestBodyItemsLimit = priceV3RequestBodyItemsLimit;</span>
+<span class="fc" id="L80">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
