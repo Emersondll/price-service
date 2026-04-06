@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BrowsePrice.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.domain</a> &gt; <span class="el_source">BrowsePrice.java</span></div><h1>BrowsePrice.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.domain;
+
+import java.math.BigDecimal;
+
+<span class="fc" id="L5">public class BrowsePrice { </span>
+
+	private String sku;
+	private BigDecimal price;
+	private BigDecimal originalPrice;
+	private String validUntil;
+	private String vendorItemId;
+
+	public String getSku() {
+
+<span class="fc" id="L15">		return sku;</span>
+	}
+
+	public void setSku(final String sku) {
+
+<span class="fc" id="L20">		this.sku = sku;</span>
+<span class="fc" id="L21">	}</span>
+
+	public BigDecimal getPrice() {
+
+<span class="fc" id="L25">		return price;</span>
+	}
+
+	public void setPrice(final BigDecimal price) {
+
+<span class="fc" id="L30">		this.price = price;</span>
+<span class="fc" id="L31">	}</span>
+
+	public BigDecimal getOriginalPrice() {
+
+<span class="fc" id="L35">		return originalPrice;</span>
+	}
+
+	public void setOriginalPrice(final BigDecimal originalPrice) {
+
+<span class="fc" id="L40">		this.originalPrice = originalPrice;</span>
+<span class="fc" id="L41">	}</span>
+
+	public String getValidUntil() {
+
+<span class="fc" id="L45">		return validUntil;</span>
+	}
+
+	public void setValidUntil(final String validUntil) {
+
+<span class="fc" id="L50">		this.validUntil = validUntil;</span>
+<span class="fc" id="L51">	}</span>
+
+	public String getVendorItemId() {
+<span class="fc" id="L54">		return vendorItemId;</span>
+	}
+
+	public void setVendorItemId(final String vendorItemId) {
+<span class="fc" id="L58">		this.vendorItemId = vendorItemId;</span>
+<span class="fc" id="L59">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
