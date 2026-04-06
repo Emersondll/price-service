@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceResultListV2ToPriceResponseVoV2Converter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.converters.v2</a> &gt; <span class="el_source">PriceResultListV2ToPriceResponseVoV2Converter.java</span></div><h1>PriceResultListV2ToPriceResponseVoV2Converter.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.converters.v2;
+
+import static java.util.Optional.ofNullable;
+
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.stereotype.Component;
+
+import com.abinbev.b2b.price.api.domain.v2.PriceResultListV2;
+import com.abinbev.b2b.price.api.rest.vo.v2.ChargeResponseVoV2;
+import com.abinbev.b2b.price.api.rest.vo.v2.PriceResponseVoV2;
+import com.abinbev.b2b.price.api.rest.vo.v2.PriceVoV2;
+import com.abinbev.b2b.price.api.rest.vo.v2.PromotionalPriceResponseVoV2;
+import com.abinbev.b2b.price.api.rest.vo.v2.TaxConditionResponseVoV2;
+import com.abinbev.b2b.price.api.rest.vo.v2.TaxOrderSubTotalResponseVoV2;
+import com.abinbev.b2b.price.api.rest.vo.v2.TaxResponseVoV2;
+import com.abinbev.b2b.price.domain.model.v2.ChargeV2;
+import com.abinbev.b2b.price.domain.model.v2.PriceEntityV2;
+import com.abinbev.b2b.price.domain.model.v2.PromotionalPriceV2;
+import com.abinbev.b2b.price.domain.model.v2.TaxConditionV2;
+import com.abinbev.b2b.price.domain.model.v2.TaxOrderSubTotalV2;
+import com.abinbev.b2b.price.domain.model.v2.TaxV2;
+import com.abinbev.b2b.price.domain.model.v2.enums.PriceMeasureUnitType;
+
+@Component
+<span class="fc" id="L33">public class PriceResultListV2ToPriceResponseVoV2Converter {</span>
+
+	public PriceResponseVoV2 convert(final PriceResultListV2 priceResultListV2) {
+
+<span class="fc" id="L37">		final PriceResponseVoV2 priceResponseVoV2 = new PriceResponseVoV2();</span>
+<span class="fc" id="L38">		priceResponseVoV2.setPrices(convertPriceEntityV2ListToPriceVoV2List(priceResultListV2.getPriceEntities()));</span>
+<span class="fc" id="L39">		priceResponseVoV2.setPagination(priceResultListV2.getPagination());</span>
+<span class="fc" id="L40">		return priceResponseVoV2;</span>
+	}
+
+	private List&lt;PriceVoV2&gt; convertPriceEntityV2ListToPriceVoV2List(final List&lt;PriceEntityV2&gt; priceEntities) {
+
+<span class="fc" id="L45">		final List&lt;PriceVoV2&gt; priceVoV2List = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		for (final PriceEntityV2 priceEntity : priceEntities) {</span>
+<span class="fc" id="L48">			priceVoV2List.add(convertNotNullablePriceEntityV2ToPriceVoV2(priceEntity));</span>
+<span class="fc" id="L49">		}</span>
+
+<span class="fc" id="L51">		return priceVoV2List;</span>
+	}
+
+	private PriceVoV2 convertNotNullablePriceEntityV2ToPriceVoV2(final PriceEntityV2 priceEntityV2) {
+
+<span class="fc" id="L56">		final PriceVoV2 priceVoV2 = new PriceVoV2();</span>
+<span class="fc" id="L57">		priceVoV2.setVendorId(priceEntityV2.getId().getVendorId());</span>
+<span class="fc" id="L58">		priceVoV2.setVendorAccountId(priceEntityV2.getId().getId());</span>
+<span class="fc" id="L59">		priceVoV2.setVendorItemId(priceEntityV2.getId().getVendorItemId());</span>
+<span class="fc" id="L60">		priceVoV2.setValidFrom(convertValidFrom(priceEntityV2.getId().getValidFrom(), priceEntityV2.getTimezone()));</span>
+<span class="fc" id="L61">		priceVoV2.setSku(priceEntityV2.getSku());</span>
+<span class="fc" id="L62">		priceVoV2.setBasePrice(priceEntityV2.getBasePrice());</span>
+<span class="fc" id="L63">		priceVoV2.setMinimumPrice(priceEntityV2.getMinimumPrice());</span>
+<span class="fc" id="L64">		priceVoV2.setMeasureUnit(priceEntityV2.getMeasureUnit());</span>
+<span class="fc" id="L65">		priceVoV2.setType(convertType(priceEntityV2.getType()));</span>
+<span class="fc" id="L66">		priceVoV2.setDeposit(priceEntityV2.getDeposit());</span>
+<span class="fc" id="L67">		priceVoV2.setConsignment(priceEntityV2.getConsignment());</span>
+<span class="fc" id="L68">		priceVoV2.setQuantityPerPallet(priceEntityV2.getQuantityPerPallet());</span>
+<span class="fc" id="L69">		priceVoV2.setTimezone(priceEntityV2.getTimezone());</span>
+<span class="fc" id="L70">		priceVoV2.setPromotionalPrice(convertNullablePromotionalPriceV2ToPromotionalPriceResponseVoV2(priceEntityV2.getPromotionalPrice()));</span>
+<span class="fc" id="L71">		priceVoV2.setTaxes(ofNullable(priceEntityV2.getTaxes()).map(this::convertNullableTaxV2ToTaxResponseVoV2).orElse(null));</span>
+<span class="fc" id="L72">		priceVoV2.setCharges(ofNullable(priceEntityV2.getCharges()).map(this::convertNullableChargeV2ToChargeResponseVoV2).orElse(null));</span>
+
+<span class="fc" id="L74">		return priceVoV2;</span>
+	}
+
+	private String convertType(final PriceMeasureUnitType type) {
+
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		return Objects.nonNull(type) ? type.name() : &quot;PER_UNIT&quot;;</span>
+	}
+
+	private String convertValidFrom(final Instant validFrom, final String timezone) {
+
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		if (validFrom == null) {</span>
+<span class="fc" id="L85">			return null;</span>
+		}
+<span class="fc" id="L87">		return validFrom.atZone(ZoneId.of(timezone)).format(DateTimeFormatter.ISO_LOCAL_DATE);</span>
+	}
+
+	private PromotionalPriceResponseVoV2 convertNullablePromotionalPriceV2ToPromotionalPriceResponseVoV2(
+			final PromotionalPriceV2 promotionalPrice) {
+
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		if (promotionalPrice == null) {</span>
+<span class="fc" id="L94">			return null;</span>
+		}
+
+<span class="fc" id="L97">		final PromotionalPriceResponseVoV2 promotionalPriceResponseVoV2 = new PromotionalPriceResponseVoV2();</span>
+<span class="fc" id="L98">		promotionalPriceResponseVoV2.setPrice(promotionalPrice.getPrice());</span>
+<span class="fc" id="L99">		promotionalPriceResponseVoV2.setExternalId(promotionalPrice.getExternalId());</span>
+<span class="fc" id="L100">		promotionalPriceResponseVoV2.setValidUntil(promotionalPrice.getValidUntil());</span>
+<span class="fc" id="L101">		return promotionalPriceResponseVoV2;</span>
+	}
+
+	private Map&lt;String, TaxResponseVoV2&gt; convertNullableTaxV2ToTaxResponseVoV2(final Map&lt;String, TaxV2&gt; taxes) {
+
+<span class="fc" id="L106">		final Map&lt;String, TaxResponseVoV2&gt; taxResponseVoV2Map = new HashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		for (final var taxV2Entry : taxes.entrySet()) {</span>
+<span class="fc" id="L109">			taxResponseVoV2Map.put(taxV2Entry.getKey(), convertNotNullableTaxV2ToTaxResponseVoV2(taxV2Entry.getValue()));</span>
+<span class="fc" id="L110">		}</span>
+
+<span class="fc" id="L112">		return taxResponseVoV2Map;</span>
+	}
+
+	private TaxResponseVoV2 convertNotNullableTaxV2ToTaxResponseVoV2(final TaxV2 tax) {
+
+<span class="fc" id="L117">		final TaxResponseVoV2 taxResponseVoV2 = new TaxResponseVoV2();</span>
+<span class="fc" id="L118">		taxResponseVoV2.setTaxId(tax.getTaxId());</span>
+<span class="fc" id="L119">		taxResponseVoV2.setType(tax.getType());</span>
+<span class="fc" id="L120">		taxResponseVoV2.setValue(tax.getValue());</span>
+<span class="fc" id="L121">		taxResponseVoV2.setTaxBaseInclusionIds(tax.getTaxBaseInclusionIds());</span>
+<span class="fc" id="L122">		taxResponseVoV2.setHidden(tax.isHidden());</span>
+<span class="fc" id="L123">		taxResponseVoV2.setBase(tax.getBase());</span>
+<span class="fc" id="L124">		taxResponseVoV2.setConditions(convertNullableTaxConditionV2ToTaxConditionResponseVoV2(tax.getConditions()));</span>
+<span class="fc" id="L125">		taxResponseVoV2.setProportional(tax.getProportional());</span>
+<span class="fc" id="L126">		return taxResponseVoV2;</span>
+	}
+
+	private TaxConditionResponseVoV2 convertNullableTaxConditionV2ToTaxConditionResponseVoV2(final TaxConditionV2 conditions) {
+
+<span class="fc bfc" id="L131" title="All 2 branches covered.">		if (conditions == null) {</span>
+<span class="fc" id="L132">			return null;</span>
+		}
+
+<span class="fc" id="L135">		final TaxConditionResponseVoV2 taxConditionResponseVoV2 = new TaxConditionResponseVoV2();</span>
+<span class="fc" id="L136">		taxConditionResponseVoV2</span>
+<span class="fc" id="L137">				.setOrderSubTotal(convertNullableTaxOrderSubTotalV2ToTaxOrderSubTotalResponseVoV2(conditions.getOrderSubTotal()));</span>
+<span class="fc" id="L138">		return taxConditionResponseVoV2;</span>
+	}
+
+	private TaxOrderSubTotalResponseVoV2 convertNullableTaxOrderSubTotalV2ToTaxOrderSubTotalResponseVoV2(
+			final TaxOrderSubTotalV2 orderSubTotal) {
+
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (orderSubTotal == null) {</span>
+<span class="fc" id="L145">			return null;</span>
+		}
+<span class="fc" id="L147">		final TaxOrderSubTotalResponseVoV2 taxOrderSubTotalResponseVoV2 = new TaxOrderSubTotalResponseVoV2();</span>
+<span class="fc" id="L148">		taxOrderSubTotalResponseVoV2.setMinimumValue(orderSubTotal.getMinimumValue());</span>
+<span class="fc" id="L149">		return taxOrderSubTotalResponseVoV2;</span>
+	}
+
+	private Map&lt;String, ChargeResponseVoV2&gt; convertNullableChargeV2ToChargeResponseVoV2(final Map&lt;String, ChargeV2&gt; charges) {
+
+<span class="fc" id="L154">		final Map&lt;String, ChargeResponseVoV2&gt; chargeResponseVoV2Map = new HashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L156" title="All 2 branches covered.">		for (final var chargeEntry : charges.entrySet()) {</span>
+<span class="fc" id="L157">			chargeResponseVoV2Map.put(chargeEntry.getKey(), convertNotNullableChargeV2ToChargeResponseVoV2(chargeEntry.getValue()));</span>
+<span class="fc" id="L158">		}</span>
+
+<span class="fc" id="L160">		return chargeResponseVoV2Map;</span>
+	}
+
+	private ChargeResponseVoV2 convertNotNullableChargeV2ToChargeResponseVoV2(final ChargeV2 charge) {
+
+<span class="fc" id="L165">		final ChargeResponseVoV2 chargeResponseVoV2 = new ChargeResponseVoV2();</span>
+<span class="fc" id="L166">		chargeResponseVoV2.setChargeId(charge.getChargeId());</span>
+<span class="fc" id="L167">		chargeResponseVoV2.setType(charge.getType());</span>
+<span class="fc" id="L168">		chargeResponseVoV2.setValue(charge.getValue());</span>
+<span class="fc" id="L169">		chargeResponseVoV2.setBase(charge.getBase());</span>
+<span class="fc" id="L170">		return chargeResponseVoV2;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
