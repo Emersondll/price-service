@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceNormalizedInfoToPriceResponseVoV3Converter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.converters.v3</a> &gt; <span class="el_source">PriceNormalizedInfoToPriceResponseVoV3Converter.java</span></div><h1>PriceNormalizedInfoToPriceResponseVoV3Converter.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.converters.v3;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
+
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
+import com.abinbev.b2b.price.api.domain.v3.PriceNormalizedInfo;
+import com.abinbev.b2b.price.api.rest.vo.v3.ChargeResponseVoV3;
+import com.abinbev.b2b.price.api.rest.vo.v3.PriceResponseVoV3;
+import com.abinbev.b2b.price.api.rest.vo.v3.PromotionalPriceResponseVoV3;
+import com.abinbev.b2b.price.api.rest.vo.v3.TaxAmountResponseVoV3;
+import com.abinbev.b2b.price.api.rest.vo.v3.TaxBaseChangesCompareWithResponseVoV3;
+import com.abinbev.b2b.price.api.rest.vo.v3.TaxBaseChangesResponseVoV3;
+import com.abinbev.b2b.price.api.rest.vo.v3.TaxConditionResponseVoV3;
+import com.abinbev.b2b.price.api.rest.vo.v3.TaxDeductionBaseChangesResponseVoV3;
+import com.abinbev.b2b.price.api.rest.vo.v3.TaxDeductionResponseVoV3;
+import com.abinbev.b2b.price.api.rest.vo.v3.TaxOrderSubTotalResponseVoV3;
+import com.abinbev.b2b.price.api.rest.vo.v3.TaxResponseVoV3;
+import com.abinbev.b2b.price.domain.model.v2.ChargeV2;
+import com.abinbev.b2b.price.domain.model.v2.PriceEntityV2;
+import com.abinbev.b2b.price.domain.model.v2.PromotionalPriceV2;
+import com.abinbev.b2b.price.domain.model.v2.TaxAmountV2;
+import com.abinbev.b2b.price.domain.model.v2.TaxBaseChangesV2;
+import com.abinbev.b2b.price.domain.model.v2.TaxConditionV2;
+import com.abinbev.b2b.price.domain.model.v2.TaxDeductionV2;
+import com.abinbev.b2b.price.domain.model.v2.TaxOrderSubTotalV2;
+import com.abinbev.b2b.price.domain.model.v2.TaxV2;
+import com.abinbev.b2b.price.domain.model.v2.enums.PriceMeasureUnitType;
+
+@Component
+<span class="fc" id="L40">public class PriceNormalizedInfoToPriceResponseVoV3Converter {</span>
+
+	public PriceResponseVoV3 convert(final PriceNormalizedInfo priceNormalizedInfo) {
+
+<span class="fc" id="L44">		final PriceResponseVoV3 priceResponseVoV3 = new PriceResponseVoV3();</span>
+
+<span class="fc" id="L46">		final PriceEntityV2 priceEntityV2 = priceNormalizedInfo.getSelectedPrice();</span>
+
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (isNull(priceEntityV2)) {</span>
+<span class="fc" id="L49">			return null;</span>
+		}
+
+<span class="fc" id="L52">		priceResponseVoV3.setVendorItemId(priceEntityV2.getId().getVendorItemId());</span>
+<span class="fc" id="L53">		priceResponseVoV3.setValidFrom(convertValidFrom(priceEntityV2.getId().getValidFrom(), priceEntityV2.getTimezone()));</span>
+<span class="fc" id="L54">		priceResponseVoV3.setSku(priceEntityV2.getSku());</span>
+<span class="fc" id="L55">		priceResponseVoV3.setBasePrice(priceEntityV2.getBasePrice());</span>
+<span class="fc" id="L56">		priceResponseVoV3.setMinimumPrice(priceEntityV2.getMinimumPrice());</span>
+<span class="fc" id="L57">		priceResponseVoV3.setMeasureUnit(priceEntityV2.getMeasureUnit());</span>
+<span class="fc" id="L58">		priceResponseVoV3.setType(convertType(priceEntityV2.getType()));</span>
+<span class="fc" id="L59">		priceResponseVoV3.setDeposit(priceEntityV2.getDeposit());</span>
+<span class="fc" id="L60">		priceResponseVoV3.setConsignment(priceEntityV2.getConsignment());</span>
+<span class="fc" id="L61">		priceResponseVoV3.setQuantityPerPallet(priceEntityV2.getQuantityPerPallet());</span>
+<span class="fc" id="L62">		priceResponseVoV3.setSuggestedRetailPrice(priceEntityV2.getSuggestedRetailPrice());</span>
+<span class="fc" id="L63">		priceResponseVoV3.setTimezone(priceEntityV2.getTimezone());</span>
+<span class="fc" id="L64">		priceResponseVoV3.setPromotionalPrice(</span>
+<span class="fc" id="L65">				convertNullablePromotionalPriceV2ToPromotionalPriceResponseVoV3(priceEntityV2.getPromotionalPrice()));</span>
+<span class="fc" id="L66">		priceResponseVoV3.setTaxes(ofNullable(priceEntityV2.getTaxes()).map(this::convertNullableTaxV2ToTaxResponseVoV3).orElse(null));</span>
+<span class="fc" id="L67">		priceResponseVoV3.setCharges(</span>
+<span class="fc" id="L68">				ofNullable(priceEntityV2.getCharges()).map(this::convertNullableChargeV2ToChargeResponseVoV3).orElse(null));</span>
+
+<span class="fc" id="L70">		priceResponseVoV3.setItemId(priceNormalizedInfo.getItemId());</span>
+<span class="fc" id="L71">		priceResponseVoV3.setContractId(priceNormalizedInfo.getContractId());</span>
+
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (isNull(priceNormalizedInfo.getContractId())) {</span>
+<span class="fc" id="L74">			priceResponseVoV3.setDeliveryCenterId(priceNormalizedInfo.getDeliveryCenterId());</span>
+		}
+
+<span class="fc" id="L77">		return priceResponseVoV3;</span>
+	}
+
+	private String convertType(final PriceMeasureUnitType type) {
+
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		return nonNull(type) ? type.name() : &quot;PER_UNIT&quot;;</span>
+	}
+
+	private String convertValidFrom(final Instant validFrom, final String timezone) {
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		if (isNull(validFrom)) {</span>
+<span class="fc" id="L88">			return null;</span>
+		}
+<span class="fc" id="L90">		return validFrom.atZone(ZoneId.of(timezone)).format(DateTimeFormatter.ISO_LOCAL_DATE);</span>
+	}
+
+	private PromotionalPriceResponseVoV3 convertNullablePromotionalPriceV2ToPromotionalPriceResponseVoV3(
+			final PromotionalPriceV2 promotionalPrice) {
+
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (isNull(promotionalPrice)) {</span>
+<span class="fc" id="L97">			return null;</span>
+		}
+
+<span class="fc" id="L100">		final PromotionalPriceResponseVoV3 promotionalPriceResponseVoV3 = new PromotionalPriceResponseVoV3();</span>
+<span class="fc" id="L101">		promotionalPriceResponseVoV3.setPrice(promotionalPrice.getPrice());</span>
+<span class="fc" id="L102">		promotionalPriceResponseVoV3.setExternalId(promotionalPrice.getExternalId());</span>
+<span class="fc" id="L103">		promotionalPriceResponseVoV3.setValidUntil(promotionalPrice.getValidUntil());</span>
+<span class="fc" id="L104">		return promotionalPriceResponseVoV3;</span>
+	}
+
+	private List&lt;TaxResponseVoV3&gt; convertNullableTaxV2ToTaxResponseVoV3(final Map&lt;String, TaxV2&gt; taxes) {
+
+<span class="fc" id="L109">		final List&lt;TaxResponseVoV3&gt; taxResponseVoV3List = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		for (final var taxV2Entry : taxes.entrySet()) {</span>
+<span class="fc" id="L112">			taxResponseVoV3List.add(convertNotNullableTaxV2ToTaxResponseVoV3(taxV2Entry.getValue()));</span>
+<span class="fc" id="L113">		}</span>
+
+<span class="fc" id="L115">		return taxResponseVoV3List;</span>
+	}
+
+	private TaxResponseVoV3 convertNotNullableTaxV2ToTaxResponseVoV3(final TaxV2 tax) {
+
+<span class="fc" id="L120">		final TaxResponseVoV3 taxResponseVoV3 = new TaxResponseVoV3();</span>
+<span class="fc" id="L121">		taxResponseVoV3.setTaxId(tax.getTaxId());</span>
+<span class="fc" id="L122">		taxResponseVoV3.setType(tax.getType());</span>
+<span class="fc" id="L123">		taxResponseVoV3.setValue(tax.getValue());</span>
+<span class="fc" id="L124">		taxResponseVoV3.setTaxBaseInclusionIds(tax.getTaxBaseInclusionIds());</span>
+<span class="fc" id="L125">		taxResponseVoV3.setHidden(tax.isHidden());</span>
+<span class="fc" id="L126">		taxResponseVoV3.setBase(tax.getBase());</span>
+<span class="fc" id="L127">		taxResponseVoV3.setConditions(convertNullableTaxConditionV2ToTaxConditionResponseVoV3(tax.getConditions()));</span>
+<span class="fc" id="L128">		taxResponseVoV3.setProportional(tax.getProportional());</span>
+<span class="fc" id="L129">		taxResponseVoV3.setBaseChanges(convertNullableTaxBaseChangesV2ToTaxBaseChangesResponseVoV3(tax.getBaseChanges()));</span>
+<span class="fc" id="L130">		taxResponseVoV3.setDeduction(convertNullableTaxDeductionV2ToTaxDeductionResponseVoV3(tax.getDeduction()));</span>
+
+<span class="fc" id="L132">		return taxResponseVoV3;</span>
+	}
+
+	private TaxBaseChangesResponseVoV3 convertNullableTaxBaseChangesV2ToTaxBaseChangesResponseVoV3(final TaxBaseChangesV2 baseChangesV2) {
+
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		if (isNull(baseChangesV2)) {</span>
+<span class="fc" id="L138">			return null;</span>
+		}
+
+<span class="fc" id="L141">		final TaxBaseChangesResponseVoV3 taxBaseChangesResponseVoV3 = new TaxBaseChangesResponseVoV3();</span>
+<span class="fc" id="L142">		taxBaseChangesResponseVoV3.setIncrease(baseChangesV2.getIncrease());</span>
+<span class="fc" id="L143">		taxBaseChangesResponseVoV3.setReduction(baseChangesV2.getReduction());</span>
+
+<span class="fc bfc" id="L145" title="All 2 branches covered.">		if (nonNull(baseChangesV2.getCompareWith())) {</span>
+<span class="fc" id="L146">			final TaxBaseChangesCompareWithResponseVoV3 taxBaseChangesCompareWithResponseVoV3 = new TaxBaseChangesCompareWithResponseVoV3();</span>
+<span class="fc" id="L147">			taxBaseChangesCompareWithResponseVoV3.setBase(baseChangesV2.getCompareWith().getBase());</span>
+<span class="fc" id="L148">			taxBaseChangesCompareWithResponseVoV3.setType(baseChangesV2.getCompareWith().getType().name());</span>
+<span class="fc" id="L149">			taxBaseChangesResponseVoV3.setCompareWith(taxBaseChangesCompareWithResponseVoV3);</span>
+		}
+
+<span class="fc" id="L152">		return taxBaseChangesResponseVoV3;</span>
+	}
+
+	private TaxDeductionResponseVoV3 convertNullableTaxDeductionV2ToTaxDeductionResponseVoV3(final TaxDeductionV2 deductionV2) {
+
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		if (isNull(deductionV2)) {</span>
+<span class="fc" id="L158">			return null;</span>
+		}
+
+<span class="fc" id="L161">		final TaxDeductionBaseChangesResponseVoV3 taxDeductionBaseChangesResponseVoV3 = ofNullable(deductionV2.getBaseChanges()).map(</span>
+<span class="fc" id="L162">						taxDeductionBaseChangesV2 -&gt; new TaxDeductionBaseChangesResponseVoV3(taxDeductionBaseChangesV2.getReduction()))</span>
+<span class="fc" id="L163">				.orElse(null);</span>
+
+<span class="fc" id="L165">		final TaxDeductionResponseVoV3 taxDeductionResponseVoV3 = new TaxDeductionResponseVoV3();</span>
+<span class="fc" id="L166">		taxDeductionResponseVoV3.setType(deductionV2.getType());</span>
+<span class="fc" id="L167">		taxDeductionResponseVoV3.setValue(deductionV2.getValue());</span>
+<span class="fc" id="L168">		taxDeductionResponseVoV3.setBaseChanges(taxDeductionBaseChangesResponseVoV3);</span>
+
+<span class="fc" id="L170">		return taxDeductionResponseVoV3;</span>
+	}
+
+	private TaxConditionResponseVoV3 convertNullableTaxConditionV2ToTaxConditionResponseVoV3(final TaxConditionV2 conditions) {
+
+<span class="fc bfc" id="L175" title="All 2 branches covered.">		if (isNull(conditions)) {</span>
+<span class="fc" id="L176">			return null;</span>
+		}
+
+<span class="fc" id="L179">		final TaxConditionResponseVoV3 taxConditionResponseVoV3 = new TaxConditionResponseVoV3();</span>
+<span class="fc" id="L180">		taxConditionResponseVoV3.setOrderSubTotal(</span>
+<span class="fc" id="L181">				convertNullableTaxOrderSubTotalV2ToTaxOrderSubTotalResponseVoV3(conditions.getOrderSubTotal()));</span>
+<span class="fc" id="L182">		taxConditionResponseVoV3.setTaxAmount(convertNullableTaxAmountV2ToTaxAmountResponseVoV3(conditions.getTaxAmount()));</span>
+<span class="fc" id="L183">		return taxConditionResponseVoV3;</span>
+	}
+
+	private TaxOrderSubTotalResponseVoV3 convertNullableTaxOrderSubTotalV2ToTaxOrderSubTotalResponseVoV3(
+			final TaxOrderSubTotalV2 orderSubTotal) {
+
+<span class="fc bfc" id="L189" title="All 2 branches covered.">		if (isNull(orderSubTotal)) {</span>
+<span class="fc" id="L190">			return null;</span>
+		}
+<span class="fc" id="L192">		final TaxOrderSubTotalResponseVoV3 taxOrderSubTotalResponseVoV3 = new TaxOrderSubTotalResponseVoV3();</span>
+<span class="fc" id="L193">		taxOrderSubTotalResponseVoV3.setMinimumValue(orderSubTotal.getMinimumValue());</span>
+<span class="fc" id="L194">		return taxOrderSubTotalResponseVoV3;</span>
+	}
+
+	private TaxAmountResponseVoV3 convertNullableTaxAmountV2ToTaxAmountResponseVoV3(TaxAmountV2 taxAmount) {
+
+<span class="fc bfc" id="L199" title="All 2 branches covered.">		if (isNull(taxAmount)) {</span>
+<span class="fc" id="L200">			return null;</span>
+		}
+<span class="fc" id="L202">		final TaxAmountResponseVoV3 taxAmountResponseVoV3 = new TaxAmountResponseVoV3();</span>
+<span class="fc" id="L203">		taxAmountResponseVoV3.setTaxId(taxAmount.getTaxId());</span>
+<span class="fc" id="L204">		taxAmountResponseVoV3.setThreshold(taxAmount.getThreshold());</span>
+<span class="fc" id="L205">		taxAmountResponseVoV3.setScope(taxAmount.getScope());</span>
+<span class="fc" id="L206">		taxAmountResponseVoV3.setOperator(taxAmount.getOperator());</span>
+<span class="fc" id="L207">		return taxAmountResponseVoV3;</span>
+	}
+
+	private List&lt;ChargeResponseVoV3&gt; convertNullableChargeV2ToChargeResponseVoV3(final Map&lt;String, ChargeV2&gt; charges) {
+
+<span class="fc" id="L212">		final List&lt;ChargeResponseVoV3&gt; chargeResponseVoV3List = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L214" title="All 2 branches covered.">		for (final var chargeEntry : charges.entrySet()) {</span>
+<span class="fc" id="L215">			chargeResponseVoV3List.add(convertNotNullableChargeV2ToChargeResponseVoV3(chargeEntry.getValue()));</span>
+<span class="fc" id="L216">		}</span>
+
+<span class="fc" id="L218">		return chargeResponseVoV3List;</span>
+	}
+
+	private ChargeResponseVoV3 convertNotNullableChargeV2ToChargeResponseVoV3(final ChargeV2 charge) {
+
+<span class="fc" id="L223">		final ChargeResponseVoV3 chargeResponseVoV3 = new ChargeResponseVoV3();</span>
+<span class="fc" id="L224">		chargeResponseVoV3.setChargeId(charge.getChargeId());</span>
+<span class="fc" id="L225">		chargeResponseVoV3.setType(charge.getType());</span>
+<span class="fc" id="L226">		chargeResponseVoV3.setValue(charge.getValue());</span>
+<span class="fc" id="L227">		chargeResponseVoV3.setBase(charge.getBase());</span>
+<span class="fc" id="L228">		return chargeResponseVoV3;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
