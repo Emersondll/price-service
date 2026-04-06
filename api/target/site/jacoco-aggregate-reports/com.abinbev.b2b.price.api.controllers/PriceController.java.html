@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.controllers</a> &gt; <span class="el_source">PriceController.java</span></div><h1>PriceController.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.controllers;
+
+import static com.abinbev.b2b.price.api.helpers.ApiConstants.AUTHORIZATION_HEADER;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.abinbev.b2b.price.api.exceptions.Issue;
+import com.abinbev.b2b.price.api.helpers.ApiConstants;
+import com.abinbev.b2b.price.api.helpers.ApiResponseConstants;
+import com.abinbev.b2b.price.api.rest.vo.Pagination;
+import com.abinbev.b2b.price.api.rest.vo.PriceResponseVo;
+import com.abinbev.b2b.price.api.services.PriceService;
+import com.abinbev.b2b.price.api.validators.RequestValidatorHelper;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@RestController
+@Tag(name = ApiConstants.API_NAME_PRICES)
+@SecurityScheme(scheme = &quot;bearer&quot;, type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
+public class PriceController {
+
+<span class="fc" id="L44">	private static final Logger LOGGER = LoggerFactory.getLogger(PriceController.class);</span>
+	private final PriceService priceService;
+	private final RequestValidatorHelper requestValidatorHelper;
+
+	@Autowired
+<span class="fc" id="L49">	public PriceController(final PriceService priceService, final RequestValidatorHelper requestValidatorHelper) {</span>
+
+<span class="fc" id="L51">		this.priceService = priceService;</span>
+<span class="fc" id="L52">		this.requestValidatorHelper = requestValidatorHelper;</span>
+<span class="fc" id="L53">	}</span>
+
+	@Operation(summary = ApiConstants.API_PRICES_DESCRIPTION, responses = {
+			@ApiResponse(responseCode = &quot;200&quot;, description = ApiResponseConstants.STATUS_200_GET_OK, content = @Content(schema = @Schema(implementation = PriceResponseVo.class))),
+			@ApiResponse(responseCode = &quot;400&quot;, description = ApiResponseConstants.STATUS_400_BAD_REQUEST, content = @Content(schema = @Schema(implementation = Issue.class))),
+			@ApiResponse(responseCode = &quot;503&quot;, description = ApiResponseConstants.STATUS_503_SERVER_ERROR, content = @Content(schema = @Schema(implementation = Issue.class))),
+			@ApiResponse(responseCode = &quot;403&quot;, description = ApiResponseConstants.STATUS_403_FORBIDDEN, content = @Content(schema = @Schema(implementation = Issue.class))),
+			@ApiResponse(responseCode = &quot;404&quot;, description = ApiResponseConstants.STATUS_404_NOT_FOUND, content = @Content(schema = @Schema(implementation = Issue.class))) })
+			@Parameter(description = ApiConstants.REQUEST_TRACE_ID_DESCRIPTION, required = true, name = ApiConstants.REQUEST_TRACE_ID_HEADER, in = ParameterIn.HEADER)
+	@GetMapping(path = &quot;/v1&quot;, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	public ResponseEntity&lt;PriceResponseVo&gt; get(
+			@Parameter(name = ApiConstants.ACCOUNT_ID_PARAM, description = ApiConstants.ACCOUNT_DESCRIPTION, required = true) @RequestParam(name = &quot;accountId&quot;) final String accountId,
+			@Parameter(name = ApiConstants.COUNTRY_HEADER, description = ApiConstants.COUNTRY_DESCRIPTION, required = true) @RequestHeader final String country,
+			@Parameter(name = ApiConstants.REQUEST_TRACE_ID_HEADER, description = ApiConstants.REQUEST_TRACE_ID_DESCRIPTION, required = true) @RequestHeader(ApiConstants.REQUEST_TRACE_ID_HEADER) final String requestTraceId,
+			@Parameter(name = AUTHORIZATION_HEADER, description = ApiConstants.AUTHORIZATION_DESCRIPTION, hidden = true) @RequestHeader(name = ApiConstants.AUTHORIZATION_HEADER, required = false) final String authorization,
+			@Parameter(name = ApiConstants.SKUS_FILTER_HEADER, description = ApiConstants.SKUS_FILTER_DESCRIPTION) @RequestParam(name = &quot;skus&quot;, required = false) final List&lt;String&gt; skus,
+			@Parameter(name = ApiConstants.PAGE_HEADER, description = ApiConstants.PAGE_DESCRIPTION) @RequestParam(name = &quot;page&quot;, required = false) final Integer page,
+			@Parameter(name = ApiConstants.SIZE_HEADER, description = ApiConstants.SIZE_DESCRIPTION) @RequestParam(name = &quot;size&quot;, required = false) final Integer size) {
+
+<span class="fc" id="L73">		final List&lt;String&gt; headersToValidate = Arrays.asList(ApiConstants.COUNTRY_HEADER, ApiConstants.REQUEST_TRACE_ID_HEADER,</span>
+				ApiConstants.AUTHORIZATION_HEADER);
+
+<span class="fc" id="L76">		requestValidatorHelper.validateHeaders(headersToValidate, accountId, country, authorization);</span>
+
+<span class="fc" id="L78">		LOGGER.debug(&quot;Received GET request for requestTraceId: {}&quot;, requestTraceId);</span>
+<span class="fc" id="L79">		return ResponseEntity.ok(priceService.getAllPrices(accountId, country, skus, getPagination(page, size)));</span>
+	}
+
+	private Pagination getPagination(final Integer page, final Integer size) {
+
+<span class="fc" id="L84">		Pagination pagination = null;</span>
+
+<span class="fc bfc" id="L86" title="All 4 branches covered.">		if (page != null || size != null) {</span>
+<span class="fc" id="L87">			pagination = new Pagination(page, size);</span>
+		}
+
+<span class="fc" id="L90">		return pagination;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
