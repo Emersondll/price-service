@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IssueEnum.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.exceptions</a> &gt; <span class="el_source">IssueEnum.java</span></div><h1>IssueEnum.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.exceptions;
+
+import java.util.IllegalFormatException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+<span class="fc" id="L8">public enum IssueEnum {</span>
+
+	// Note: the comments are placed just to prevent auto formatting add
+	// the constants to the same line.
+	// General error codes 1~50.
+<span class="fc" id="L13">	BAD_REQUEST(1, &quot;Malformed Request&quot;), //</span>
+<span class="fc" id="L14">	REQUEST_HEADER_NOT_VALID(2, &quot;The header %s '%s' is not valid&quot;), //</span>
+<span class="fc" id="L15">	REQUIRED_HEADER_MISSING(3, &quot;Required header '%s' is missing&quot;), //</span>
+<span class="fc" id="L16">	JSON_DESERIALIZE_ERROR(4, &quot;Can not deserialize JSON.&quot;), //</span>
+<span class="fc" id="L17">	METHOD_NOT_ALLOWED(5, &quot;%s method is not supported for this request. Supported methods are [%s]&quot;), //</span>
+<span class="fc" id="L18">	REQUEST_PARAM_NOT_VALID(6, &quot;The param %s '%s' is not valid&quot;), //</span>
+<span class="fc" id="L19">	UNEXPECTED_ERROR(7, &quot;Unexpected error. Please contact system administrator.&quot;), //</span>
+<span class="fc" id="L20">	PRICES_NOT_FOUND(8, &quot;No Price found for account '%s' and country '%s'&quot;), //</span>
+<span class="fc" id="L21">	PRICES_NOT_FOUND_V2(9, &quot;No Price found for vendor '%s', vendor account '%s' and country '%s'&quot;), //</span>
+<span class="fc" id="L22">	PRICES_WITH_PRICE_LIST_ID_NOT_FOUND_V2(24, &quot;No Price found for vendor '%s', vendor account '%s' or price list '%s' and country '%s'&quot;),</span>
+<span class="fc" id="L23">	INVALID_PAGE_SIZE(14, &quot;Page size should be greater than zero.&quot;), //</span>
+<span class="fc" id="L24">	INVALID_PAGE_NUMBER(15, &quot;Page number can not be negative.&quot;), //</span>
+<span class="fc" id="L25">	PRICING_CONFIGURATION_NOT_FOUND(17, &quot;Could not retrieve pricing configuration for country '%s'&quot;), //</span>
+<span class="fc" id="L26">	JWT_DECODE_ERROR(4, &quot;Error while decoding the token&quot;), //</span>
+<span class="fc" id="L27">	JWT_TOKEN_INVALID(5, &quot;Invalid Token&quot;), //</span>
+<span class="fc" id="L28">	MISSING_ACCOUNT_ID_OR_VENDOR_ACCOUNT_ID_HEADER(20, &quot;Please provide accountId or vendorAccountId header.&quot;), //</span>
+<span class="fc" id="L29">	MISMATCHED_ACCOUNT_ID_AND_VENDOR_ACCOUNT_ID_HEADER(21, &quot;The values of accountId and vendorAccountId cannot be different.&quot;), //</span>
+<span class="fc" id="L30">	MISMATCHED_SKUS_AND_VENDOR_ITEM_IDS_HEADER(22, &quot;The values of skus and vendorItemIds cannot be different.&quot;), //</span>
+<span class="fc" id="L31">	DATABASE_ACCESS_ERROR(23, &quot;Database access failed.  Please contact system administrator.&quot;), //</span>
+<span class="fc" id="L32">	REQUEST_DECODING_ERROR(24, &quot;Error decoding '%s' from request body&quot;), //</span>
+<span class="fc" id="L33">	CONTRACT_ID_IS_REQUIRED_FOR_PRICE_LIST(25, &quot;The contractId is required for Price List.&quot;), //</span>
+<span class="fc" id="L34">	EXCEEDED_LIMIT_OF_ITEMS_REQUEST(26, &quot;Exceeded limit of %d items.&quot;), //</span>
+<span class="fc" id="L35">	REQUEST_BODY_MUST_BE_A_NONEMPTY_ARRAY(27, &quot;The request body must be a nonempty array.&quot;); //</span>
+
+	// not static because ENUMS are initialized before static fields by JVM
+<span class="fc" id="L38">	private final Logger logger = LoggerFactory.getLogger(IssueEnum.class);</span>
+	private final int code;
+	private final String message;
+
+<span class="fc" id="L42">	IssueEnum(final int code, final String message) {</span>
+
+<span class="fc" id="L44">		this.code = code;</span>
+<span class="fc" id="L45">		this.message = message;</span>
+<span class="fc" id="L46">	}</span>
+
+	public int getCode() {
+
+<span class="fc" id="L50">		return code;</span>
+	}
+
+	public String getFormattedMessage(final Object... args) {
+
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		if (message == null) {</span>
+<span class="nc" id="L56">			return &quot;&quot;;</span>
+		}
+
+		try {
+<span class="fc" id="L60">			return String.format(message, args);</span>
+<span class="nc" id="L61">		} catch (final IllegalFormatException e) {</span>
+<span class="nc" id="L62">			logger.warn(e.getMessage(), e);</span>
+<span class="nc" id="L63">			return message.replace(&quot;%s&quot;, &quot;&quot;);</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
