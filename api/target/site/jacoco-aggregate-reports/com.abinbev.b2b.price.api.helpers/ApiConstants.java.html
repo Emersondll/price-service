@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApiConstants.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.helpers</a> &gt; <span class="el_source">ApiConstants.java</span></div><h1>ApiConstants.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.helpers;
+
+public abstract class ApiConstants {
+
+	public static final String API_NAME_PRICES = &quot;Prices API&quot;;
+	public static final String API_NAME_PRICES_OFFERS = &quot;Prices Offers API&quot;;
+	public static final String API_PRICES_DESCRIPTION = &quot;Retrieves prices by customer ID. Taxes are not included&quot;;
+	public static final String API_PRICES_OFFERS_DESCRIPTION = &quot;Retrieves prices offers by customer ID.&quot;;
+	public static final String HEADER = &quot;header&quot;;
+	public static final String SUPPORTED_COUNTRIES = &quot;ar,br,co,do,mx,za,ec,pe&quot;;
+	public static final String ACCOUNT_DESCRIPTION = &quot;AccountID for filtering by account&quot;;
+	public static final String COUNTRY_DESCRIPTION = &quot;Country/region. ISO 3166 alpha-2 country code&quot;;
+	public static final String COUNTRY_HEADER = &quot;country&quot;;
+	public static final String PAGE_HEADER = &quot;page&quot;;
+	public static final String SIZE_HEADER = &quot;size&quot;;
+	public static final String ACCOUNT_ID_PARAM = &quot;accountId&quot;;
+	public static final String REQUEST_TRACE_ID_HEADER = &quot;requestTraceId&quot;;
+	public static final String REQUEST_TRACE_ID_DESCRIPTION = &quot;Cross transaction unique ID&quot;;
+	public static final String UNAUTHORIZED_ACCESS = &quot;Unauthorized access&quot;;
+	public static final String ACCESS_DENIED = &quot;Access denied&quot;;
+	public static final String API_TITLE = &quot;AB-Inbev B2B Pricing Conditions Service&quot;;
+	public static final String API_DESCRIPTION = &quot;\&quot;REST API for AB-Inbev Pricing Conditions Service Microservice\&quot;&quot;;
+	public static final String API_LICENSE = &quot;Anheuser-Busch InBev © &quot;;
+	public static final String API_VERSION_1_LABEL = &quot;API v1&quot;;
+	public static final String API_VERSION_2_LABEL = &quot;API v2&quot;;
+	public static final String API_VERSION_3_LABEL = &quot;API v3&quot;;
+	public static final String SKUS_FILTER_HEADER = &quot;skus&quot;;
+	public static final String SKUS_FILTER_DESCRIPTION = &quot;Set of SKUs to filter e.g: ?skus=SKU0001,SKU0002,SKU0003,..N&quot;;
+	public static final String VENDOR_ID_DESCRIPTION = &quot;Vendor ID for filtering by vendor&quot;;
+	public static final String VENDOR_ACCOUNT_ID_DESCRIPTION = &quot;Vendor Account ID for filtering by vendor account&quot;;
+	public static final String VENDOR_ITEM_ID_DESCRIPTION = &quot;Vendor Item ID for filtering by vendor account item&quot;;
+	public static final String PAGE_DESCRIPTION = &quot;The page selected&quot;;
+	public static final String SIZE_DESCRIPTION = &quot;The quantity of how many items per page&quot;;
+	public static final String AUTHORIZATION_DESCRIPTION = &quot;JWT Token&quot;;
+	public static final String AUTHORIZATION_HEADER = &quot;authorization&quot;;
+	public static final String ACCOUNTS = &quot;accounts&quot;;
+	public static final String SERVICE_NAME_LABEL = &quot;ServiceName&quot;;
+	public static final String PRICE_SERVICE = &quot;price-service&quot;;
+	public static final String EXTENSION_ACCOUNTS = &quot;extension_accountids&quot;;
+	public static final String CLAIM_APP = &quot;app&quot;;
+	public static final String WHEN_APPLY_ROUNDING_ON_TAXES = &quot;whenApplyRoundingOnTaxes&quot;;
+	public static final String ROUND_TAXES_AND_DISCOUNT_BEFORE_SUBTOTAL_AND_TOTAL = &quot;roundTaxesAndDiscountBeforeSubtotalAndTotal&quot;;
+	public static final String PRICE_INCLUDE_DEPOSIT = &quot;priceIncludeDeposit&quot;;
+	public static final String PRICES_IGNORE_TAX_CONDITION = &quot;pricesIgnoreTaxCondition&quot;;
+	public static final String TAX_INCLUDE_DEPOSIT = &quot;taxIncludesDeposit&quot;;
+	public static final String TAX_PERCENT_TYPE = &quot;%&quot;;
+	public static final String DEFAULT_CONFIGURATION = &quot;default&quot;;
+	public static final String EXCLUDE_TAXES_FROM_BROWSE_PRICE = &quot;excludeTaxesFromBrowsePrice&quot;;
+	public static final String EXCLUDE_CHARGE_FROM_BROWSE_PRICE = &quot;excludeChargeFromBrowsePrice&quot;;
+	public static final String EXCLUDE_CONDITIONAL_TAXES_FROM_BROWSE_PRICE = &quot;excludeConditionalTaxesFromBrowsePrice&quot;;
+	public static final String ROLES = &quot;roles&quot;;
+	public static final String ROLE_READ = &quot;READ&quot;;
+	public static final String ROLE_WRITE = &quot;WRITE&quot;;
+	public static final String ROLE_CUSTOMER = &quot;ROLE_CUSTOMER&quot;;
+	public static final String APP_B2B = &quot;b2b&quot;;
+	public static final String APP_B2B_UPPERCASE = &quot;B2B&quot;;
+	public static final String TOKEN_INVALID = &quot;This token is invalid.&quot;;
+	public static final String BEARER_PREFIX = &quot;Bearer&quot;;
+	public static final String VENDOR_ID_HEADER = &quot;vendorId&quot;;
+	public static final String VENDOR_ACCOUNT_ID_HEADER = &quot;vendorAccountId&quot;;
+	public static final String VENDOR_ITEM_IDS_HEADER = &quot;vendorItemIds&quot;;
+	public static final String DAYS_BEHIND_TO_SHOW_VALID_UNTIL = &quot;daysBehindToShowValidUntil&quot;;
+	public static final String PRICE_LIST_ID_DESCRIPTION = &quot;PRICE LIST ID for filtering by price list&quot;;
+	public static final String PRICE_LIST_ID_HEADER = &quot;priceListId&quot;;
+	public static final String IGNORE_VALID_FROM = &quot;ignoreValidFrom&quot;;
+	public static final String IGNORE_VALID_FROM_DESCRIPTION = &quot;Filter to ignore field validFrom, if true it will return future prices&quot;;
+
+<span class="nc" id="L68">	private ApiConstants() {</span>
+
+<span class="nc" id="L70">		throw new AssertionError();</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
