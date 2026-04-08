@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtDataVo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.rest.vo</a> &gt; <span class="el_source">JwtDataVo.java</span></div><h1>JwtDataVo.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.rest.vo;
+
+import java.util.List;
+
+<span class="fc" id="L5">public class JwtDataVo {</span>
+
+	private List&lt;String&gt; roles;
+	private List&lt;String&gt; accounts;
+	private List&lt;String&gt; extensionAccountIds;
+	private String country;
+	private String app;
+
+	public static JwtDataBuilder builder() {
+
+<span class="fc" id="L15">		return new JwtDataBuilder();</span>
+	}
+
+	public List&lt;String&gt; getExtensionAccountIds() {
+
+<span class="fc" id="L20">		return extensionAccountIds;</span>
+	}
+
+	public void setExtensionAccountIds(final List&lt;String&gt; extensionAccountIds) {
+
+<span class="fc" id="L25">		this.extensionAccountIds = extensionAccountIds;</span>
+<span class="fc" id="L26">	}</span>
+
+	public List&lt;String&gt; getRoles() {
+
+<span class="fc" id="L30">		return roles;</span>
+	}
+
+	public void setRoles(final List&lt;String&gt; roles) {
+
+<span class="fc" id="L35">		this.roles = roles;</span>
+<span class="fc" id="L36">	}</span>
+
+	public List&lt;String&gt; getAccounts() {
+
+<span class="fc" id="L40">		return accounts;</span>
+	}
+
+	public void setAccounts(final List&lt;String&gt; accounts) {
+
+<span class="fc" id="L45">		this.accounts = accounts;</span>
+<span class="fc" id="L46">	}</span>
+
+	public String getCountry() {
+
+<span class="fc" id="L50">		return country;</span>
+	}
+
+	public void setCountry(final String country) {
+
+<span class="fc" id="L55">		this.country = country;</span>
+<span class="fc" id="L56">	}</span>
+
+	public String getApp() {
+
+<span class="fc" id="L60">		return app;</span>
+	}
+
+	public void setApp(final String app) {
+
+<span class="fc" id="L65">		this.app = app;</span>
+<span class="fc" id="L66">	}</span>
+
+<span class="fc" id="L68">	public static class JwtDataBuilder {</span>
+
+<span class="fc" id="L70">		final JwtDataVo jwtDataVo = new JwtDataVo();</span>
+
+		public JwtDataBuilder withRoles(final List&lt;String&gt; roles) {
+
+<span class="fc" id="L74">			this.jwtDataVo.roles = roles;</span>
+<span class="fc" id="L75">			return this;</span>
+		}
+
+		public JwtDataBuilder withAccounts(final List&lt;String&gt; accounts) {
+
+<span class="fc" id="L80">			this.jwtDataVo.accounts = accounts;</span>
+<span class="fc" id="L81">			return this;</span>
+		}
+
+		public JwtDataBuilder withExtensionAccountIds(final List&lt;String&gt; extensionAccountIds) {
+
+<span class="fc" id="L86">			this.jwtDataVo.setExtensionAccountIds(extensionAccountIds);</span>
+<span class="fc" id="L87">			return this;</span>
+		}
+
+		public JwtDataBuilder withApp(final String app) {
+
+<span class="fc" id="L92">			this.jwtDataVo.app = app;</span>
+<span class="fc" id="L93">			return this;</span>
+		}
+
+		public JwtDataBuilder withCountry(final String country) {
+
+<span class="fc" id="L98">			this.jwtDataVo.country = country;</span>
+<span class="fc" id="L99">			return this;</span>
+		}
+
+		public JwtDataVo build() {
+
+<span class="fc" id="L104">			return this.jwtDataVo;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
