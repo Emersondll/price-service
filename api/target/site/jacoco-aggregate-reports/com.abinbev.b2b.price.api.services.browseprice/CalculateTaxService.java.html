@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CalculateTaxService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.services.browseprice</a> &gt; <span class="el_source">CalculateTaxService.java</span></div><h1>CalculateTaxService.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.services.browseprice;
+
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.collections4.MapUtils;
+import org.javatuples.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.abinbev.b2b.price.api.domain.TaxFact;
+import com.abinbev.b2b.price.api.domain.TaxOrderSubTotalFact;
+import com.abinbev.b2b.price.api.domain.bre.WhenApplyRoundingOnTaxesEnum;
+import com.abinbev.b2b.price.api.helpers.ApiConstants;
+import com.newrelic.api.agent.Trace;
+
+@Service
+public class CalculateTaxService {
+
+<span class="fc" id="L28">	private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);</span>
+<span class="fc" id="L29">	private static final MathContext DEFAULT_MATH_CONTEXT = MathContext.DECIMAL128;</span>
+
+	private final PricingConfigurationService pricingConfigurationService;
+	private final RoundValueService roundValueService;
+
+	@Autowired
+<span class="fc" id="L35">	public CalculateTaxService(final RoundValueService roundValueService, final PricingConfigurationService pricingConfigurationService) {</span>
+
+<span class="fc" id="L37">		this.pricingConfigurationService = pricingConfigurationService;</span>
+<span class="fc" id="L38">		this.roundValueService = roundValueService;</span>
+<span class="fc" id="L39">	}</span>
+
+	public BigDecimal execute(final Map&lt;String, TaxFact&gt; taxes, final BigDecimal taxBasePrice, final BigDecimal itemBasePrice,
+			final String country) {
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		return MapUtils.isNotEmpty(taxes) ? getCalculatedTaxes(taxes, taxBasePrice, itemBasePrice, country) : BigDecimal.ZERO;</span>
+	}
+
+	@Trace(dispatcher = true)
+	private BigDecimal getCalculatedTaxes(final Map&lt;String, TaxFact&gt; taxes, final BigDecimal taxBasePrice, final BigDecimal itemBasePrice,
+			final String country) {
+
+<span class="fc" id="L51">		final Map&lt;String, BigDecimal&gt; mappedTaxValueByTaxId = new HashMap&lt;&gt;();</span>
+
+<span class="fc" id="L53">		BigDecimal taxHidden = BigDecimal.ZERO;</span>
+<span class="fc" id="L54">		final List&lt;String&gt; taxIds = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		for (final TaxFact tax : taxes.values()) {</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">			if (isTaxApplicable(itemBasePrice, tax, country)) {</span>
+<span class="fc" id="L58">				final var entryTaxIdTaxAmount = getMapOfCalculatedTaxValueByTaxId(taxes, tax, taxBasePrice, country);</span>
+<span class="fc" id="L59">				mappedTaxValueByTaxId.put(entryTaxIdTaxAmount.getKey(), entryTaxIdTaxAmount.getValue());</span>
+
+<span class="fc bfc" id="L61" title="All 2 branches covered.">				if (tax.isHidden()) {</span>
+<span class="fc" id="L62">					taxHidden = taxHidden.add(mappedTaxValueByTaxId.get(tax.getTaxId()));</span>
+<span class="fc" id="L63">					taxIds.add(tax.getTaxId());</span>
+				}
+			}
+<span class="fc" id="L66">		}</span>
+<span class="fc" id="L67">		taxIds.forEach(mappedTaxValueByTaxId.keySet()::remove);</span>
+
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		return MapUtils.isNotEmpty(mappedTaxValueByTaxId) ?</span>
+<span class="fc" id="L70">				sumTaxValuesAndRoundIfApplicable(mappedTaxValueByTaxId, taxHidden, country) :</span>
+<span class="fc" id="L71">				BigDecimal.ZERO;</span>
+	}
+
+	private boolean isTaxApplicable(final BigDecimal itemBasePrice, final TaxFact tax, final String country) {
+
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		if (pricingConfigurationService.getPriceConfig(country, ApiConstants.EXCLUDE_CONDITIONAL_TAXES_FROM_BROWSE_PRICE)</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">				&amp;&amp; isTaxWithCondition(tax)) {</span>
+<span class="fc" id="L78">			return false;</span>
+		}
+
+<span class="fc bfc" id="L81" title="All 4 branches covered.">		return pricingConfigurationService.getPriceConfig(country, ApiConstants.PRICES_IGNORE_TAX_CONDITION) || !isTaxWithCondition(tax)</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">				|| hasItemBasePriceGreaterThanOrderMinimumPrice(itemBasePrice, tax);</span>
+	}
+
+	private boolean isTaxWithCondition(final TaxFact tax) {
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		return tax.getConditions() != null;</span>
+	}
+
+	private boolean hasItemBasePriceGreaterThanOrderMinimumPrice(final BigDecimal itemBasePrice, final TaxFact tax) {
+
+<span class="fc" id="L92">		final BigDecimal orderMinimumPrice = Optional.ofNullable(tax.getConditions().getOrderSubTotal())</span>
+<span class="fc" id="L93">				.map(TaxOrderSubTotalFact::getMinimumValue).orElse(null);</span>
+
+<span class="fc bfc" id="L95" title="All 6 branches covered.">		return itemBasePrice != null &amp;&amp; orderMinimumPrice != null &amp;&amp; itemBasePrice.compareTo(orderMinimumPrice) &gt;= 0;</span>
+	}
+
+	private Map.Entry&lt;String, BigDecimal&gt; getMapOfCalculatedTaxValueByTaxId(final Map&lt;String, TaxFact&gt; taxes, final TaxFact tax,
+			final BigDecimal taxBasePrice, final String country) {
+
+<span class="fc" id="L101">		return Map.entry(tax.getTaxId(), sumTaxDependenciesIfExists(taxes, tax, taxBasePrice, country));</span>
+	}
+
+	private BigDecimal sumTaxDependenciesIfExists(final Map&lt;String, TaxFact&gt; taxes, final TaxFact tax, final BigDecimal taxBasePrice,
+			final String country) {
+
+<span class="fc" id="L107">		BigDecimal dependenciesAmount = BigDecimal.ZERO;</span>
+
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		if (isNotEmpty(tax.getTaxBaseInclusionIds())) {</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">			for (final String dependencyId : tax.getTaxBaseInclusionIds()) {</span>
+<span class="fc" id="L111">				dependenciesAmount = dependenciesAmount</span>
+<span class="fc" id="L112">						.add(sumTaxDependenciesIfExists(taxes, taxes.get(dependencyId), taxBasePrice, country));</span>
+<span class="fc" id="L113">			}</span>
+		}
+
+<span class="fc" id="L116">		return calculateTaxAmountBasedOnTaxType(tax, dependenciesAmount, taxBasePrice, country);</span>
+	}
+
+	private BigDecimal calculateTaxAmountBasedOnTaxType(final TaxFact tax, final BigDecimal dependenciesAmount,
+			final BigDecimal taxBasePrice, final String country) {
+
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		final BigDecimal taxAmount = ApiConstants.TAX_PERCENT_TYPE.equals(tax.getType()) ?</span>
+<span class="fc" id="L123">				calculateTaxAmountByPercentage(tax, dependenciesAmount, taxBasePrice) :</span>
+<span class="fc" id="L124">				tax.getValue();</span>
+
+<span class="fc bfc" id="L126" title="All 2 branches covered.">		if (pricingConfigurationService.getPriceConfigWhenApplyRoundingOnTaxesEnum(country) == WhenApplyRoundingOnTaxesEnum.ON_EACH_TAX) {</span>
+<span class="fc" id="L127">			return roundValueService.execute(taxAmount);</span>
+		}
+
+<span class="fc" id="L130">		return taxAmount;</span>
+	}
+
+	private BigDecimal calculateTaxAmountByPercentage(final TaxFact tax, final BigDecimal dependenciesAmount,
+			final BigDecimal taxBasePrice) {
+
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		final BigDecimal basePrice = tax.getBase() != null ? tax.getBase().add(dependenciesAmount) : taxBasePrice.add(dependenciesAmount);</span>
+
+<span class="fc" id="L138">		return tax.getValue().multiply(basePrice).divide(ONE_HUNDRED, DEFAULT_MATH_CONTEXT);</span>
+	}
+
+	private BigDecimal sumTaxValuesAndRoundIfApplicable(final Map&lt;String, BigDecimal&gt; mappedTaxValueByTaxId, final BigDecimal taxHidden,
+			final String country) {
+
+<span class="fc" id="L144">		final BigDecimal summedTaxes = sumProductTaxesValues(mappedTaxValueByTaxId.values());</span>
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">		final Pair&lt;BigDecimal, BigDecimal&gt; calculatedItemTax = shouldRoundTaxAmount(country) ?</span>
+<span class="fc" id="L147">				new Pair&lt;&gt;(roundValueService.execute(summedTaxes), roundValueService.execute(taxHidden)) :</span>
+<span class="fc" id="L148">				new Pair&lt;&gt;(summedTaxes, taxHidden);</span>
+
+<span class="fc" id="L150">		return calculatedItemTax.getValue0().add(calculatedItemTax.getValue1());</span>
+	}
+
+	private BigDecimal sumProductTaxesValues(final Collection&lt;BigDecimal&gt; taxesValuesList) {
+
+<span class="fc" id="L155">		BigDecimal taxesSum = BigDecimal.ZERO;</span>
+
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		for (final BigDecimal tax : taxesValuesList) {</span>
+<span class="fc" id="L158">			taxesSum = taxesSum.add(tax);</span>
+<span class="fc" id="L159">		}</span>
+
+<span class="fc" id="L161">		return taxesSum;</span>
+	}
+
+	private boolean shouldRoundTaxAmount(final String country) {
+
+<span class="fc bfc" id="L166" title="All 2 branches covered.">		return pricingConfigurationService.getPriceConfigWhenApplyRoundingOnTaxesEnum(country) == WhenApplyRoundingOnTaxesEnum.IN_THE_END;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
