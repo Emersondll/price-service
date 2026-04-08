@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MDCManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.helpers</a> &gt; <span class="el_source">MDCManager.java</span></div><h1>MDCManager.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.helpers;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.slf4j.MDC;
+
+public class MDCManager {
+
+	private MDCManager() {
+
+	}
+
+	public static void registerServiceLogData(final HttpServletRequest request) {
+
+<span class="fc" id="L15">		putHeaderByHttpRequest(ApiConstants.REQUEST_TRACE_ID_HEADER, request);</span>
+<span class="fc" id="L16">		putHeaderByHttpRequest(ApiConstants.COUNTRY_HEADER, request);</span>
+
+<span class="fc" id="L18">		putHeaderByString(ApiConstants.SERVICE_NAME_LABEL, ApiConstants.PRICE_SERVICE);</span>
+<span class="fc" id="L19">	}</span>
+
+	private static void putHeaderByHttpRequest(final String header, final HttpServletRequest request) {
+
+<span class="fc" id="L23">		MDC.put(header, request.getHeader(header));</span>
+<span class="fc" id="L24">	}</span>
+
+	private static void putHeaderByString(final String header, final String value) {
+
+<span class="fc" id="L28">		MDC.put(header, value);</span>
+<span class="fc" id="L29">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
