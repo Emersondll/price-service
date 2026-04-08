@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceVoV2.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.rest.vo.v2</a> &gt; <span class="el_source">PriceVoV2.java</span></div><h1>PriceVoV2.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.rest.vo.v2;
+
+import java.math.BigDecimal;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = &quot;PriceVoV2&quot;)
+<span class="fc" id="L11">public class PriceVoV2 {</span>
+
+	@JsonProperty
+	@Schema(description = &quot;The vendor account identifier.&quot;, example = &quot;123456&quot;)
+	private String vendorAccountId;
+
+	@JsonProperty
+	@Schema(description = &quot;The vendor identifier.&quot;, example = &quot;123456&quot;)
+	private String vendorId;
+
+	@JsonProperty
+	@Schema(description = &quot;The vendor item identifier. It can have special characters&quot;, required = true, example = &quot;SKU0001-CASE&quot;)
+	private String vendorItemId;
+
+	@JsonProperty
+	@Schema(description = &quot;The sku alphanumeric identifier. It can have special characters but not dot&quot;, example = &quot;SKU0001&quot;)
+	private String sku;
+
+	@JsonProperty
+	@Schema(description = &quot;The base price for the current sku represented by a financial amount. The max number of decimal places is 15&quot;, required = true, example = &quot;20.99&quot;)
+	private BigDecimal basePrice;
+
+	@JsonProperty
+	@Schema(description = &quot;The minimum price for the current sku represented by a financial amount. The max number of decimal places is 15&quot;, example = &quot;5.99&quot;)
+	private BigDecimal minimumPrice;
+
+	@JsonProperty
+	@Schema(description = &quot;The measure unit for the current sku&quot;, example = &quot;CS&quot;)
+	private String measureUnit;
+
+	@JsonProperty
+	@Schema(description = &quot;The type of the price measure unit&quot;, example = &quot;PER_UNIT or PER_UOM&quot;)
+	private String type;
+
+	@JsonProperty
+	@Schema(description = &quot;The deposit represents the can/cask price. It's represented by a financial amount and the max number of decimal places is 15&quot;, example = &quot;3.99&quot;)
+	private BigDecimal deposit;
+
+	@JsonProperty
+	@Schema(description = &quot;The deposit fee for kegs.&quot;, example = &quot;0.75&quot;)
+	private BigDecimal consignment;
+
+	@JsonProperty
+	@Schema(description = &quot;The quantity of the current sku that fit in a pallet. Used for the calculations of pallet deals&quot;, example = &quot;88&quot;)
+	private Integer quantityPerPallet;
+
+	@JsonProperty
+	@Schema(description = &quot;A geographic region within which the same standard time is used.&quot;, example = &quot;America/Los_Angeles&quot;)
+	private String timezone;
+
+	@JsonProperty
+	@Schema(description = &quot;The valid from date on format 'yyyy-MM-dd'. Indicates when this price starts to be used in the calculation process.&quot;, example = &quot;2020-12-31&quot;)
+	private String validFrom;
+
+	@JsonProperty
+	@Schema(description = &quot;List of taxes&quot;)
+	private Map&lt;String, TaxResponseVoV2&gt; taxes;
+
+	@JsonProperty
+	@Schema(description = &quot;The promotional price&quot;)
+	private PromotionalPriceResponseVoV2 promotionalPrice;
+
+	@JsonProperty
+	@Schema(description = &quot;List of charges&quot;)
+	private Map&lt;String, ChargeResponseVoV2&gt; charges;
+
+	public String getVendorAccountId() {
+
+<span class="fc" id="L79">		return vendorAccountId;</span>
+	}
+
+	public void setVendorAccountId(final String vendorAccountId) {
+
+<span class="fc" id="L84">		this.vendorAccountId = vendorAccountId;</span>
+<span class="fc" id="L85">	}</span>
+
+	public String getVendorId() {
+
+<span class="fc" id="L89">		return vendorId;</span>
+	}
+
+	public void setVendorId(final String vendorId) {
+
+<span class="fc" id="L94">		this.vendorId = vendorId;</span>
+<span class="fc" id="L95">	}</span>
+
+	public String getVendorItemId() {
+
+<span class="fc" id="L99">		return vendorItemId;</span>
+	}
+
+	public void setVendorItemId(final String vendorItemId) {
+
+<span class="fc" id="L104">		this.vendorItemId = vendorItemId;</span>
+<span class="fc" id="L105">	}</span>
+
+	public String getSku() {
+
+<span class="fc" id="L109">		return sku;</span>
+	}
+
+	public void setSku(final String sku) {
+
+<span class="fc" id="L114">		this.sku = sku;</span>
+<span class="fc" id="L115">	}</span>
+
+	public BigDecimal getBasePrice() {
+
+<span class="fc" id="L119">		return basePrice;</span>
+	}
+
+	public void setBasePrice(final BigDecimal basePrice) {
+
+<span class="fc" id="L124">		this.basePrice = basePrice;</span>
+<span class="fc" id="L125">	}</span>
+
+	public BigDecimal getMinimumPrice() {
+
+<span class="fc" id="L129">		return minimumPrice;</span>
+	}
+
+	public void setMinimumPrice(final BigDecimal minimumPrice) {
+
+<span class="fc" id="L134">		this.minimumPrice = minimumPrice;</span>
+<span class="fc" id="L135">	}</span>
+
+	public String getMeasureUnit() {
+
+<span class="fc" id="L139">		return measureUnit;</span>
+	}
+
+	public void setMeasureUnit(final String measureUnit) {
+
+<span class="fc" id="L144">		this.measureUnit = measureUnit;</span>
+<span class="fc" id="L145">	}</span>
+
+	public String getType() {
+
+<span class="fc" id="L149">		return type;</span>
+	}
+
+	public void setType(final String type) {
+
+<span class="fc" id="L154">		this.type = type;</span>
+<span class="fc" id="L155">	}</span>
+
+	public BigDecimal getDeposit() {
+
+<span class="fc" id="L159">		return deposit;</span>
+	}
+
+	public void setDeposit(final BigDecimal deposit) {
+
+<span class="fc" id="L164">		this.deposit = deposit;</span>
+<span class="fc" id="L165">	}</span>
+
+	public BigDecimal getConsignment() {
+
+<span class="fc" id="L169">		return consignment;</span>
+	}
+
+	public void setConsignment(final BigDecimal consignment) {
+
+<span class="fc" id="L174">		this.consignment = consignment;</span>
+<span class="fc" id="L175">	}</span>
+
+	public Integer getQuantityPerPallet() {
+
+<span class="fc" id="L179">		return quantityPerPallet;</span>
+	}
+
+	public void setQuantityPerPallet(final Integer quantityPerPallet) {
+
+<span class="fc" id="L184">		this.quantityPerPallet = quantityPerPallet;</span>
+<span class="fc" id="L185">	}</span>
+
+	public String getTimezone() {
+
+<span class="fc" id="L189">		return timezone;</span>
+	}
+
+	public void setTimezone(final String timezone) {
+
+<span class="fc" id="L194">		this.timezone = timezone;</span>
+<span class="fc" id="L195">	}</span>
+
+	public String getValidFrom() {
+
+<span class="fc" id="L199">		return validFrom;</span>
+	}
+
+	public void setValidFrom(final String validFrom) {
+
+<span class="fc" id="L204">		this.validFrom = validFrom;</span>
+<span class="fc" id="L205">	}</span>
+
+	public Map&lt;String, TaxResponseVoV2&gt; getTaxes() {
+
+<span class="fc" id="L209">		return taxes;</span>
+	}
+
+	public void setTaxes(final Map&lt;String, TaxResponseVoV2&gt; taxes) {
+
+<span class="fc" id="L214">		this.taxes = taxes;</span>
+<span class="fc" id="L215">	}</span>
+
+	public PromotionalPriceResponseVoV2 getPromotionalPrice() {
+
+<span class="fc" id="L219">		return promotionalPrice;</span>
+	}
+
+	public void setPromotionalPrice(final PromotionalPriceResponseVoV2 promotionalPrice) {
+
+<span class="fc" id="L224">		this.promotionalPrice = promotionalPrice;</span>
+<span class="fc" id="L225">	}</span>
+
+	public Map&lt;String, ChargeResponseVoV2&gt; getCharges() {
+
+<span class="fc" id="L229">		return charges;</span>
+	}
+
+	public void setCharges(final Map&lt;String, ChargeResponseVoV2&gt; charges) {
+
+<span class="fc" id="L234">		this.charges = charges;</span>
+<span class="fc" id="L235">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
