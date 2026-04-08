@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaxResponseVoV2.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.rest.vo.v2</a> &gt; <span class="el_source">TaxResponseVoV2.java</span></div><h1>TaxResponseVoV2.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.rest.vo.v2;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = &quot;TaxResponseVoV2&quot;)
+<span class="fc" id="L13">public class TaxResponseVoV2 {</span>
+
+	@JsonProperty
+	@Schema(description = &quot;The taxId is an alphanumeric identifier for the current tax&quot;, required = true, example = &quot;IVA&quot;)
+	private String taxId;
+	@JsonProperty
+	@Schema(description = &quot;The tax type can be percent or cash and define how this tax will be calculated and applied&quot;, required = true, example = &quot;$ or %&quot;)
+	private String type;
+	@JsonProperty
+	@Schema(description = &quot;The value of the tax is a financial amount with the max number of decimal places as 15. Its application depends on the type&quot;, required = true, example = &quot;20.99&quot;)
+	private BigDecimal value;
+	@JsonProperty
+	@ArraySchema(arraySchema = @Schema(description = &quot;The tax base inclusion ids is a list of the dependent taxes. If all the taxes inside it are eligible to be applied then the current tax has this condition satisfied&quot;, required = true, example = &quot;[\&quot;IVA\&quot;]&quot;), schema = @Schema(description = &quot;tax base inclusion id&quot;))
+	private List&lt;String&gt; taxBaseInclusionIds;
+	@JsonProperty
+	@Schema(description = &quot;Indicates whether the tax is hidden&quot;, required = true, example = &quot;false&quot;)
+	private boolean hidden;
+	@JsonProperty
+	@Schema(description = &quot;The base value replaces the base price of the sku in the tax calculation. It's a financial value with the max number of decimal places as 15&quot;, example = &quot;10.99&quot;)
+	private BigDecimal base;
+	@JsonProperty
+	@Schema(description = &quot;The tax conditions&quot;)
+	private TaxConditionResponseVoV2 conditions;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@JsonProperty
+	@Schema(description = &quot;this property show when the tax should be reduced proportionately when a discount is applied&quot;)
+	private Boolean proportional;
+
+	public String getTaxId() {
+
+<span class="fc" id="L43">		return taxId;</span>
+	}
+
+	public void setTaxId(final String taxId) {
+
+<span class="fc" id="L48">		this.taxId = taxId;</span>
+<span class="fc" id="L49">	}</span>
+
+	public String getType() {
+
+<span class="fc" id="L53">		return type;</span>
+	}
+
+	public void setType(final String type) {
+
+<span class="fc" id="L58">		this.type = type;</span>
+<span class="fc" id="L59">	}</span>
+
+	public BigDecimal getValue() {
+
+<span class="fc" id="L63">		return value;</span>
+	}
+
+	public void setValue(final BigDecimal value) {
+
+<span class="fc" id="L68">		this.value = value;</span>
+<span class="fc" id="L69">	}</span>
+
+	public List&lt;String&gt; getTaxBaseInclusionIds() {
+
+<span class="fc" id="L73">		return taxBaseInclusionIds;</span>
+	}
+
+	public void setTaxBaseInclusionIds(final List&lt;String&gt; taxBaseInclusionIds) {
+
+<span class="fc" id="L78">		this.taxBaseInclusionIds = taxBaseInclusionIds;</span>
+<span class="fc" id="L79">	}</span>
+
+	public boolean isHidden() {
+
+<span class="fc" id="L83">		return hidden;</span>
+	}
+
+	public void setHidden(final boolean hidden) {
+
+<span class="fc" id="L88">		this.hidden = hidden;</span>
+<span class="fc" id="L89">	}</span>
+
+	public BigDecimal getBase() {
+
+<span class="fc" id="L93">		return base;</span>
+	}
+
+	public void setBase(final BigDecimal base) {
+
+<span class="fc" id="L98">		this.base = base;</span>
+<span class="fc" id="L99">	}</span>
+
+	public TaxConditionResponseVoV2 getConditions() {
+
+<span class="fc" id="L103">		return conditions;</span>
+	}
+
+	public void setConditions(final TaxConditionResponseVoV2 conditions) {
+
+<span class="fc" id="L108">		this.conditions = conditions;</span>
+<span class="fc" id="L109">	}</span>
+
+	public Boolean getProportional() {
+
+<span class="fc" id="L113">		return proportional;</span>
+	}
+
+	public void setProportional(final Boolean proportional) {
+
+<span class="fc" id="L118">		this.proportional = proportional;</span>
+<span class="fc" id="L119">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
