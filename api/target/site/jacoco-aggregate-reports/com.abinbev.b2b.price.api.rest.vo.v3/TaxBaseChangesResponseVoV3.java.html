@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaxBaseChangesResponseVoV3.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.rest.vo.v3</a> &gt; <span class="el_source">TaxBaseChangesResponseVoV3.java</span></div><h1>TaxBaseChangesResponseVoV3.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.rest.vo.v3;
+
+import java.math.BigDecimal;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = &quot;TaxBaseChangesResponseVoV3&quot;)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+<span class="fc" id="L11">public class TaxBaseChangesResponseVoV3 {</span>
+
+	@Schema(description = &quot;A percentage to decrease the value of the tax base mentioned on \&quot;taxes.baseChanges\&quot;. Ex.: if sent 5, it will decrease the base by 5%.&quot;, example = &quot;5&quot;)
+	private BigDecimal reduction;
+
+	@Schema(description = &quot;A percentage to increase the value of the tax base mentioned on \&quot;taxes.baseChanges\&quot;. Ex.: if sent 5, it will increase the base by 5%.&quot;, example = &quot;5&quot;)
+	private BigDecimal increase;
+
+	@Schema(description = &quot;In case vendors want to compare tax bases before applying the tax percentage.&quot;)
+	private TaxBaseChangesCompareWithResponseVoV3 compareWith;
+
+	public BigDecimal getReduction() {
+
+<span class="fc" id="L24">		return reduction;</span>
+	}
+
+	public void setReduction(final BigDecimal reduction) {
+
+<span class="fc" id="L29">		this.reduction = reduction;</span>
+<span class="fc" id="L30">	}</span>
+
+	public BigDecimal getIncrease() {
+
+<span class="fc" id="L34">		return increase;</span>
+	}
+
+	public void setIncrease(final BigDecimal increase) {
+
+<span class="fc" id="L39">		this.increase = increase;</span>
+<span class="fc" id="L40">	}</span>
+
+	public TaxBaseChangesCompareWithResponseVoV3 getCompareWith() {
+
+<span class="fc" id="L44">		return compareWith;</span>
+	}
+
+	public void setCompareWith(final TaxBaseChangesCompareWithResponseVoV3 compareWith) {
+
+<span class="fc" id="L49">		this.compareWith = compareWith;</span>
+<span class="fc" id="L50">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
