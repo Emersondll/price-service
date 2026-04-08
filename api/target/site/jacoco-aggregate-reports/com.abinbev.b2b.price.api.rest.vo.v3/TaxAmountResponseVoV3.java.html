@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaxAmountResponseVoV3.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.rest.vo.v3</a> &gt; <span class="el_source">TaxAmountResponseVoV3.java</span></div><h1>TaxAmountResponseVoV3.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.rest.vo.v3;
+
+import java.math.BigDecimal;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(name = &quot;TaxAmountResponseVoV3&quot;)
+<span class="fc" id="L11">public class TaxAmountResponseVoV3 {</span>
+
+	@Schema(description = &quot;The id of the tax that is in the condition&quot;, example = &quot;IVA&quot;)
+	private String taxId;
+
+	@Schema(description = &quot;The value that will be used to compare the sum of the given tax id&quot;, example = &quot;1000.00&quot;)
+	private BigDecimal threshold;
+
+	@Schema(description = &quot;Level which the Amount of tax will be compared to the threshold&quot;, example = &quot;ORDER&quot;)
+	private String scope;
+
+	@Schema(description = &quot;This is the operator indicating the type of comparison that is necessary to be done between scope and threshold&quot;, example = &quot;GE&quot;)
+	private String operator;
+
+	public String getTaxId() {
+
+<span class="fc" id="L27">		return taxId;</span>
+	}
+
+	public void setTaxId(String taxId) {
+
+<span class="fc" id="L32">		this.taxId = taxId;</span>
+<span class="fc" id="L33">	}</span>
+
+	public BigDecimal getThreshold() {
+
+<span class="fc" id="L37">		return threshold;</span>
+	}
+
+	public void setThreshold(BigDecimal threshold) {
+
+<span class="fc" id="L42">		this.threshold = threshold;</span>
+<span class="fc" id="L43">	}</span>
+
+	public String getScope() {
+
+<span class="fc" id="L47">		return scope;</span>
+	}
+
+	public void setScope(String scope) {
+
+<span class="fc" id="L52">		this.scope = scope;</span>
+<span class="fc" id="L53">	}</span>
+
+	public String getOperator() {
+
+<span class="fc" id="L57">		return operator;</span>
+	}
+
+	public void setOperator(String operator) {
+
+<span class="fc" id="L62">		this.operator = operator;</span>
+<span class="fc" id="L63">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
