@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaxResponseVoV3.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.rest.vo.v3</a> &gt; <span class="el_source">TaxResponseVoV3.java</span></div><h1>TaxResponseVoV3.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.rest.vo.v3;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(name = &quot;TaxResponseVoV3&quot;)
+<span class="fc" id="L13">public class TaxResponseVoV3 {</span>
+
+	@Schema(description = &quot;The taxId is an alphanumeric identifier for the current tax&quot;, required = true, example = &quot;IVA&quot;)
+	private String taxId;
+
+	@Schema(description = &quot;The tax type can be percent or cash and define how this tax will be calculated and applied&quot;, required = true, example = &quot;$ or %&quot;)
+	private String type;
+
+	@Schema(description = &quot;The value of the tax is a financial amount with the max number of decimal places as 15. Its application depends on the type&quot;, required = true, example = &quot;20.99&quot;)
+	private BigDecimal value;
+
+	@ArraySchema(arraySchema = @Schema(description = &quot;The tax base inclusion ids is a list of the dependent taxes. If all the taxes inside it are eligible to be applied then the current tax has this condition satisfied&quot;, required = true, example = &quot;[\&quot;IVA\&quot;]&quot;), schema = @Schema(description = &quot;tax base inclusion id&quot;))
+	private List&lt;String&gt; taxBaseInclusionIds;
+
+	@Schema(description = &quot;Indicates whether the tax is hidden&quot;, required = true, example = &quot;false&quot;)
+	private boolean hidden;
+
+	@Schema(description = &quot;The base value replaces the base price of the sku in the tax calculation. It's a financial value with the max number of decimal places as 15&quot;, example = &quot;10.99&quot;)
+	private BigDecimal base;
+
+	@Schema(description = &quot;The tax conditions&quot;)
+	private TaxConditionResponseVoV3 conditions;
+
+	@Schema(description = &quot;this property show when the tax should be reduced proportionately when a discount is applied&quot;)
+	private Boolean proportional;
+
+	@Schema(description = &quot;When sent, the tax will have the subtotal, other taxes, and charges as the base value for applying percentage tax.&quot;)
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private TaxBaseChangesResponseVoV3 baseChanges;
+
+	@Schema(description = &quot;A deduction on the tax value. The base for deduction is the same one of the “taxes.BaseChanges”. Ex.: if the tax value = $10 and Deduction = $1, the new tax value = $9.&quot;)
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private TaxDeductionResponseVoV3 deduction;
+
+	public String getTaxId() {
+
+<span class="fc" id="L49">		return taxId;</span>
+	}
+
+	public void setTaxId(final String taxId) {
+
+<span class="fc" id="L54">		this.taxId = taxId;</span>
+<span class="fc" id="L55">	}</span>
+
+	public String getType() {
+
+<span class="fc" id="L59">		return type;</span>
+	}
+
+	public void setType(final String type) {
+
+<span class="fc" id="L64">		this.type = type;</span>
+<span class="fc" id="L65">	}</span>
+
+	public BigDecimal getValue() {
+
+<span class="fc" id="L69">		return value;</span>
+	}
+
+	public void setValue(final BigDecimal value) {
+
+<span class="fc" id="L74">		this.value = value;</span>
+<span class="fc" id="L75">	}</span>
+
+	public List&lt;String&gt; getTaxBaseInclusionIds() {
+
+<span class="fc" id="L79">		return taxBaseInclusionIds;</span>
+	}
+
+	public void setTaxBaseInclusionIds(final List&lt;String&gt; taxBaseInclusionIds) {
+
+<span class="fc" id="L84">		this.taxBaseInclusionIds = taxBaseInclusionIds;</span>
+<span class="fc" id="L85">	}</span>
+
+	public boolean isHidden() {
+
+<span class="fc" id="L89">		return hidden;</span>
+	}
+
+	public void setHidden(final boolean hidden) {
+
+<span class="fc" id="L94">		this.hidden = hidden;</span>
+<span class="fc" id="L95">	}</span>
+
+	public BigDecimal getBase() {
+
+<span class="fc" id="L99">		return base;</span>
+	}
+
+	public void setBase(final BigDecimal base) {
+
+<span class="fc" id="L104">		this.base = base;</span>
+<span class="fc" id="L105">	}</span>
+
+	public TaxConditionResponseVoV3 getConditions() {
+
+<span class="fc" id="L109">		return conditions;</span>
+	}
+
+	public void setConditions(final TaxConditionResponseVoV3 conditions) {
+
+<span class="fc" id="L114">		this.conditions = conditions;</span>
+<span class="fc" id="L115">	}</span>
+
+	public Boolean getProportional() {
+
+<span class="fc" id="L119">		return proportional;</span>
+	}
+
+	public void setProportional(Boolean proportional) {
+
+<span class="fc" id="L124">		this.proportional = proportional;</span>
+<span class="fc" id="L125">	}</span>
+
+	public TaxBaseChangesResponseVoV3 getBaseChanges() {
+
+<span class="fc" id="L129">		return baseChanges;</span>
+	}
+
+	public void setBaseChanges(final TaxBaseChangesResponseVoV3 baseChanges) {
+
+<span class="fc" id="L134">		this.baseChanges = baseChanges;</span>
+<span class="fc" id="L135">	}</span>
+
+	public TaxDeductionResponseVoV3 getDeduction() {
+
+<span class="fc" id="L139">		return deduction;</span>
+	}
+
+	public void setDeduction(final TaxDeductionResponseVoV3 deduction) {
+
+<span class="fc" id="L144">		this.deduction = deduction;</span>
+<span class="fc" id="L145">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
