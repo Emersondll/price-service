@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtTokenValidatorV3.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.security.jwt</a> &gt; <span class="el_source">JwtTokenValidatorV3.java</span></div><h1>JwtTokenValidatorV3.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.security.jwt;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import com.abinbev.b2b.price.api.helpers.ApiConstants;
+import com.abinbev.b2b.price.api.rest.vo.JwtDataVo;
+
+@Component
+public class JwtTokenValidatorV3 {
+
+<span class="fc" id="L21">	private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenValidatorV3.class);</span>
+	private static final String HMAC_TYPE = &quot;HMAC&quot;;
+	private static final String M2M_TYPE = &quot;M2M&quot;;
+
+	private JwtTokenValidatorV3() {
+
+	}
+
+	public boolean isValid(final JwtDataVo jwtDataVo, final String country, final String supportedJwtApps) {
+
+<span class="fc" id="L31">		final List&lt;String&gt; validationMessages = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">		final boolean isValid = isValidHMAC(jwtDataVo, validationMessages) ||</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">				isValidB2CRSA(jwtDataVo, country, validationMessages) ||</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">				isValidM2MRSA(jwtDataVo, Arrays.asList(ApiConstants.ROLE_READ, ApiConstants.ROLE_WRITE), validationMessages) ||</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">				isValidB2COtherApps(jwtDataVo, supportedJwtApps, validationMessages);</span>
+
+<span class="fc bfc" id="L37" title="All 2 branches covered.">		if (!isValid) {</span>
+<span class="fc" id="L38">			final String messages = String.join(&quot;\n&quot;, validationMessages);</span>
+<span class="fc" id="L39">			LOGGER.error(messages);</span>
+		}
+<span class="fc" id="L41">		return isValid;</span>
+	}
+
+	private boolean isValidHMAC(final JwtDataVo jwtDataVo, final List&lt;String&gt; validationMessages) {
+
+<span class="fc" id="L46">		return isRolesAuthorized(jwtDataVo, Collections.singletonList(ApiConstants.ROLE_CUSTOMER), HMAC_TYPE, validationMessages);</span>
+	}
+
+	private boolean isValidB2CRSA(final JwtDataVo jwtDataVo, final String country, final List&lt;String&gt; validationMessagesList) {
+
+<span class="fc bfc" id="L51" title="All 4 branches covered.">		if (StringUtils.isNotEmpty(jwtDataVo.getCountry()) &amp;&amp; country.equalsIgnoreCase(jwtDataVo.getCountry())) {</span>
+<span class="fc bfc" id="L52" title="All 4 branches covered.">			if ((StringUtils.isNotEmpty(jwtDataVo.getApp()) &amp;&amp; ApiConstants.APP_B2B.equalsIgnoreCase(jwtDataVo.getApp())) || StringUtils</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">					.isEmpty(jwtDataVo.getApp())) {</span>
+<span class="fc" id="L54">				return true;</span>
+			}
+<span class="fc" id="L56">			validationMessagesList.add(String.format(&quot;B2CRSA Token does not match the app: %s&quot;, ApiConstants.APP_B2B));</span>
+<span class="fc" id="L57">			return false;</span>
+		}
+<span class="fc" id="L59">		validationMessagesList.add(String.format(&quot;B2CRSA Token does not match the request country: %s&quot;, country));</span>
+<span class="fc" id="L60">		return false;</span>
+	}
+
+	private boolean isValidM2MRSA(final JwtDataVo jwtDataVo, final List&lt;String&gt; roles, final List&lt;String&gt; validationMessages) {
+
+<span class="fc" id="L65">		return isRolesAuthorized(jwtDataVo, roles, M2M_TYPE, validationMessages);</span>
+	}
+
+	private boolean isValidB2COtherApps(final JwtDataVo jwtDataVo, final String supportedJwtApps,
+			final List&lt;String&gt; validationMessagesList) {
+
+<span class="pc bpc" id="L71" title="2 of 4 branches missed.">		if (CollectionUtils.isEmpty(jwtDataVo.getAccounts()) &amp;&amp; CollectionUtils.isEmpty(jwtDataVo.getExtensionAccountIds())) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">			if (StringUtils.isNotEmpty(jwtDataVo.getApp())) {</span>
+<span class="fc" id="L73">				final String[] supportedApps = supportedJwtApps.split(&quot;,&quot;);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">				if (Arrays.stream(supportedApps).anyMatch(app -&gt; app.equalsIgnoreCase(jwtDataVo.getApp()))) {</span>
+<span class="fc" id="L75">					return true;</span>
+				}
+<span class="fc" id="L77">				validationMessagesList.add(&quot;B2C Token does not contain any supported app.&quot;);</span>
+<span class="fc" id="L78">				return false;</span>
+			}
+<span class="fc" id="L80">			validationMessagesList.add(&quot;B2C Token does not have any app.&quot;);</span>
+<span class="fc" id="L81">			return false;</span>
+		}
+<span class="nc" id="L83">		validationMessagesList.add(&quot;Token is not a B2C from other apps once it contains some account.&quot;);</span>
+<span class="nc" id="L84">		return false;</span>
+
+	}
+
+	private boolean isRolesAuthorized(final JwtDataVo jwtDataVo, final List&lt;String&gt; roles, final String tokenType,
+			final List&lt;String&gt; validationMessages) {
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		if (CollectionUtils.isNotEmpty(jwtDataVo.getRoles()) &amp;&amp; jwtDataVo.getRoles().stream().map(String::toUpperCase)</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">				.collect(Collectors.toList()).containsAll(roles)) {</span>
+<span class="fc" id="L93">			return true;</span>
+		}
+<span class="fc" id="L95">		validationMessages.add(String.format(&quot;Token %s does not contain the roles: %s &quot;, tokenType, roles));</span>
+<span class="fc" id="L96">		return false;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
