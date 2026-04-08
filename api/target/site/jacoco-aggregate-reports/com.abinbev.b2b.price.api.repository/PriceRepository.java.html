@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.repository</a> &gt; <span class="el_source">PriceRepository.java</span></div><h1>PriceRepository.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.repository;
+
+import java.time.Instant;
+import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
+
+import com.abinbev.b2b.price.api.config.properties.DatabaseCollectionProperties;
+import com.abinbev.b2b.price.api.domain.PriceResultList;
+import com.abinbev.b2b.price.api.rest.vo.Pagination;
+import com.abinbev.b2b.price.domain.model.PriceEntity;
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Token;
+import com.newrelic.api.agent.Trace;
+
+@Repository
+public class PriceRepository {
+
+	private static final String PRICE_ID_FIELD_NAME = &quot;_id&quot;;
+	private static final String PRICE_SKU_FIELD_NAME = &quot;sku&quot;;
+	private static final String PRICE_ACCOUNT_ID_FIELD_NAME = &quot;accountId&quot;;
+	private static final String PRICE_DELETED_FIELD_NAME = &quot;deleted&quot;;
+	private static final String FILTER_PATTERN = &quot;%s.%s&quot;;
+<span class="fc" id="L30">	private static final Integer DEFAULT_PAGE_SIZE = 0;</span>
+	private static final String VALID_TO_FIELD_NAME = &quot;validTo&quot;;
+	private static final String VALID_FROM_FIELD_NAME = &quot;validFrom&quot;;
+
+	private final MongoOperations mongoOperations;
+	private final DatabaseCollectionProperties databaseCollectionProperties;
+
+	@Autowired
+<span class="fc" id="L38">	public PriceRepository(final MongoOperations mongoOperations, final DatabaseCollectionProperties databaseCollectionProperties) {</span>
+
+<span class="fc" id="L40">		this.databaseCollectionProperties = databaseCollectionProperties;</span>
+<span class="fc" id="L41">		this.mongoOperations = mongoOperations;</span>
+<span class="fc" id="L42">	}</span>
+
+	@Trace(dispatcher = true)
+	public PriceResultList findPriceByIdFilteringSkus(final String accountId, final String country, final List&lt;String&gt; skus,
+			final Pagination pagination, final boolean priceUpFrontEnabled, final Instant currentDate) {
+
+<span class="fc" id="L48">		final Token token = NewRelic.getAgent().getTransaction().getToken();</span>
+<span class="fc" id="L49">		return findPriceByIdFilteringSkus(accountId, country, skus, pagination, token, priceUpFrontEnabled, currentDate);</span>
+	}
+
+	private PriceResultList findPriceByIdFilteringSkus(final String accountId, final String country, final List&lt;String&gt; skus,
+			final Pagination paginationFilter, final Token token, final boolean priceUpFrontEnabled, final Instant currentDate) {
+
+		try {
+<span class="fc" id="L56">			token.link();</span>
+
+<span class="fc" id="L58">			final Query query = new Query();</span>
+
+<span class="fc" id="L60">			Pagination pagination = null;</span>
+
+<span class="fc" id="L62">			final Criteria mainFilter = Criteria.where(String.format(FILTER_PATTERN, PRICE_ID_FIELD_NAME, PRICE_ACCOUNT_ID_FIELD_NAME))</span>
+<span class="fc" id="L63">					.is(accountId);</span>
+
+<span class="fc" id="L65">			query.addCriteria(Criteria.where(PRICE_DELETED_FIELD_NAME).is(false));</span>
+
+<span class="fc bfc" id="L67" title="All 2 branches covered.">			if (CollectionUtils.isNotEmpty(skus)) {</span>
+<span class="fc" id="L68">				query.addCriteria(Criteria.where(String.format(FILTER_PATTERN, PRICE_ID_FIELD_NAME, PRICE_SKU_FIELD_NAME)).in(skus));</span>
+			}
+
+<span class="fc" id="L71">			createPriceUpFrontFilter(priceUpFrontEnabled, currentDate, mainFilter);</span>
+
+<span class="fc" id="L73">			query.addCriteria(mainFilter);</span>
+
+<span class="fc" id="L75">			final String collectionByCountry = databaseCollectionProperties.getCollectionByCountry(country);</span>
+
+<span class="fc bfc" id="L77" title="All 2 branches covered.">			if (paginationFilter != null) {</span>
+<span class="fc" id="L78">				pagination = new Pagination(paginationFilter.getPage(), paginationFilter.getSize(),</span>
+<span class="fc" id="L79">						countByFilter(collectionByCountry, query));</span>
+
+<span class="fc" id="L81">				query.with(PageRequest.of(pagination.getPage(), pagination.getSize()));</span>
+			}
+<span class="fc" id="L83">			query.maxTimeMsec(databaseCollectionProperties.getQueryTimeoutMS());</span>
+
+<span class="fc" id="L85">			final List&lt;PriceEntity&gt; priceEntityList = mongoOperations.find(query, PriceEntity.class, collectionByCountry);</span>
+
+<span class="fc" id="L87">			return new PriceResultList(priceEntityList,</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">					pagination != null ? pagination : new Pagination(DEFAULT_PAGE_SIZE, priceEntityList.size(), priceEntityList.size()));</span>
+
+		} finally {
+<span class="fc" id="L91">			token.expire();</span>
+		}
+	}
+
+	private int countByFilter(final String collectionName, final Query query) {
+
+<span class="fc" id="L97">		return Math.toIntExact(mongoOperations.count(query, collectionName));</span>
+	}
+
+	private void createPriceUpFrontFilter(final boolean priceUpFrontEnabled, final Instant currentDate, final Criteria mainFilter) {
+
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		if (priceUpFrontEnabled) {</span>
+
+<span class="fc" id="L104">			mainFilter.andOperator(new Criteria()</span>
+<span class="fc" id="L105">							.orOperator(Criteria.where(String.format(FILTER_PATTERN, PRICE_ID_FIELD_NAME, VALID_FROM_FIELD_NAME)).lte(currentDate),</span>
+<span class="fc" id="L106">									Criteria.where(String.format(FILTER_PATTERN, PRICE_ID_FIELD_NAME, VALID_FROM_FIELD_NAME)).exists(false)),</span>
+<span class="fc" id="L107">					new Criteria().orOperator(Criteria.where(VALID_TO_FIELD_NAME).gte(currentDate),</span>
+<span class="fc" id="L108">							Criteria.where(VALID_TO_FIELD_NAME).exists(false)));</span>
+		}
+<span class="fc" id="L110">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
