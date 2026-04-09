@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PricePriorityByTypeService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.services.v2</a> &gt; <span class="el_source">PricePriorityByTypeService.java</span></div><h1>PricePriorityByTypeService.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.services.v2;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.ListUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.abinbev.b2b.price.api.config.properties.PriceListProperties;
+import com.abinbev.b2b.price.api.domain.v2.PriceResultListV2;
+import com.abinbev.b2b.price.domain.model.v2.EntityTypeEnum;
+import com.abinbev.b2b.price.domain.model.v2.PriceEntityV2;
+import com.newrelic.api.agent.Trace;
+
+@Service
+public class PricePriorityByTypeService {
+
+	private final PriceListProperties priceListProperties;
+
+	@Autowired
+<span class="fc" id="L24">	public PricePriorityByTypeService(final PriceListProperties priceListProperties) {</span>
+
+<span class="fc" id="L26">		this.priceListProperties = priceListProperties;</span>
+<span class="fc" id="L27">	}</span>
+
+	@Trace(dispatcher = true)
+	public PriceResultListV2 execute(final PriceResultListV2 priceList, final String country) {
+
+<span class="fc" id="L32">		final String type = getPriorityTypeConfigurationByCountry(country);</span>
+
+<span class="fc" id="L34">		final List&lt;PriceEntityV2&gt; listFilteredByToggleType = priceList.getPriceEntities().stream()</span>
+<span class="fc" id="L35">				.filter(p -&gt; p.getId().getType().equalsIgnoreCase(type)).collect(Collectors.toList());</span>
+
+<span class="fc" id="L37">		final List&lt;PriceEntityV2&gt; listFilteredDifferentFromToggle = priceList.getPriceEntities().stream()</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">				.filter(p -&gt; !p.getId().getType().equalsIgnoreCase(type)).collect(Collectors.toList());</span>
+
+<span class="fc" id="L40">		final List&lt;PriceEntityV2&gt; union = ListUtils.union(listFilteredByToggleType, listFilteredDifferentFromToggle);</span>
+
+<span class="fc" id="L42">		final HashSet&lt;Object&gt; seen = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L43" title="All 4 branches covered.">		union.removeIf(e -&gt; !seen.add(e.getId().getVendorItemId()) &amp;&amp; Objects.isNull(e.getId().getValidFrom()));</span>
+
+<span class="fc" id="L45">		priceList.setPriceEntities(union);</span>
+
+<span class="fc" id="L47">		return priceList;</span>
+	}
+
+	protected String getPriorityTypeConfigurationByCountry(final String country) {
+
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (List.of(priceListProperties.getCountriesEnabled().toLowerCase().split(&quot;,&quot;)).contains(country.toLowerCase())) {</span>
+<span class="fc" id="L53">			return EntityTypeEnum.PRICE_LIST.toString();</span>
+		}
+
+<span class="fc" id="L56">		return EntityTypeEnum.ACCOUNT.toString();</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
