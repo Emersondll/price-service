@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ObtainPricesWithClosestDatesService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.services.v3</a> &gt; <span class="el_source">ObtainPricesWithClosestDatesService.java</span></div><h1>ObtainPricesWithClosestDatesService.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.services.v3;
+
+import static java.util.Comparator.comparingLong;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.abinbev.b2b.price.api.config.properties.ToggleConfigurationProperties;
+import com.abinbev.b2b.price.domain.model.v2.PriceEntityV2;
+import com.newrelic.api.agent.Trace;
+
+@Service
+public class ObtainPricesWithClosestDatesService {
+
+	// Remove this constant when removing BEESPR_19558
+	private static final String CODE_TOGGLE_BEESPR_19558 = &quot;BEESPR_19558&quot;;
+	private final ToggleConfigurationProperties toggleConfigurationProperties;
+
+	@Autowired
+<span class="fc" id="L33">	public ObtainPricesWithClosestDatesService(final ToggleConfigurationProperties toggleConfigurationProperties) {</span>
+
+<span class="fc" id="L35">		this.toggleConfigurationProperties = toggleConfigurationProperties;</span>
+<span class="fc" id="L36">	}</span>
+
+	@Trace(dispatcher = true)
+	public List&lt;PriceEntityV2&gt; execute(final List&lt;PriceEntityV2&gt; priceEntities) {
+
+<span class="fc" id="L41">		final Instant currentDate = Instant.now();</span>
+<span class="fc" id="L42">		final Map&lt;Object, List&lt;PriceEntityV2&gt;&gt; pricesGroupedById = getPricesGroupedById(priceEntities);</span>
+
+<span class="fc" id="L44">		final List&lt;PriceEntityV2&gt; closestDatePrices = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		for (final List&lt;PriceEntityV2&gt; entities : pricesGroupedById.values()) {</span>
+
+<span class="fc bfc" id="L48" title="All 2 branches covered.">			if (entities.size() == NumberUtils.INTEGER_ONE) {</span>
+<span class="fc" id="L49">				closestDatePrices.add(entities.get(0));</span>
+<span class="fc" id="L50">				continue;</span>
+			}
+
+<span class="fc" id="L53">			final Optional&lt;PriceEntityV2&gt; priceWithValidFromAndValidToNull = entities.stream()</span>
+<span class="fc bfc" id="L54" title="All 4 branches covered.">					.filter(price -&gt; isNull(price.getId().getValidFrom()) &amp;&amp; isNull(price.getValidTo())).findFirst();</span>
+
+			// Remove this constant when removing BEESPR_19558
+<span class="fc bfc" id="L57" title="All 2 branches covered.">			final boolean isCodeToggleDisabled = !toggleConfigurationProperties.isEnabledCodeToggle(CODE_TOGGLE_BEESPR_19558);</span>
+
+<span class="fc bfc" id="L59" title="All 4 branches covered.">			if (priceWithValidFromAndValidToNull.isEmpty() || isCodeToggleDisabled) {</span>
+<span class="fc" id="L60">				final Optional&lt;PriceEntityV2&gt; priceEntity = entities.stream()</span>
+<span class="fc" id="L61">						.filter(price -&gt; nonNull(price.getId().getValidFrom()))</span>
+<span class="fc" id="L62">						.max(comparingLong(entity -&gt; ChronoUnit.HOURS.between(currentDate, entity.getId().getValidFrom())));</span>
+
+<span class="fc" id="L64">				priceEntity.ifPresent(closestDatePrices::add);</span>
+<span class="fc" id="L65">			} else {</span>
+<span class="fc" id="L66">				closestDatePrices.add(priceWithValidFromAndValidToNull.get());</span>
+			}
+
+<span class="fc" id="L69">		}</span>
+<span class="fc" id="L70">		return closestDatePrices;</span>
+	}
+
+	private Map&lt;Object, List&lt;PriceEntityV2&gt;&gt; getPricesGroupedById(final List&lt;PriceEntityV2&gt; priceEntities) {
+
+<span class="fc" id="L75">		final Function&lt;PriceEntityV2, List&lt;Object&gt;&gt; compositeKey = price -&gt;</span>
+<span class="fc" id="L76">				Arrays.asList(price.getId().getId(), price.getId().getType(), price.getId().getVendorItemId(), price.getId().getVendorId());</span>
+
+<span class="fc" id="L78">		return priceEntities.stream().collect(Collectors.groupingBy(compositeKey, Collectors.toList()));</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
