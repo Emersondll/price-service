@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceOffersRequestValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.validators</a> &gt; <span class="el_source">PriceOffersRequestValidator.java</span></div><h1>PriceOffersRequestValidator.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.validators;
+
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.abinbev.b2b.price.api.config.properties.OffersPointToV2;
+import com.abinbev.b2b.price.api.domain.OffersAliasParameters;
+import com.abinbev.b2b.price.api.exceptions.MismatchedAccountValuesException;
+import com.abinbev.b2b.price.api.exceptions.MismatchedSkusAndVendorItemsValuesException;
+import com.abinbev.b2b.price.api.exceptions.MissingAccountHeaderException;
+import com.abinbev.b2b.price.api.exceptions.MissingHeaderException;
+import com.abinbev.b2b.price.api.helpers.ApiConstants;
+import com.abinbev.b2b.price.api.helpers.offers.enums.VersionFlag;
+
+@Component
+public class PriceOffersRequestValidator {
+
+	private final RequestValidatorHelper requestValidatorHelper;
+	private final OffersPointToV2 offersPointToV2;
+
+	@Autowired
+<span class="fc" id="L32">	public PriceOffersRequestValidator(final RequestValidatorHelper requestValidatorHelper, final OffersPointToV2 offersPointToV2) {</span>
+
+<span class="fc" id="L34">		this.requestValidatorHelper = requestValidatorHelper;</span>
+<span class="fc" id="L35">		this.offersPointToV2 = offersPointToV2;</span>
+<span class="fc" id="L36">	}</span>
+
+	public OffersAliasParameters validatePriceOffersAndCheckVersion(final String accountId, final String vendorAccountId,
+			final List&lt;String&gt; skus, final List&lt;String&gt; vendorItemIds, final String vendorId, final String country,
+			final String authorization) {
+
+<span class="fc" id="L42">		final OffersAliasParameters offersAliasParameters = new OffersAliasParameters();</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		if (isBlank(country)) {</span>
+<span class="fc" id="L45">			throw new MissingHeaderException(ApiConstants.COUNTRY_HEADER, country);</span>
+		}
+
+<span class="fc" id="L48">		final String[] enabledCountriesV2 = offersPointToV2.getEnabledCountries().split(&quot;,&quot;);</span>
+<span class="fc" id="L49">		final String vendorAccountIdAlias = validateAndGetAccountAlias(accountId, vendorAccountId);</span>
+
+<span class="fc" id="L51">		validateVendorItemIds(skus, vendorItemIds);</span>
+
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (Arrays.stream(enabledCountriesV2).anyMatch(country::equalsIgnoreCase)) {</span>
+<span class="fc" id="L54">			requestValidatorHelper.validateHeadersV2(vendorId, vendorAccountIdAlias, country, authorization);</span>
+<span class="fc" id="L55">			offersAliasParameters.setRequestVersion(VersionFlag.V2);</span>
+		} else {
+<span class="fc" id="L57">			final List&lt;String&gt; headersToValidate = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L58">			headersToValidate.add(ApiConstants.COUNTRY_HEADER);</span>
+<span class="fc" id="L59">			headersToValidate.add(ApiConstants.REQUEST_TRACE_ID_HEADER);</span>
+
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			if (isNotEmpty(authorization)) {</span>
+<span class="fc" id="L62">				headersToValidate.add(ApiConstants.AUTHORIZATION_HEADER);</span>
+			}
+
+<span class="fc" id="L65">			requestValidatorHelper.validateHeaders(headersToValidate, vendorAccountIdAlias, country, authorization);</span>
+<span class="fc" id="L66">			offersAliasParameters.setRequestVersion(VersionFlag.V1);</span>
+		}
+
+<span class="fc" id="L69">		offersAliasParameters.setRequestAccountId(vendorAccountIdAlias);</span>
+<span class="fc" id="L70">		offersAliasParameters.setRequestItems(getItemSkusAlias(skus, vendorItemIds));</span>
+
+<span class="fc" id="L72">		return offersAliasParameters;</span>
+	}
+
+	private List&lt;String&gt; getItemSkusAlias(final List&lt;String&gt; skus, final List&lt;String&gt; vendorItemIds) {
+
+<span class="fc bfc" id="L77" title="All 2 branches covered.">		return CollectionUtils.isEmpty(skus) ? vendorItemIds : skus;</span>
+	}
+
+	private String validateAndGetAccountAlias(final String accountId, final String vendorAccountId) {
+
+<span class="fc bfc" id="L82" title="All 4 branches covered.">		if (isBlank(accountId) &amp;&amp; isBlank(vendorAccountId)) {</span>
+<span class="fc" id="L83">			throw new MissingAccountHeaderException();</span>
+		}
+
+<span class="fc bfc" id="L86" title="All 6 branches covered.">		if (isNotBlank(accountId) &amp;&amp; isNotBlank(vendorAccountId) &amp;&amp; !accountId.equalsIgnoreCase(vendorAccountId)) {</span>
+<span class="fc" id="L87">			throw new MismatchedAccountValuesException();</span>
+		}
+
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		return isNotBlank(accountId) ? accountId : vendorAccountId;</span>
+	}
+
+	private void validateVendorItemIds(final List&lt;String&gt; skus, final List&lt;String&gt; vendorItemIds) {
+
+<span class="fc bfc" id="L95" title="All 4 branches covered.">		if (isNotEmpty(skus) &amp;&amp; isNotEmpty(vendorItemIds)) {</span>
+<span class="fc" id="L96">			checkEqualityOfVendorItemIds(skus, vendorItemIds);</span>
+		}
+<span class="fc" id="L98">	}</span>
+
+	private void checkEqualityOfVendorItemIds(final List&lt;String&gt; skus, final List&lt;String&gt; vendorItemIds) {
+
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		if (!skus.equals(vendorItemIds)) {</span>
+<span class="fc" id="L103">			throw new MismatchedSkusAndVendorItemsValuesException();</span>
+		}
+<span class="fc" id="L105">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
