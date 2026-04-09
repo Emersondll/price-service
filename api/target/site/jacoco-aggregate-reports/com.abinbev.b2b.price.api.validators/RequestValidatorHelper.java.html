@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RequestValidatorHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.validators</a> &gt; <span class="el_source">RequestValidatorHelper.java</span></div><h1>RequestValidatorHelper.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.validators;
+
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
+import java.util.List;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.abinbev.b2b.price.api.config.properties.RequestHeaderData;
+import com.abinbev.b2b.price.api.config.properties.SecurityProperties;
+import com.abinbev.b2b.price.api.config.properties.SupportedProperties;
+import com.abinbev.b2b.price.api.exceptions.InvalidHeaderException;
+import com.abinbev.b2b.price.api.exceptions.InvalidParamException;
+import com.abinbev.b2b.price.api.exceptions.JWTException;
+import com.abinbev.b2b.price.api.exceptions.MissingHeaderException;
+import com.abinbev.b2b.price.api.helpers.ApiConstants;
+import com.abinbev.b2b.price.api.rest.vo.JwtDataVo;
+import com.abinbev.b2b.price.api.security.jwt.JwtDecoder;
+import com.abinbev.b2b.price.api.security.jwt.JwtTokenValidator;
+import com.abinbev.b2b.price.api.security.jwt.JwtTokenValidatorV3;
+
+@Component
+public class RequestValidatorHelper {
+
+	private final SupportedProperties supportedProperties;
+	private final SecurityProperties securityProperties;
+	private final RequestHeaderData requestHeaderData;
+	private final JwtTokenValidator jwtTokenValidator;
+	private final JwtTokenValidatorV3 jwtTokenValidatorV3;
+
+	@Autowired
+	public RequestValidatorHelper(final SupportedProperties supportedProperties, final SecurityProperties securityProperties,
+			final RequestHeaderData requestHeaderData, final JwtTokenValidator jwtTokenValidator,
+<span class="fc" id="L37">			final JwtTokenValidatorV3 jwtTokenValidatorV3) {</span>
+
+<span class="fc" id="L39">		this.supportedProperties = supportedProperties;</span>
+<span class="fc" id="L40">		this.securityProperties = securityProperties;</span>
+<span class="fc" id="L41">		this.requestHeaderData = requestHeaderData;</span>
+<span class="fc" id="L42">		this.jwtTokenValidator = jwtTokenValidator;</span>
+<span class="fc" id="L43">		this.jwtTokenValidatorV3 = jwtTokenValidatorV3;</span>
+<span class="fc" id="L44">	}</span>
+
+	public void validateHeaders(final List&lt;String&gt; headersToValidate, final String accountId, final String country,
+			final String authorization) {
+
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		if (headersToValidate.contains(ApiConstants.COUNTRY_HEADER)) {</span>
+<span class="fc" id="L50">			final String[] supportedCountriesArray = supportedProperties.getCountries().split(&quot;,&quot;);</span>
+<span class="fc" id="L51">			validateHeader(requestHeaderData.getCountry(), supportedCountriesArray, ApiConstants.COUNTRY_HEADER);</span>
+		}
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (headersToValidate.contains(ApiConstants.REQUEST_TRACE_ID_HEADER)) {</span>
+<span class="fc" id="L54">			validateHeader(requestHeaderData.getRequestTraceId(), null, ApiConstants.REQUEST_TRACE_ID_HEADER);</span>
+		}
+<span class="fc" id="L56">		validateAccountIdParam(accountId);</span>
+
+<span class="fc bfc" id="L58" title="All 6 branches covered.">		if (isNotEmpty(authorization) &amp;&amp; securityProperties.isEnabled() &amp;&amp; headersToValidate.contains(ApiConstants.AUTHORIZATION_HEADER)) {</span>
+<span class="fc" id="L59">			validateJwt(authorization, accountId, country);</span>
+		}
+<span class="fc" id="L61">	}</span>
+
+	public void validateHeadersV2(final String vendorId, final String vendorAccountId, final String country, final String authorization) {
+
+<span class="fc" id="L65">		validateHeader(vendorId, null, ApiConstants.VENDOR_ID_HEADER);</span>
+<span class="fc" id="L66">		validateHeader(vendorAccountId, null, ApiConstants.VENDOR_ACCOUNT_ID_HEADER);</span>
+<span class="fc" id="L67">		validateHeader(requestHeaderData.getCountry(), supportedProperties.getCountriesV2().split(&quot;,&quot;), ApiConstants.COUNTRY_HEADER);</span>
+<span class="fc" id="L68">		validateHeader(requestHeaderData.getRequestTraceId(), null, ApiConstants.REQUEST_TRACE_ID_HEADER);</span>
+
+<span class="fc bfc" id="L70" title="All 4 branches covered.">		if (isNotEmpty(authorization) &amp;&amp; securityProperties.isEnabled()) {</span>
+<span class="fc" id="L71">			validateJwt(authorization, vendorAccountId, country);</span>
+		}
+<span class="fc" id="L73">	}</span>
+
+	public void validateHeadersV3(final String authorization, final String country) {
+
+<span class="fc" id="L77">		validateHeader(requestHeaderData.getCountry(), supportedProperties.getCountriesV3().split(&quot;,&quot;), ApiConstants.COUNTRY_HEADER);</span>
+<span class="fc" id="L78">		validateHeader(requestHeaderData.getRequestTraceId(), null, ApiConstants.REQUEST_TRACE_ID_HEADER);</span>
+
+<span class="fc bfc" id="L80" title="All 4 branches covered.">		if (isNotEmpty(authorization) &amp;&amp; securityProperties.isEnabled()) {</span>
+<span class="fc" id="L81">			validateJwtV3(authorization, country);</span>
+		}
+<span class="fc" id="L83">	}</span>
+
+	private void validateJwt(final String authorization, final String accountId, final String country) {
+
+<span class="fc" id="L87">		final JwtDataVo jwtDataVo = JwtDecoder.decodeToken(authorization);</span>
+
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		if (!jwtTokenValidator.isValid(jwtDataVo, accountId, country, securityProperties.getJwtApps())) {</span>
+<span class="fc" id="L90">			throw JWTException.invalidToken();</span>
+		}
+<span class="fc" id="L92">	}</span>
+
+	private void validateJwtV3(final String authorization, final String country) {
+
+<span class="fc" id="L96">		final JwtDataVo jwtDataVo = JwtDecoder.decodeToken(authorization);</span>
+
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		if (!jwtTokenValidatorV3.isValid(jwtDataVo, country, securityProperties.getJwtApps())) {</span>
+<span class="fc" id="L99">			throw JWTException.invalidToken();</span>
+		}
+<span class="fc" id="L101">	}</span>
+
+	private void validateHeader(final String header, final String[] collection, final String apiConstant) {
+
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		if (StringUtils.isNotBlank(header)) {</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (ArrayUtils.isNotEmpty(collection)) {</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">				for (final String collectionHeader : collection) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">					if (collectionHeader.equalsIgnoreCase(header)) {</span>
+<span class="fc" id="L109">						return;</span>
+					}
+				}
+<span class="fc" id="L112">				throw new InvalidHeaderException(apiConstant, header);</span>
+			}
+		} else {
+<span class="fc" id="L115">			throw new MissingHeaderException(apiConstant, header);</span>
+		}
+<span class="fc" id="L117">	}</span>
+
+	private void validateAccountIdParam(final String accountId) {
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		if (StringUtils.isNotEmpty(accountId)) {</span>
+<span class="fc" id="L122">			return;</span>
+		}
+<span class="fc" id="L124">		throw new InvalidParamException(ApiConstants.ACCOUNT_ID_PARAM, accountId);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
