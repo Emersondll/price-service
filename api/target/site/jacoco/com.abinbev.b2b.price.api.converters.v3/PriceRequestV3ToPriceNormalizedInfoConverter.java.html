@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceRequestV3ToPriceNormalizedInfoConverter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.converters.v3</a> &gt; <span class="el_source">PriceRequestV3ToPriceNormalizedInfoConverter.java</span></div><h1>PriceRequestV3ToPriceNormalizedInfoConverter.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.converters.v3;
+
+import static com.abinbev.b2b.commons.platformId.core.enuns.PlatformIdEnum.CONTRACT;
+import static com.abinbev.b2b.commons.platformId.core.enuns.PlatformIdEnum.DELIVERY_CENTER;
+import static com.abinbev.b2b.commons.platformId.core.enuns.PlatformIdEnum.ITEM;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.abinbev.b2b.commons.platformId.core.PlatformIdEncoderDecoder;
+import com.abinbev.b2b.commons.platformId.core.vo.ContractPlatformId;
+import com.abinbev.b2b.commons.platformId.core.vo.DeliveryCenterPlatformId;
+import com.abinbev.b2b.commons.platformId.core.vo.ItemPlatformId;
+import com.abinbev.b2b.price.api.domain.v3.PriceNormalizedInfo;
+import com.abinbev.b2b.price.api.exceptions.BadRequestException;
+import com.abinbev.b2b.price.api.rest.vo.v3.PriceRequestV3;
+
+@Component
+public class PriceRequestV3ToPriceNormalizedInfoConverter {
+
+	private final PlatformIdEncoderDecoder platformIdEncoderDecoder;
+
+	@Autowired
+<span class="fc" id="L28">	public PriceRequestV3ToPriceNormalizedInfoConverter(final PlatformIdEncoderDecoder platformIdEncoderDecoder) {</span>
+
+<span class="fc" id="L30">		this.platformIdEncoderDecoder = platformIdEncoderDecoder;</span>
+<span class="fc" id="L31">	}</span>
+
+	public PriceNormalizedInfo convert(final PriceRequestV3 priceRequestV3) {
+
+<span class="fc" id="L35">		final PriceNormalizedInfo priceNormalizedInfo = new PriceNormalizedInfo();</span>
+
+<span class="fc" id="L37">		priceNormalizedInfo.setItemId(priceRequestV3.getItemId());</span>
+<span class="fc" id="L38">		priceNormalizedInfo.setContractId(priceRequestV3.getContractId());</span>
+<span class="fc" id="L39">		priceNormalizedInfo.setPriceListId(priceRequestV3.getPriceListId());</span>
+<span class="fc" id="L40">		priceNormalizedInfo.setDeliveryCenterId(priceRequestV3.getDeliveryCenterId());</span>
+
+<span class="fc" id="L42">		final ItemPlatformId itemPlatformId = (ItemPlatformId) platformIdEncoderDecoder.decodePlatformId(priceRequestV3.getItemId(), ITEM);</span>
+<span class="fc" id="L43">		validateDecoding(itemPlatformId.getVendorId(), itemPlatformId.getVendorId(), &quot;itemId&quot;);</span>
+<span class="fc" id="L44">		priceNormalizedInfo.setVendorId(itemPlatformId.getVendorId());</span>
+<span class="fc" id="L45">		priceNormalizedInfo.setVendorItemId(itemPlatformId.getVendorItemId());</span>
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (isNotBlank(priceRequestV3.getContractId())) {</span>
+<span class="fc" id="L48">			final ContractPlatformId contractPlatformId = (ContractPlatformId) platformIdEncoderDecoder.decodePlatformId(</span>
+<span class="fc" id="L49">					priceRequestV3.getContractId(), CONTRACT);</span>
+<span class="fc" id="L50">			validateDecoding(contractPlatformId.getVendorId(), contractPlatformId.getVendorAccountId(), &quot;contractId&quot;);</span>
+<span class="fc" id="L51">			priceNormalizedInfo.setAccountId(contractPlatformId.getVendorAccountId());</span>
+		}
+
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		if (isNotBlank(priceRequestV3.getDeliveryCenterId())) {</span>
+<span class="fc" id="L55">			final DeliveryCenterPlatformId deliveryCenterPlatformId = (DeliveryCenterPlatformId) platformIdEncoderDecoder.decodePlatformId(</span>
+<span class="fc" id="L56">					priceRequestV3.getDeliveryCenterId(), DELIVERY_CENTER);</span>
+<span class="fc" id="L57">			validateDecoding(deliveryCenterPlatformId.getVendorId(), deliveryCenterPlatformId.getVendorId(), &quot;deliveryCenterId&quot;);</span>
+<span class="fc" id="L58">			priceNormalizedInfo.setVendorDeliveryCenterId(deliveryCenterPlatformId.getVendorDeliveryCenterId());</span>
+		}
+
+<span class="fc" id="L61">		return priceNormalizedInfo;</span>
+	}
+
+	private void validateDecoding(final String vendorId, final String keyId, final String field) {
+
+<span class="fc" id="L66">		final List&lt;String&gt; ids = Arrays.asList(vendorId, keyId);</span>
+<span class="fc bfc" id="L67" title="All 4 branches covered.">		if (ids.contains(null) || ids.contains(&quot;null&quot;)) {</span>
+<span class="fc" id="L68">			throw BadRequestException.requestDecodingError(field);</span>
+		}
+<span class="fc" id="L70">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
