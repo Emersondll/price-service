@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SwaggerConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.config</a> &gt; <span class="el_source">SwaggerConfig.java</span></div><h1>SwaggerConfig.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.config;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springdoc.core.customizers.OperationCustomizer;
+import org.springdoc.core.models.GroupedOpenApi;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.method.HandlerMethod;
+
+import com.abinbev.b2b.price.api.helpers.ApiConstants;
+
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
+
+@Configuration
+@PropertySource(&quot;classpath:version.properties&quot;)
+<span class="fc" id="L27">public class SwaggerConfig {</span>
+
+	private static final String BEARER_SCHEME = &quot;bearer&quot;;
+	private static final String BEARER_FORMAT = &quot;JWT&quot;;
+
+	@Value(&quot;${swagger.url}&quot;)
+	private String baseUrl;
+
+	@Bean
+	public GroupedOpenApi apiV1() {
+
+<span class="fc" id="L38">		return GroupedOpenApi.builder().group(ApiConstants.API_VERSION_1_LABEL).pathsToMatch(&quot;/v1/**&quot;)</span>
+<span class="fc" id="L39">				.addOpenApiCustomizer(openApiCustomizer1dot0()).build();</span>
+	}
+
+	@Bean
+	public GroupedOpenApi apiV2() {
+
+<span class="fc" id="L45">		return GroupedOpenApi.builder().group(ApiConstants.API_VERSION_2_LABEL).pathsToMatch(&quot;/v2/**&quot;)</span>
+<span class="fc" id="L46">				.addOpenApiCustomizer(openApiCustomizer2dot0()).build();</span>
+	}
+
+	@Bean
+	public GroupedOpenApi apiV3() {
+
+<span class="fc" id="L52">		return GroupedOpenApi.builder().group(ApiConstants.API_VERSION_3_LABEL).pathsToMatch(&quot;/v3/**&quot;)</span>
+<span class="fc" id="L53">				.addOpenApiCustomizer(openApiCustomizer3dot0()).build();</span>
+	}
+
+	@Bean
+	public OpenApiCustomizer openApiCustomizer1dot0() {
+
+<span class="fc" id="L59">		final int currentYear = LocalDate.now().getYear();</span>
+<span class="pc" id="L60">		return openApi -&gt; openApi.servers(List.of(new Server().url(baseUrl)))</span>
+<span class="nc" id="L61">				.info(new Info().title(ApiConstants.API_TITLE).description(ApiConstants.API_DESCRIPTION).version(&quot;1.0&quot;)</span>
+<span class="nc" id="L62">						.license(new License().name(ApiConstants.API_LICENSE + currentYear))).getComponents()</span>
+<span class="nc" id="L63">				.addSecuritySchemes(HttpHeaders.AUTHORIZATION,</span>
+<span class="nc" id="L64">						new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme(BEARER_SCHEME).bearerFormat(BEARER_FORMAT));</span>
+	}
+
+	@Bean
+	public OpenApiCustomizer openApiCustomizer2dot0() {
+
+<span class="fc" id="L70">		final int currentYear = LocalDate.now().getYear();</span>
+<span class="pc" id="L71">		return openApi -&gt; openApi.servers(List.of(new Server().url(baseUrl)))</span>
+<span class="nc" id="L72">				.info(new Info().title(ApiConstants.API_TITLE).description(ApiConstants.API_DESCRIPTION).version(&quot;2.0&quot;)</span>
+<span class="nc" id="L73">						.license(new License().name(ApiConstants.API_LICENSE + currentYear))).getComponents()</span>
+<span class="nc" id="L74">				.addSecuritySchemes(HttpHeaders.AUTHORIZATION,</span>
+<span class="nc" id="L75">						new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme(BEARER_SCHEME).bearerFormat(BEARER_FORMAT));</span>
+	}
+
+	@Bean
+	public OpenApiCustomizer openApiCustomizer3dot0() {
+
+<span class="fc" id="L81">		final int currentYear = LocalDate.now().getYear();</span>
+<span class="pc" id="L82">		return openApi -&gt; openApi.servers(List.of(new Server().url(baseUrl)))</span>
+<span class="nc" id="L83">				.info(new Info().title(ApiConstants.API_TITLE).description(ApiConstants.API_DESCRIPTION).version(&quot;3.0&quot;)</span>
+<span class="nc" id="L84">						.license(new License().name(ApiConstants.API_LICENSE + currentYear))).getComponents()</span>
+<span class="nc" id="L85">				.addSecuritySchemes(HttpHeaders.AUTHORIZATION,</span>
+<span class="nc" id="L86">						new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme(BEARER_SCHEME).bearerFormat(BEARER_FORMAT));</span>
+	}
+
+	@Bean
+	public OperationCustomizer customGlobalHeaders() {
+
+<span class="fc" id="L92">		return (final Operation operation, final HandlerMethod handlerMethod) -&gt; {</span>
+<span class="nc" id="L93">			operation.addSecurityItem(new SecurityRequirement().addList(HttpHeaders.AUTHORIZATION));</span>
+<span class="nc" id="L94">			return operation;</span>
+		};
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
