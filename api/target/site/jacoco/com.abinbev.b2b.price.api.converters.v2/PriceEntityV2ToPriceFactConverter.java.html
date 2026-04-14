@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceEntityV2ToPriceFactConverter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.converters.v2</a> &gt; <span class="el_source">PriceEntityV2ToPriceFactConverter.java</span></div><h1>PriceEntityV2ToPriceFactConverter.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.converters.v2;
+
+import static java.util.Optional.ofNullable;
+
+import java.util.Map;
+
+import org.apache.commons.collections4.map.HashedMap;
+import org.springframework.stereotype.Component;
+
+import com.abinbev.b2b.price.api.domain.ChargeFact;
+import com.abinbev.b2b.price.api.domain.PriceFact;
+import com.abinbev.b2b.price.api.domain.PromotionalPriceFact;
+import com.abinbev.b2b.price.api.domain.TaxConditionFact;
+import com.abinbev.b2b.price.api.domain.TaxFact;
+import com.abinbev.b2b.price.api.domain.TaxOrderSubTotalFact;
+import com.abinbev.b2b.price.domain.model.v2.ChargeV2;
+import com.abinbev.b2b.price.domain.model.v2.PriceEntityV2;
+import com.abinbev.b2b.price.domain.model.v2.PromotionalPriceV2;
+import com.abinbev.b2b.price.domain.model.v2.TaxConditionV2;
+import com.abinbev.b2b.price.domain.model.v2.TaxOrderSubTotalV2;
+import com.abinbev.b2b.price.domain.model.v2.TaxV2;
+
+@Component
+<span class="fc" id="L24">public class PriceEntityV2ToPriceFactConverter {</span>
+
+	public PriceFact convert(final PriceEntityV2 priceEntityV2) {
+
+<span class="fc" id="L28">		final PriceFact priceFact = new PriceFact();</span>
+<span class="fc" id="L29">		priceFact.setBasePrice(priceEntityV2.getBasePrice());</span>
+<span class="fc" id="L30">		priceFact.setMeasureUnit(priceEntityV2.getMeasureUnit());</span>
+<span class="fc" id="L31">		priceFact.setMinimumPrice(priceEntityV2.getMinimumPrice());</span>
+<span class="fc" id="L32">		priceFact.setDeposit(priceEntityV2.getDeposit());</span>
+<span class="fc" id="L33">		priceFact.setQuantityPerPallet(priceEntityV2.getQuantityPerPallet());</span>
+<span class="fc" id="L34">		priceFact.setPromotionalPrice(convertPromotionalPriceV2(priceEntityV2.getPromotionalPrice()));</span>
+<span class="fc" id="L35">		priceFact.setTaxes(ofNullable(priceEntityV2.getTaxes()).map(this::convertTaxesV2).orElse(null));</span>
+<span class="fc" id="L36">		priceFact.setCharges(ofNullable(priceEntityV2.getCharges()).map(this::convertChargesV2).orElse(null));</span>
+<span class="fc" id="L37">		priceFact.setSku(priceEntityV2.getSku());</span>
+<span class="fc" id="L38">		priceFact.setValidFrom(priceEntityV2.getValidFrom());</span>
+<span class="fc" id="L39">		priceFact.setConsignment(priceEntityV2.getConsignment());</span>
+<span class="fc" id="L40">		priceFact.setVendorItemId(priceEntityV2.getId().getVendorItemId());</span>
+<span class="fc" id="L41">		priceFact.setTimezone(priceEntityV2.getTimezone());</span>
+<span class="fc" id="L42">		priceFact.setCountry(priceEntityV2.getCountry());</span>
+
+<span class="fc" id="L44">		return priceFact;</span>
+	}
+
+	private PromotionalPriceFact convertPromotionalPriceV2(final PromotionalPriceV2 promotionalPriceV2) {
+
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		if (promotionalPriceV2 == null) {</span>
+<span class="fc" id="L50">			return null;</span>
+		}
+
+<span class="fc" id="L53">		final PromotionalPriceFact promotionalPriceFact = new PromotionalPriceFact();</span>
+<span class="fc" id="L54">		promotionalPriceFact.setExternalId(promotionalPriceV2.getExternalId());</span>
+<span class="fc" id="L55">		promotionalPriceFact.setPrice(promotionalPriceV2.getPrice());</span>
+<span class="fc" id="L56">		promotionalPriceFact.setValidUntil(promotionalPriceV2.getValidUntil());</span>
+
+<span class="fc" id="L58">		return promotionalPriceFact;</span>
+	}
+
+	private Map&lt;String, TaxFact&gt; convertTaxesV2(final Map&lt;String, TaxV2&gt; taxesMapV2) {
+
+<span class="fc" id="L63">		final Map&lt;String, TaxFact&gt; taxesFactMap = new HashedMap&lt;&gt;();</span>
+<span class="fc" id="L64">		taxesMapV2.forEach((k, v) -&gt; taxesFactMap.put(k, convertTaxValueV2(v)));</span>
+
+<span class="fc" id="L66">		return taxesFactMap;</span>
+	}
+
+	private TaxFact convertTaxValueV2(final TaxV2 taxV2) {
+
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		if (taxV2 == null) {</span>
+<span class="fc" id="L72">			return null;</span>
+		}
+
+<span class="fc" id="L75">		final TaxFact taxFact = new TaxFact();</span>
+<span class="fc" id="L76">		taxFact.setBase(taxV2.getBase());</span>
+<span class="fc" id="L77">		taxFact.setConditions(convertTaxConditionV2(taxV2.getConditions()));</span>
+<span class="fc" id="L78">		taxFact.setHidden(taxV2.isHidden());</span>
+<span class="fc" id="L79">		taxFact.setTaxBaseInclusionIds(taxV2.getTaxBaseInclusionIds());</span>
+<span class="fc" id="L80">		taxFact.setTaxId(taxV2.getTaxId());</span>
+<span class="fc" id="L81">		taxFact.setType(taxV2.getType());</span>
+<span class="fc" id="L82">		taxFact.setValue(taxV2.getValue());</span>
+
+<span class="fc" id="L84">		return taxFact;</span>
+	}
+
+	private TaxConditionFact convertTaxConditionV2(final TaxConditionV2 taxConditionV2) {
+
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		if (taxConditionV2 == null) {</span>
+<span class="fc" id="L90">			return null;</span>
+		}
+
+<span class="fc" id="L93">		final TaxConditionFact taxConditionFact = new TaxConditionFact();</span>
+<span class="fc" id="L94">		taxConditionFact.setOrderSubTotal(convertTaxOrderSubTotalV2(taxConditionV2.getOrderSubTotal()));</span>
+
+<span class="fc" id="L96">		return taxConditionFact;</span>
+	}
+
+	private TaxOrderSubTotalFact convertTaxOrderSubTotalV2(final TaxOrderSubTotalV2 taxOrderSubTotalV2) {
+
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		if (taxOrderSubTotalV2 == null) {</span>
+<span class="fc" id="L102">			return null;</span>
+		}
+
+<span class="fc" id="L105">		final TaxOrderSubTotalFact taxOrderSubTotalFact = new TaxOrderSubTotalFact();</span>
+<span class="fc" id="L106">		taxOrderSubTotalFact.setMinimumValue(taxOrderSubTotalV2.getMinimumValue());</span>
+
+<span class="fc" id="L108">		return taxOrderSubTotalFact;</span>
+	}
+
+	private Map&lt;String, ChargeFact&gt; convertChargesV2(final Map&lt;String, ChargeV2&gt; chargesMapV2) {
+
+<span class="fc" id="L113">		final Map&lt;String, ChargeFact&gt; chargesFactMap = new HashedMap&lt;&gt;();</span>
+<span class="fc" id="L114">		chargesMapV2.forEach((k, v) -&gt; chargesFactMap.put(k, convertChargeValueV2(v)));</span>
+
+<span class="fc" id="L116">		return chargesFactMap;</span>
+	}
+
+	private ChargeFact convertChargeValueV2(final ChargeV2 chargeV2) {
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		if (chargeV2 == null) {</span>
+<span class="fc" id="L122">			return null;</span>
+		}
+
+<span class="fc" id="L125">		final ChargeFact chargeFact = new ChargeFact();</span>
+<span class="fc" id="L126">		chargeFact.setBase(chargeV2.getBase());</span>
+<span class="fc" id="L127">		chargeFact.setChargeId(chargeV2.getChargeId());</span>
+<span class="fc" id="L128">		chargeFact.setType(chargeV2.getType());</span>
+<span class="fc" id="L129">		chargeFact.setValue(chargeV2.getValue());</span>
+
+<span class="fc" id="L131">		return chargeFact;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
