@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceOffersController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.controllers</a> &gt; <span class="el_source">PriceOffersController.java</span></div><h1>PriceOffersController.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.controllers;
+
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.validation.constraints.NotEmpty;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.abinbev.b2b.price.api.config.ApiConfig;
+import com.abinbev.b2b.price.api.domain.BrowsePrice;
+import com.abinbev.b2b.price.api.domain.OffersAliasParameters;
+import com.abinbev.b2b.price.api.exceptions.Issue;
+import com.abinbev.b2b.price.api.helpers.ApiConstants;
+import com.abinbev.b2b.price.api.helpers.ApiResponseConstants;
+import com.abinbev.b2b.price.api.helpers.offers.enums.VersionFlag;
+import com.abinbev.b2b.price.api.rest.vo.CustomerProductPriceResponseVo;
+import com.abinbev.b2b.price.api.services.CalculateBrowsePricesV1OrchestratorService;
+import com.abinbev.b2b.price.api.services.v2.CalculateBrowsePricesV2OrchestratorService;
+import com.abinbev.b2b.price.api.validators.PriceOffersRequestValidator;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@RestController
+@Tag(name = ApiConstants.API_NAME_PRICES_OFFERS)
+@SecurityScheme(scheme = &quot;bearer&quot;, type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
+public class PriceOffersController {
+
+<span class="fc" id="L50">	private static final Logger LOGGER = LoggerFactory.getLogger(PriceOffersController.class);</span>
+
+	private final CalculateBrowsePricesV1OrchestratorService calculateBrowsePricesV1OrchestratorService;
+	private final CalculateBrowsePricesV2OrchestratorService calculateBrowsePricesV2OrchestratorService;
+	private final PriceOffersRequestValidator priceOffersRequestValidator;
+	private final ApiConfig apiConfig;
+
+	@Autowired
+	public PriceOffersController(final CalculateBrowsePricesV1OrchestratorService calculateBrowsePricesV1OrchestratorService,
+			final CalculateBrowsePricesV2OrchestratorService calculateBrowsePricesV2OrchestratorService,
+<span class="fc" id="L60">			final PriceOffersRequestValidator priceOffersRequestValidator, final ApiConfig apiConfig) {</span>
+
+<span class="fc" id="L62">		this.calculateBrowsePricesV1OrchestratorService = calculateBrowsePricesV1OrchestratorService;</span>
+<span class="fc" id="L63">		this.calculateBrowsePricesV2OrchestratorService = calculateBrowsePricesV2OrchestratorService;</span>
+<span class="fc" id="L64">		this.priceOffersRequestValidator = priceOffersRequestValidator;</span>
+<span class="fc" id="L65">		this.apiConfig = apiConfig;</span>
+<span class="fc" id="L66">	}</span>
+
+	@Operation(summary = ApiConstants.API_PRICES_OFFERS_DESCRIPTION, responses = {
+			@ApiResponse(responseCode = &quot;200&quot;, description = ApiResponseConstants.STATUS_200_GET_OK, content = @Content(array = @ArraySchema(schema = @Schema(implementation = CustomerProductPriceResponseVo.class)))),
+			@ApiResponse(responseCode = &quot;400&quot;, description = ApiResponseConstants.STATUS_400_BAD_REQUEST, content = @Content(schema = @Schema(implementation = Issue.class))),
+			@ApiResponse(responseCode = &quot;503&quot;, description = ApiResponseConstants.STATUS_503_SERVER_ERROR, content = @Content(schema = @Schema(implementation = Issue.class))),
+			@ApiResponse(responseCode = &quot;403&quot;, description = ApiResponseConstants.STATUS_403_FORBIDDEN, content = @Content(schema = @Schema(implementation = Issue.class))),
+			@ApiResponse(responseCode = &quot;404&quot;, description = ApiResponseConstants.STATUS_404_NOT_FOUND, content = @Content(schema = @Schema(implementation = Issue.class))) })
+	@Parameter(description = ApiConstants.REQUEST_TRACE_ID_DESCRIPTION, required = true, name = ApiConstants.REQUEST_TRACE_ID_HEADER, in = ParameterIn.HEADER)
+	@GetMapping(path = &quot;/v1/offers&quot;, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity&lt;List&lt;CustomerProductPriceResponseVo&gt;&gt; getOffers(
+			@Parameter(name = ApiConstants.COUNTRY_HEADER, description = ApiConstants.COUNTRY_DESCRIPTION, required = true) @RequestHeader(name = ApiConstants.COUNTRY_HEADER) final String country,
+			@Parameter(name = ApiConstants.AUTHORIZATION_HEADER, description = ApiConstants.AUTHORIZATION_DESCRIPTION, hidden = true) @RequestHeader(value = ApiConstants.AUTHORIZATION_HEADER, required = false) @NotEmpty final String authorization,
+			@Parameter(name = ApiConstants.REQUEST_TRACE_ID_HEADER, description = ApiConstants.REQUEST_TRACE_ID_DESCRIPTION, required = true) @RequestHeader(ApiConstants.REQUEST_TRACE_ID_HEADER) final String requestTraceId,
+			@Parameter(name = ApiConstants.VENDOR_ID_HEADER, description = ApiConstants.VENDOR_ID_DESCRIPTION) @RequestHeader(name = ApiConstants.VENDOR_ID_HEADER, required = false) final String vendorId,
+			@Parameter(name = ApiConstants.VENDOR_ACCOUNT_ID_HEADER, description = ApiConstants.VENDOR_ACCOUNT_ID_DESCRIPTION) @RequestHeader(name = ApiConstants.VENDOR_ACCOUNT_ID_HEADER, required = false) final String vendorAccountId,
+			@Parameter(name = ApiConstants.ACCOUNT_ID_PARAM, description = ApiConstants.ACCOUNT_DESCRIPTION) @RequestParam(name = ApiConstants.ACCOUNT_ID_PARAM, required = false) final String accountId,
+			@Parameter(name = ApiConstants.SKUS_FILTER_HEADER, description = ApiConstants.SKUS_FILTER_DESCRIPTION) @RequestParam(name = ApiConstants.SKUS_FILTER_HEADER, required = false) final List&lt;String&gt; skus,
+			@Parameter(name = ApiConstants.VENDOR_ITEM_IDS_HEADER, description = ApiConstants.VENDOR_ITEM_ID_DESCRIPTION) @RequestParam(name = ApiConstants.VENDOR_ITEM_IDS_HEADER, required = false) final List&lt;String&gt; vendorItemIds) {
+
+<span class="fc" id="L86">		final String finalVendorId = getVendorId(vendorId, country);</span>
+
+<span class="fc" id="L88">		LOGGER.debug(&quot;Received GET request for requestTraceId: {}&quot;, requestTraceId);</span>
+
+<span class="fc" id="L90">		final OffersAliasParameters offersAliasParameters = priceOffersRequestValidator.validatePriceOffersAndCheckVersion(accountId,</span>
+				vendorAccountId, skus, vendorItemIds, finalVendorId, country, authorization);
+
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		if (VersionFlag.V2.equals(offersAliasParameters.getRequestVersion())) {</span>
+<span class="fc" id="L94">			return ResponseEntity.ok(convertFromBrowsePricesToCustomerProductPriceResponseVos(</span>
+<span class="fc" id="L95">					calculateBrowsePricesV2OrchestratorService.execute(finalVendorId, offersAliasParameters.getRequestAccountId(), country,</span>
+<span class="fc" id="L96">							offersAliasParameters.getRequestItems())));</span>
+		}
+
+<span class="fc" id="L99">		return ResponseEntity.ok(convertFromBrowsePricesToCustomerProductPriceResponseVos(</span>
+<span class="fc" id="L100">				calculateBrowsePricesV1OrchestratorService.execute(offersAliasParameters.getRequestAccountId(), country,</span>
+<span class="fc" id="L101">						offersAliasParameters.getRequestItems())));</span>
+	}
+
+	private List&lt;CustomerProductPriceResponseVo&gt; convertFromBrowsePricesToCustomerProductPriceResponseVos(
+			final List&lt;BrowsePrice&gt; browsePrices) {
+
+<span class="fc" id="L107">		final List&lt;CustomerProductPriceResponseVo&gt; customerProductPriceResponseVoList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		for (final BrowsePrice browsePrice : browsePrices) {</span>
+<span class="fc" id="L110">			customerProductPriceResponseVoList.add(</span>
+<span class="fc" id="L111">					new CustomerProductPriceResponseVo(browsePrice.getSku(), browsePrice.getPrice(), browsePrice.getOriginalPrice(),</span>
+<span class="fc" id="L112">							browsePrice.getValidUntil(), browsePrice.getVendorItemId()));</span>
+<span class="fc" id="L113">		}</span>
+
+<span class="fc" id="L115">		return customerProductPriceResponseVoList;</span>
+	}
+
+	private String getVendorId(final String vendorId, final String country) {
+
+<span class="fc bfc" id="L120" title="All 4 branches covered.">		return (isNotEmpty(vendorId) &amp;&amp; !apiConfig.shouldUseDefaultVendorId(country)) ?</span>
+<span class="fc" id="L121">				vendorId :</span>
+<span class="fc" id="L122">				apiConfig.getDefaultVendorIdByCountry(country);</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
