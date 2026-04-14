@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceEntityToPriceFactConverter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.converters</a> &gt; <span class="el_source">PriceEntityToPriceFactConverter.java</span></div><h1>PriceEntityToPriceFactConverter.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.converters;
+
+import static java.util.Optional.ofNullable;
+
+import java.util.Map;
+
+import org.apache.commons.collections4.map.HashedMap;
+import org.springframework.stereotype.Component;
+
+import com.abinbev.b2b.price.api.domain.ChargeFact;
+import com.abinbev.b2b.price.api.domain.PriceFact;
+import com.abinbev.b2b.price.api.domain.PromotionalPriceFact;
+import com.abinbev.b2b.price.api.domain.TaxConditionFact;
+import com.abinbev.b2b.price.api.domain.TaxFact;
+import com.abinbev.b2b.price.api.domain.TaxOrderSubTotalFact;
+import com.abinbev.b2b.price.domain.model.Charge;
+import com.abinbev.b2b.price.domain.model.PriceEntity;
+import com.abinbev.b2b.price.domain.model.PromotionalPrice;
+import com.abinbev.b2b.price.domain.model.Tax;
+import com.abinbev.b2b.price.domain.model.TaxCondition;
+import com.abinbev.b2b.price.domain.model.TaxOrderSubTotal;
+
+@Component
+<span class="fc" id="L24">public class PriceEntityToPriceFactConverter {</span>
+
+	public PriceFact convert(final PriceEntity priceEntity) {
+
+<span class="fc" id="L28">		final PriceFact priceFact = new PriceFact();</span>
+<span class="fc" id="L29">		priceFact.setBasePrice(priceEntity.getBasePrice());</span>
+<span class="fc" id="L30">		priceFact.setMeasureUnit(priceEntity.getMeasureUnit());</span>
+<span class="fc" id="L31">		priceFact.setMinimumPrice(priceEntity.getMinimumPrice());</span>
+<span class="fc" id="L32">		priceFact.setDeposit(priceEntity.getDeposit());</span>
+<span class="fc" id="L33">		priceFact.setQuantityPerPallet(priceEntity.getQuantityPerPallet());</span>
+<span class="fc" id="L34">		priceFact.setPromotionalPrice(convertPromotionalPrice(priceEntity.getPromotionalPrice()));</span>
+<span class="fc" id="L35">		priceFact.setTaxes(ofNullable(priceEntity.getTaxes()).map(this::convertTaxes).orElse(null));</span>
+<span class="fc" id="L36">		priceFact.setCharges(ofNullable(priceEntity.getCharges()).map(this::convertCharges).orElse(null));</span>
+<span class="fc" id="L37">		priceFact.setSku(priceEntity.getId().getSku());</span>
+<span class="fc" id="L38">		priceFact.setValidFrom(priceEntity.getValidFrom());</span>
+<span class="fc" id="L39">		priceFact.setConsignment(priceEntity.getConsignment());</span>
+<span class="fc" id="L40">		priceFact.setTimezone(priceEntity.getTimezone());</span>
+<span class="fc" id="L41">		priceFact.setCountry(priceEntity.getCountry());</span>
+
+<span class="fc" id="L43">		return priceFact;</span>
+	}
+
+	private PromotionalPriceFact convertPromotionalPrice(PromotionalPrice promotionalPrice) {
+
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (promotionalPrice == null) {</span>
+<span class="fc" id="L49">			return null;</span>
+		}
+
+<span class="fc" id="L52">		final PromotionalPriceFact promotionalPriceFact = new PromotionalPriceFact();</span>
+<span class="fc" id="L53">		promotionalPriceFact.setExternalId(promotionalPrice.getExternalId());</span>
+<span class="fc" id="L54">		promotionalPriceFact.setPrice(promotionalPrice.getPrice());</span>
+<span class="fc" id="L55">		promotionalPriceFact.setValidUntil(promotionalPrice.getValidUntil());</span>
+
+<span class="fc" id="L57">		return promotionalPriceFact;</span>
+	}
+
+	private Map&lt;String, TaxFact&gt; convertTaxes(final Map&lt;String, Tax&gt; taxesMap) {
+
+<span class="fc" id="L62">		final Map&lt;String, TaxFact&gt; taxesFactMap = new HashedMap&lt;&gt;();</span>
+<span class="fc" id="L63">		taxesMap.forEach((k, v) -&gt; taxesFactMap.put(k, convertTaxValue(v)));</span>
+
+<span class="fc" id="L65">		return taxesFactMap;</span>
+	}
+
+	private TaxFact convertTaxValue(final Tax tax) {
+
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		if (tax == null) {</span>
+<span class="fc" id="L71">			return null;</span>
+		}
+
+<span class="fc" id="L74">		final TaxFact taxFact = new TaxFact();</span>
+<span class="fc" id="L75">		taxFact.setBase(tax.getBase());</span>
+<span class="fc" id="L76">		taxFact.setConditions(converTaxCondition(tax.getConditions()));</span>
+<span class="fc" id="L77">		taxFact.setHidden(tax.isHidden());</span>
+<span class="fc" id="L78">		taxFact.setTaxBaseInclusionIds(tax.getTaxBaseInclusionIds());</span>
+<span class="fc" id="L79">		taxFact.setTaxId(tax.getTaxId());</span>
+<span class="fc" id="L80">		taxFact.setType(tax.getType());</span>
+<span class="fc" id="L81">		taxFact.setValue(tax.getValue());</span>
+
+<span class="fc" id="L83">		return taxFact;</span>
+	}
+
+	private TaxConditionFact converTaxCondition(final TaxCondition taxCondition) {
+
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		if (taxCondition == null) {</span>
+<span class="fc" id="L89">			return null;</span>
+		}
+
+<span class="fc" id="L92">		final TaxConditionFact taxConditionFact = new TaxConditionFact();</span>
+<span class="fc" id="L93">		taxConditionFact.setOrderSubTotal(convertTaxOrderSubTotal(taxCondition.getOrderSubTotal()));</span>
+
+<span class="fc" id="L95">		return taxConditionFact;</span>
+	}
+
+	private TaxOrderSubTotalFact convertTaxOrderSubTotal(final TaxOrderSubTotal taxOrderSubTotal) {
+
+<span class="fc bfc" id="L100" title="All 2 branches covered.">		if (taxOrderSubTotal == null) {</span>
+<span class="fc" id="L101">			return null;</span>
+		}
+
+<span class="fc" id="L104">		final TaxOrderSubTotalFact taxOrderSubTotalFact = new TaxOrderSubTotalFact();</span>
+<span class="fc" id="L105">		taxOrderSubTotalFact.setMinimumValue(taxOrderSubTotal.getMinimumValue());</span>
+
+<span class="fc" id="L107">		return taxOrderSubTotalFact;</span>
+	}
+
+	private Map&lt;String, ChargeFact&gt; convertCharges(final Map&lt;String, Charge&gt; chargesMap) {
+
+<span class="fc" id="L112">		final Map&lt;String, ChargeFact&gt; chargesFactMap = new HashedMap&lt;&gt;();</span>
+<span class="fc" id="L113">		chargesMap.forEach((k, v) -&gt; chargesFactMap.put(k, convertChargeValue(v)));</span>
+
+<span class="fc" id="L115">		return chargesFactMap;</span>
+	}
+
+	private ChargeFact convertChargeValue(final Charge charge) {
+
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		if (charge == null) {</span>
+<span class="fc" id="L121">			return null;</span>
+		}
+
+<span class="fc" id="L124">		final ChargeFact chargeFact = new ChargeFact();</span>
+<span class="fc" id="L125">		chargeFact.setBase(charge.getBase());</span>
+<span class="fc" id="L126">		chargeFact.setChargeId(charge.getChargeId());</span>
+<span class="fc" id="L127">		chargeFact.setType(charge.getType());</span>
+<span class="fc" id="L128">		chargeFact.setValue(charge.getValue());</span>
+
+<span class="fc" id="L130">		return chargeFact;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
