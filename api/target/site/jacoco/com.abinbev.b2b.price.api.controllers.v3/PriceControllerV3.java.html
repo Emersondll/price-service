@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceControllerV3.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.controllers.v3</a> &gt; <span class="el_source">PriceControllerV3.java</span></div><h1>PriceControllerV3.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.controllers.v3;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import jakarta.validation.Valid;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.abinbev.b2b.price.api.converters.v3.PriceNormalizedInfoToPriceResponseVoV3Converter;
+import com.abinbev.b2b.price.api.converters.v3.PriceRequestV3ToPriceNormalizedInfoConverter;
+import com.abinbev.b2b.price.api.domain.v3.PriceNormalizedInfo;
+import com.abinbev.b2b.price.api.exceptions.Issue;
+import com.abinbev.b2b.price.api.helpers.ApiConstants;
+import com.abinbev.b2b.price.api.helpers.ApiResponseConstants;
+import com.abinbev.b2b.price.api.rest.vo.v3.PriceRequestV3;
+import com.abinbev.b2b.price.api.rest.vo.v3.PriceResponseVoV3;
+import com.abinbev.b2b.price.api.services.v3.SearchForPricesAndFillIntoPriceNormalizedInfoServiceV3;
+import com.abinbev.b2b.price.api.validators.RequestValidatorHelper;
+import com.abinbev.b2b.price.api.validators.v3.PriceRequestV3Validator;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Validated
+@RestController
+@Tag(name = ApiConstants.API_NAME_PRICES)
+@SecurityScheme(scheme = &quot;bearer&quot;, type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
+public class PriceControllerV3 {
+
+<span class="fc" id="L54">	private static final Logger LOGGER = LoggerFactory.getLogger(PriceControllerV3.class);</span>
+
+	private final SearchForPricesAndFillIntoPriceNormalizedInfoServiceV3 searchForPricesAndFillIntoPriceNormalizedInfoServiceV3;
+	private final PriceNormalizedInfoToPriceResponseVoV3Converter priceNormalizedInfoToPriceResponseVoV3Converter;
+	private final PriceRequestV3ToPriceNormalizedInfoConverter priceRequestV3ToPriceNormalizedInfoConverter;
+	private final PriceRequestV3Validator priceRequestV3Validator;
+	private final RequestValidatorHelper requestValidatorHelper;
+
+	@Autowired
+	public PriceControllerV3(
+			final SearchForPricesAndFillIntoPriceNormalizedInfoServiceV3 searchForPricesAndFillIntoPriceNormalizedInfoServiceV3,
+			final PriceNormalizedInfoToPriceResponseVoV3Converter priceNormalizedInfoToPriceResponseVoV3Converter,
+			final PriceRequestV3ToPriceNormalizedInfoConverter priceRequestV3ToPriceNormalizedInfoConverter,
+<span class="fc" id="L67">			final PriceRequestV3Validator priceRequestV3Validator, final RequestValidatorHelper requestValidatorHelper) {</span>
+
+<span class="fc" id="L69">		this.searchForPricesAndFillIntoPriceNormalizedInfoServiceV3 = searchForPricesAndFillIntoPriceNormalizedInfoServiceV3;</span>
+<span class="fc" id="L70">		this.priceNormalizedInfoToPriceResponseVoV3Converter = priceNormalizedInfoToPriceResponseVoV3Converter;</span>
+<span class="fc" id="L71">		this.priceRequestV3ToPriceNormalizedInfoConverter = priceRequestV3ToPriceNormalizedInfoConverter;</span>
+<span class="fc" id="L72">		this.priceRequestV3Validator = priceRequestV3Validator;</span>
+<span class="fc" id="L73">		this.requestValidatorHelper = requestValidatorHelper;</span>
+<span class="fc" id="L74">	}</span>
+
+	@Operation(summary = ApiConstants.API_PRICES_DESCRIPTION, responses = {
+			@ApiResponse(responseCode = &quot;200&quot;, description = ApiResponseConstants.STATUS_200_GET_OK, content = @Content(array = @ArraySchema(schema = @Schema(implementation = PriceResponseVoV3.class)))),
+			@ApiResponse(responseCode = &quot;204&quot;, description = ApiResponseConstants.STATUS_204_NO_CONTENT, content = @Content(schema = @Schema(implementation = Issue.class))),
+			@ApiResponse(responseCode = &quot;400&quot;, description = ApiResponseConstants.STATUS_400_BAD_REQUEST, content = @Content(schema = @Schema(implementation = Issue.class))),
+			@ApiResponse(responseCode = &quot;403&quot;, description = ApiResponseConstants.STATUS_403_FORBIDDEN, content = @Content(schema = @Schema(implementation = Issue.class))),
+			@ApiResponse(responseCode = &quot;503&quot;, description = ApiResponseConstants.STATUS_503_SERVER_ERROR, content = @Content(schema = @Schema(implementation = Issue.class))) })
+	@Parameter(description = ApiConstants.REQUEST_TRACE_ID_DESCRIPTION, required = true, name = ApiConstants.REQUEST_TRACE_ID_HEADER, in = ParameterIn.HEADER)
+	@PostMapping(path = &quot;/v3&quot;, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity&lt;List&lt;PriceResponseVoV3&gt;&gt; getPricesV3(
+			@Parameter(name = ApiConstants.COUNTRY_HEADER, description = ApiConstants.COUNTRY_DESCRIPTION, required = true) @RequestHeader(name = ApiConstants.COUNTRY_HEADER) final String country,
+			@Parameter(name = ApiConstants.REQUEST_TRACE_ID_HEADER, description = ApiConstants.REQUEST_TRACE_ID_DESCRIPTION, required = true) @RequestHeader(ApiConstants.REQUEST_TRACE_ID_HEADER) final String requestTraceId,
+			@Parameter(name = ApiConstants.AUTHORIZATION_HEADER, description = ApiConstants.AUTHORIZATION_DESCRIPTION, hidden = true) @RequestHeader(name = ApiConstants.AUTHORIZATION_HEADER, required = false) final String authorization,
+			@Parameter(name = ApiConstants.IGNORE_VALID_FROM, description = ApiConstants.IGNORE_VALID_FROM_DESCRIPTION) @RequestParam(value = ApiConstants.IGNORE_VALID_FROM, required = false, defaultValue = &quot;false&quot;) final Boolean ignoreValidFrom,
+			@RequestBody final List&lt;@Valid PriceRequestV3&gt; itemsRequest) {
+
+<span class="fc" id="L92">		LOGGER.info(&quot;[PriceControllerV3] Starting finding prices&quot;);</span>
+
+<span class="fc" id="L94">		priceRequestV3Validator.validate(itemsRequest);</span>
+
+<span class="fc" id="L96">		requestValidatorHelper.validateHeadersV3(authorization, country);</span>
+
+<span class="fc" id="L98">		final List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoList = convertToPriceNormalizedInfo(itemsRequest);</span>
+
+<span class="fc" id="L100">		List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoListResult =</span>
+<span class="fc" id="L101">				searchForPricesAndFillIntoPriceNormalizedInfoServiceV3.execute(priceNormalizedInfoList, country, ignoreValidFrom);</span>
+
+<span class="fc" id="L103">		final List&lt;PriceResponseVoV3&gt; priceResponseVoV3List = convertToPriceResponseList(priceNormalizedInfoListResult);</span>
+
+<span class="fc" id="L105">		LOGGER.info(&quot;[PriceControllerV3] {} prices converted&quot;, priceResponseVoV3List.size());</span>
+
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		if (CollectionUtils.isEmpty(priceResponseVoV3List)) {</span>
+<span class="fc" id="L108">			return ResponseEntity.noContent().build();</span>
+		}
+
+<span class="fc" id="L111">		LOGGER.info(&quot;[PriceControllerV3] Find prices finished&quot;);</span>
+
+<span class="fc" id="L113">		return ResponseEntity.ok(priceResponseVoV3List);</span>
+	}
+
+	private List&lt;PriceNormalizedInfo&gt; convertToPriceNormalizedInfo(final List&lt;PriceRequestV3&gt; itemsRequest) {
+
+<span class="fc" id="L118">		return itemsRequest.stream().map(priceRequestV3ToPriceNormalizedInfoConverter::convert).collect(Collectors.toList());</span>
+	}
+
+	private List&lt;PriceResponseVoV3&gt; convertToPriceResponseList(final List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoList) {
+
+<span class="fc" id="L123">		return priceNormalizedInfoList.stream().map(priceNormalizedInfoToPriceResponseVoV3Converter::convert).filter(Objects::nonNull)</span>
+<span class="fc" id="L124">				.collect(Collectors.toList());</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
