@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CalculateItemBasePriceService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.services.browseprice</a> &gt; <span class="el_source">CalculateItemBasePriceService.java</span></div><h1>CalculateItemBasePriceService.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.services.browseprice;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.abinbev.b2b.price.api.domain.PriceFact;
+import com.abinbev.b2b.price.api.helpers.ApiConstants;
+import com.newrelic.api.agent.Trace;
+
+@Service
+public class CalculateItemBasePriceService {
+
+	private final PricingConfigurationService pricingConfigurationService;
+
+	@Autowired
+<span class="fc" id="L19">	public CalculateItemBasePriceService(final PricingConfigurationService pricingConfigurationService) {</span>
+
+<span class="fc" id="L21">		this.pricingConfigurationService = pricingConfigurationService;</span>
+<span class="fc" id="L22">	}</span>
+
+	@Trace(dispatcher = true)
+	public BigDecimal execute(final PriceFact priceFact, final String country, final boolean ignorePromotionalPrice) {
+
+<span class="fc" id="L27">		final BigDecimal itemBasePrice = getProductBasePrice(priceFact, ignorePromotionalPrice);</span>
+
+<span class="fc bfc" id="L29" title="All 2 branches covered.">		return pricingConfigurationService.getPriceConfig(country, ApiConstants.PRICE_INCLUDE_DEPOSIT) ?</span>
+<span class="fc" id="L30">				sumProductBasePriceWithDepositAndConsignment(itemBasePrice, priceFact.getDeposit(), priceFact.getConsignment()) :</span>
+<span class="fc" id="L31">				itemBasePrice;</span>
+	}
+
+	private BigDecimal getProductBasePrice(final PriceFact priceFact, final boolean ignorePromotionalPrice) {
+
+<span class="fc bfc" id="L36" title="All 4 branches covered.">		return Objects.nonNull(priceFact.getPromotionalPrice())</span>
+<span class="fc" id="L37">				&amp;&amp; !ignorePromotionalPrice ?</span>
+<span class="fc" id="L38">				priceFact.getPromotionalPrice().getPrice().max(priceFact.getMinimumPrice()) :</span>
+<span class="fc" id="L39">				priceFact.getBasePrice();</span>
+	}
+
+	private BigDecimal sumProductBasePriceWithDepositAndConsignment(final BigDecimal itemBasePrice, final BigDecimal deposit,
+			final BigDecimal consignment) {
+
+<span class="fc" id="L45">		return itemBasePrice.add(getValueOrZero(deposit)).add(getValueOrZero(consignment));</span>
+	}
+
+	private BigDecimal getValueOrZero(final BigDecimal value) {
+
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		return value != null ? value : BigDecimal.ZERO;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
