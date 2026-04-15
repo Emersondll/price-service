@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Pagination.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.rest.vo</a> &gt; <span class="el_source">Pagination.java</span></div><h1>Pagination.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.rest.vo;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(name = &quot;Pagination&quot;)
+public class Pagination {
+
+	@JsonProperty
+	@Schema(example = &quot;4&quot;, description = &quot;Current page number. The first page is zero&quot;)
+	private Integer page;
+
+	@JsonProperty
+	@Schema(example = &quot;20&quot;, description = &quot;Size of each page&quot;)
+	private Integer size;
+
+	@JsonProperty
+	@Schema(example = &quot;5&quot;, description = &quot;Total number of pages&quot;)
+	private Integer totalPages;
+
+	@JsonProperty
+	@Schema(example = &quot;100&quot;, description = &quot;Total number of elements&quot;)
+	private long totalElements;
+
+<span class="fc" id="L29">	public Pagination() {</span>
+
+<span class="fc" id="L31">	}</span>
+
+<span class="fc" id="L33">	public Pagination(final Integer page, final Integer size) {</span>
+
+<span class="fc bfc" id="L35" title="All 2 branches covered.">		this.page = page == null ? 0 : page;</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		this.size = size == null ? 50 : size;</span>
+<span class="fc" id="L37">	}</span>
+
+<span class="fc" id="L39">	public Pagination(final Integer page, final Integer size, final int totalElements) {</span>
+
+<span class="fc" id="L41">		this.page = page;</span>
+<span class="fc" id="L42">		this.size = size;</span>
+<span class="fc" id="L43">		setTotalElements(totalElements);</span>
+<span class="fc" id="L44">	}</span>
+
+	@JsonIgnore
+	public boolean isPaginationRequested() {
+
+<span class="pc bpc" id="L49" title="2 of 4 branches missed.">		return page != null &amp;&amp; size != null;</span>
+	}
+
+	@JsonIgnore
+	public boolean isInvalidPageSize() {
+
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		return size &lt; 0;</span>
+	}
+
+	@JsonIgnore
+	public boolean isInvalidPageNumber() {
+
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		return page &lt; 0;</span>
+	}
+
+	public Integer getPage() {
+
+<span class="fc" id="L66">		return page;</span>
+	}
+
+	public void setPage(final Integer page) {
+
+<span class="fc" id="L71">		this.page = page;</span>
+<span class="fc" id="L72">	}</span>
+
+	public Integer getSize() {
+
+<span class="fc" id="L76">		return size;</span>
+	}
+
+	public void setSize(final Integer size) {
+
+<span class="fc" id="L81">		this.size = size;</span>
+<span class="fc" id="L82">	}</span>
+
+	public Integer getTotalPages() {
+
+<span class="fc" id="L86">		return totalPages;</span>
+	}
+
+	public void setTotalPages(final Integer totalPages) {
+
+<span class="fc" id="L91">		this.totalPages = totalPages;</span>
+<span class="fc" id="L92">	}</span>
+
+	public long getTotalElements() {
+
+<span class="fc" id="L96">		return totalElements;</span>
+	}
+
+	public void setTotalElements(final int totalElements) {
+
+<span class="fc" id="L101">		this.totalElements = totalElements;</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">		if (isPaginationRequested()) {</span>
+			// We don't test if the size is zero because it is a business
+			// validation in the service.
+<span class="fc" id="L105">			totalPages = (int) Math.ceil((double) totalElements / (double) size);</span>
+		}
+<span class="fc" id="L107">	}</span>
+
+	@Override
+	public int hashCode() {
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">		int result = page != null ? page.hashCode() : 0;</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">		result = 31 * result + (size != null ? size.hashCode() : 0);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">		result = 31 * result + (totalPages != null ? totalPages.hashCode() : 0);</span>
+<span class="nc" id="L115">		result = 31 * result + (int) (totalElements ^ totalElements &gt;&gt;&gt; 32);</span>
+<span class="nc" id="L116">		return result;</span>
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+
+<span class="nc bnc" id="L122" title="All 2 branches missed.">		if (this == o) {</span>
+<span class="nc" id="L123">			return true;</span>
+		}
+<span class="nc bnc" id="L125" title="All 4 branches missed.">		if (o == null || getClass() != o.getClass()) {</span>
+<span class="nc" id="L126">			return false;</span>
+		}
+
+<span class="nc" id="L129">		final Pagination that = (Pagination) o;</span>
+
+<span class="nc bnc" id="L131" title="All 2 branches missed.">		if (totalElements != that.totalElements) {</span>
+<span class="nc" id="L132">			return false;</span>
+		}
+<span class="nc bnc" id="L134" title="All 6 branches missed.">		if (page != null ? !page.equals(that.page) : that.page != null) {</span>
+<span class="nc" id="L135">			return false;</span>
+		}
+<span class="nc bnc" id="L137" title="All 6 branches missed.">		if (size != null ? !size.equals(that.size) : that.size != null) {</span>
+<span class="nc" id="L138">			return false;</span>
+		}
+<span class="nc bnc" id="L140" title="All 4 branches missed.">		return totalPages != null ? totalPages.equals(that.totalPages) : that.totalPages == null;</span>
+	}
+
+	@Override
+	public String toString() {
+
+<span class="nc" id="L146">		return String.format(&quot;Pagination{page=%s, size=%s, totalPages=%s, totalElements=%s}&quot;, page, size, totalPages, totalElements);</span>
+	}
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
