@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtDecoder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.security.jwt</a> &gt; <span class="el_source">JwtDecoder.java</span></div><h1>JwtDecoder.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.security.jwt;
+
+import static com.abinbev.b2b.price.api.helpers.ApiConstants.ACCOUNTS;
+import static com.abinbev.b2b.price.api.helpers.ApiConstants.BEARER_PREFIX;
+import static com.abinbev.b2b.price.api.helpers.ApiConstants.CLAIM_APP;
+import static com.abinbev.b2b.price.api.helpers.ApiConstants.COUNTRY_HEADER;
+import static com.abinbev.b2b.price.api.helpers.ApiConstants.EXTENSION_ACCOUNTS;
+import static com.abinbev.b2b.price.api.helpers.ApiConstants.ROLES;
+import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.abinbev.b2b.price.api.exceptions.JWTException;
+import com.abinbev.b2b.price.api.helpers.ApiConstants;
+import com.abinbev.b2b.price.api.rest.vo.JwtDataVo;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+
+public class JwtDecoder {
+
+<span class="fc" id="L30">	private static final Logger LOGGER = LoggerFactory.getLogger(JwtDecoder.class);</span>
+
+	private JwtDecoder() {
+
+	}
+
+	private static DecodedJWT decode(final String receivedToken) {
+
+<span class="fc" id="L38">		final String token = readToken(receivedToken);</span>
+
+		try {
+<span class="fc" id="L41">			return JWT.decode(token);</span>
+<span class="fc" id="L42">		} catch (final JWTDecodeException exception) {</span>
+<span class="fc" id="L43">			LOGGER.error(exception.getMessage(), exception);</span>
+<span class="fc" id="L44">			throw JWTException.decodeException();</span>
+		}
+	}
+
+	private static String readToken(final String receivedToken) {
+
+<span class="fc bfc" id="L50" title="All 4 branches covered.">		if (isNotEmpty(receivedToken) &amp;&amp; receivedToken.startsWith(BEARER_PREFIX)) {</span>
+<span class="fc" id="L51">			return receivedToken.substring(7);</span>
+		}
+<span class="fc" id="L53">		LOGGER.error(ApiConstants.TOKEN_INVALID);</span>
+<span class="fc" id="L54">		throw JWTException.invalidToken();</span>
+	}
+
+	public static JwtDataVo decodeToken(final String token) {
+
+<span class="fc" id="L59">		final DecodedJWT decodedJwt = decode(token);</span>
+
+<span class="fc" id="L61">		return JwtDataVo.builder().withRoles(findRoles(decodedJwt)).withAccounts(findAccountIdsInJwt(decodedJwt))</span>
+<span class="fc" id="L62">				.withExtensionAccountIds(findExtensionAccountIds(decodedJwt)).withApp(findFieldInClaim(decodedJwt, CLAIM_APP))</span>
+<span class="fc" id="L63">				.withCountry(findFieldInClaim(decodedJwt, COUNTRY_HEADER)).build();</span>
+	}
+
+	private static List&lt;String&gt; findRoles(final DecodedJWT decodedJWT) {
+
+<span class="fc" id="L68">		final List&lt;String&gt; roles = decodedJWT.getClaim(ROLES).asList(String.class);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		return CollectionUtils.isEmpty(roles) ? emptyList() : roles;</span>
+	}
+
+	private static List&lt;String&gt; findAccountIdsInJwt(final DecodedJWT decodedJwt) {
+
+<span class="fc" id="L74">		final Claim magentoAccountIds = decodedJwt.getClaim(ACCOUNTS);</span>
+<span class="fc" id="L75">		final List&lt;String&gt; magentoAccountIdsAsList = magentoAccountIds.asList(String.class);</span>
+
+<span class="pc bpc" id="L77" title="1 of 4 branches missed.">		if (!magentoAccountIds.isNull() &amp;&amp; CollectionUtils.isNotEmpty(magentoAccountIdsAsList)) {</span>
+<span class="fc" id="L78">			return magentoAccountIdsAsList;</span>
+		}
+<span class="fc" id="L80">		return emptyList();</span>
+	}
+
+	private static List&lt;String&gt; findExtensionAccountIds(final DecodedJWT decodedJwt) {
+
+<span class="fc" id="L85">		final Claim extensionAccountIds = decodedJwt.getClaim(EXTENSION_ACCOUNTS);</span>
+<span class="fc" id="L86">		final String extensionAccountIdsAsString = extensionAccountIds.asString();</span>
+
+<span class="pc bpc" id="L88" title="1 of 4 branches missed.">		if (!extensionAccountIds.isNull() &amp;&amp; isNotBlank(extensionAccountIdsAsString)) {</span>
+<span class="fc" id="L89">			final String accounts = extensionAccountIdsAsString.replaceAll(&quot;[\\[\\]]&quot;, &quot;&quot;);</span>
+<span class="fc" id="L90">			return Arrays.asList(accounts.split(&quot;,&quot;));</span>
+		}
+<span class="fc" id="L92">		return emptyList();</span>
+	}
+
+	private static String findFieldInClaim(final DecodedJWT decodedJwt, final String field) {
+
+<span class="fc" id="L97">		final Claim fieldClaim = decodedJwt.getClaim(field);</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">		return fieldClaim.isNull() ? null : fieldClaim.asString();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
