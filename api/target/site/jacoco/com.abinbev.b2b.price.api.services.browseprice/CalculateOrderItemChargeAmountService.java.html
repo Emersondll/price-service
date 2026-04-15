@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CalculateOrderItemChargeAmountService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.services.browseprice</a> &gt; <span class="el_source">CalculateOrderItemChargeAmountService.java</span></div><h1>CalculateOrderItemChargeAmountService.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.services.browseprice;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.apache.commons.collections4.MapUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.abinbev.b2b.price.api.domain.ChargeFact;
+import com.abinbev.b2b.price.api.domain.TaxFact;
+import com.abinbev.b2b.price.api.domain.bre.WhenApplyRoundingOnTaxesEnum;
+import com.abinbev.b2b.price.api.helpers.ApiConstants;
+import com.newrelic.api.agent.Trace;
+
+@Service
+public class CalculateOrderItemChargeAmountService {
+
+<span class="fc" id="L24">	private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);</span>
+<span class="fc" id="L25">	private static final MathContext DEFAULT_MATH_CONTEXT = MathContext.DECIMAL128;</span>
+
+	private final PricingConfigurationService pricingConfigurationService;
+	private final CalculateTaxService calculateTaxService;
+	private final RoundValueService roundValueService;
+
+	@Autowired
+	public CalculateOrderItemChargeAmountService(final PricingConfigurationService pricingConfigurationService,
+<span class="fc" id="L33">			final CalculateTaxService calculateTaxService, final RoundValueService roundValueService) {</span>
+
+<span class="fc" id="L35">		this.pricingConfigurationService = pricingConfigurationService;</span>
+<span class="fc" id="L36">		this.calculateTaxService = calculateTaxService;</span>
+<span class="fc" id="L37">		this.roundValueService = roundValueService;</span>
+<span class="fc" id="L38">	}</span>
+
+	@Trace(dispatcher = true)
+	public BigDecimal execute(final Map&lt;String, ChargeFact&gt; charges, final BigDecimal taxBasePrice, final Map&lt;String, TaxFact&gt; taxes,
+			final String country) {
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		return MapUtils.isNotEmpty(charges) ?</span>
+<span class="fc" id="L45">				getCalculatedChargeAmountWithChargeTax(charges, taxBasePrice, taxes, country) :</span>
+<span class="fc" id="L46">				BigDecimal.ZERO;</span>
+	}
+
+	private BigDecimal getCalculatedChargeAmountWithChargeTax(final Map&lt;String, ChargeFact&gt; charges, final BigDecimal taxBasePrice,
+			final Map&lt;String, TaxFact&gt; taxes, final String country) {
+
+<span class="fc" id="L52">		final List&lt;BigDecimal&gt; chargeTaxes = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		for (final ChargeFact charge : charges.values()) {</span>
+<span class="fc" id="L55">			chargeTaxes.add(calculateChargeAmountAndTaxBasedOnChargeType(charge, taxBasePrice,</span>
+<span class="fc" id="L56">					Objects.requireNonNullElseGet(taxes, Collections::emptyMap), country));</span>
+<span class="fc" id="L57">		}</span>
+
+<span class="fc" id="L59">		return calculateChargeAmount(chargeTaxes, country);</span>
+	}
+
+	private BigDecimal calculateChargeAmountAndTaxBasedOnChargeType(final ChargeFact charge, final BigDecimal taxBasePrice,
+			final Map&lt;String, TaxFact&gt; taxes, final String country) {
+
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		return ApiConstants.TAX_PERCENT_TYPE.equals(charge.getType()) ?</span>
+<span class="fc" id="L66">				calculateChargeAmountByPercentage(taxBasePrice, charge, taxes, country) :</span>
+<span class="fc" id="L67">				calculateChargeAmountByFinancial(charge, taxes, country);</span>
+	}
+
+	private BigDecimal calculateChargeAmountByPercentage(final BigDecimal taxBasePrice, final ChargeFact charge,
+			final Map&lt;String, TaxFact&gt; taxes, final String country) {
+
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		final BigDecimal basePrice = charge.getBase() != null ? charge.getBase() : taxBasePrice;</span>
+<span class="fc" id="L74">		final BigDecimal chargeValue = charge.getValue().multiply(basePrice).divide(ONE_HUNDRED, DEFAULT_MATH_CONTEXT);</span>
+
+<span class="fc" id="L76">		return calculateChargesTaxes(taxes, chargeValue, country);</span>
+	}
+
+	private BigDecimal calculateChargeAmountByFinancial(final ChargeFact charge, final Map&lt;String, TaxFact&gt; taxes, final String country) {
+
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		final BigDecimal chargeValue = charge.getValue() != null ? charge.getValue() : BigDecimal.ZERO;</span>
+
+<span class="fc" id="L83">		return calculateChargesTaxes(taxes, chargeValue, country);</span>
+	}
+
+	private BigDecimal calculateChargesTaxes(final Map&lt;String, TaxFact&gt; taxes, final BigDecimal chargeValue, final String country) {
+
+<span class="fc" id="L88">		final BigDecimal chargeTaxAmount = calculateTaxService.execute(taxes, chargeValue, BigDecimal.ZERO, country);</span>
+<span class="fc" id="L89">		final BigDecimal summedChargeValueWithTax = chargeValue.add(chargeTaxAmount);</span>
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		return pricingConfigurationService.getPriceConfigWhenApplyRoundingOnTaxesEnum(country) == WhenApplyRoundingOnTaxesEnum.ON_EACH_TAX ?</span>
+<span class="fc" id="L92">				roundValueService.execute(summedChargeValueWithTax) :</span>
+<span class="fc" id="L93">				summedChargeValueWithTax;</span>
+	}
+
+	private BigDecimal calculateChargeAmount(final List&lt;BigDecimal&gt; chargeTaxes, final String country) {
+
+<span class="fc" id="L98">		final BigDecimal chargeAmount = getSummedChargeAmountAndTax(chargeTaxes);</span>
+
+<span class="fc bfc" id="L100" title="All 2 branches covered.">		return shouldRoundTaxAmount(country) ? roundValueService.execute(chargeAmount) : chargeAmount;</span>
+	}
+
+	private BigDecimal getSummedChargeAmountAndTax(final List&lt;BigDecimal&gt; chargeTaxes) {
+
+<span class="fc" id="L105">		BigDecimal chargeAmount = BigDecimal.ZERO;</span>
+
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		for (final BigDecimal pairedChargeAmountWithChargeTax : chargeTaxes) {</span>
+<span class="fc" id="L108">			chargeAmount = chargeAmount.add(pairedChargeAmountWithChargeTax);</span>
+<span class="fc" id="L109">		}</span>
+
+<span class="fc" id="L111">		return chargeAmount;</span>
+	}
+
+	private boolean shouldRoundTaxAmount(final String country) {
+
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		return pricingConfigurationService.getPriceConfigWhenApplyRoundingOnTaxesEnum(country) == WhenApplyRoundingOnTaxesEnum.IN_THE_END;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
