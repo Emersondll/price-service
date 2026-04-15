@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CalculateBrowsePriceService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.services.browseprice</a> &gt; <span class="el_source">CalculateBrowsePriceService.java</span></div><h1>CalculateBrowsePriceService.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.services.browseprice;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.abinbev.b2b.price.api.domain.BrowsePrice;
+import com.abinbev.b2b.price.api.domain.PriceFact;
+import com.abinbev.b2b.price.api.helpers.ApiConstants;
+import com.abinbev.b2b.price.api.helpers.CalculateDaysBehindToShowValidUntilHelper;
+import com.newrelic.api.agent.Trace;
+
+@Service
+public class CalculateBrowsePriceService {
+
+	private final PricingConfigurationService pricingConfigurationService;
+	private final CalculateItemBasePriceService calculateItemBasePriceService;
+	private final CalculateTaxBasePriceService calculateTaxBasePriceService;
+	private final CalculateTaxService calculateTaxService;
+	private final CalculateOrderItemChargeAmountService calculateOrderItemChargeAmountService;
+	private final RoundValueService roundValueService;
+	private final CalculateDaysBehindToShowValidUntilHelper calculateDaysBehindToShowValidUntilHelper;
+
+	@Autowired
+	public CalculateBrowsePriceService(final PricingConfigurationService pricingConfigurationService,
+			final CalculateItemBasePriceService calculateItemBasePriceService,
+			final CalculateTaxBasePriceService calculateTaxBasePriceService, final CalculateTaxService calculateTaxService,
+			final CalculateOrderItemChargeAmountService calculateOrderItemChargeAmountService, final RoundValueService roundValueService,
+<span class="fc" id="L37">			final CalculateDaysBehindToShowValidUntilHelper calculateDaysBehindToShowValidUntilHelper) {</span>
+
+<span class="fc" id="L39">		this.pricingConfigurationService = pricingConfigurationService;</span>
+<span class="fc" id="L40">		this.calculateItemBasePriceService = calculateItemBasePriceService;</span>
+<span class="fc" id="L41">		this.calculateTaxBasePriceService = calculateTaxBasePriceService;</span>
+<span class="fc" id="L42">		this.calculateTaxService = calculateTaxService;</span>
+<span class="fc" id="L43">		this.calculateOrderItemChargeAmountService = calculateOrderItemChargeAmountService;</span>
+<span class="fc" id="L44">		this.roundValueService = roundValueService;</span>
+<span class="fc" id="L45">		this.calculateDaysBehindToShowValidUntilHelper = calculateDaysBehindToShowValidUntilHelper;</span>
+<span class="fc" id="L46">	}</span>
+
+	@Trace(dispatcher = true)
+	public BrowsePrice execute(final PriceFact priceFact, final String country) {
+
+<span class="fc" id="L51">		final BigDecimal itemBasePrice = calculateItemBasePriceService.execute(priceFact, country, true);</span>
+<span class="fc" id="L52">		final BigDecimal itemPromotionalPrice = calculateItemBasePriceService.execute(priceFact, country, false);</span>
+
+<span class="fc" id="L54">		final boolean isExcludeTaxesEnabled = pricingConfigurationService</span>
+<span class="fc" id="L55">				.getPriceConfig(country, ApiConstants.EXCLUDE_TAXES_FROM_BROWSE_PRICE);</span>
+
+<span class="fc" id="L57">		final boolean isExcludeChargeEnabled = pricingConfigurationService</span>
+<span class="fc" id="L58">				.getPriceConfig(country, ApiConstants.EXCLUDE_CHARGE_FROM_BROWSE_PRICE);</span>
+
+<span class="fc" id="L60">		final BigDecimal price = calculatePrice(priceFact, country, itemPromotionalPrice, isExcludeTaxesEnabled, isExcludeChargeEnabled);</span>
+<span class="fc" id="L61">		final BigDecimal originalPrice = calculatePrice(priceFact, country, itemBasePrice, isExcludeTaxesEnabled, isExcludeChargeEnabled);</span>
+
+<span class="fc" id="L63">		return fillBrowsePrice(priceFact, originalPrice, price);</span>
+	}
+
+	private BigDecimal calculatePrice(final PriceFact priceFact, final String country, BigDecimal itemBasePrice,
+			final boolean isExcludeTaxesEnabled, final boolean isExcludeChargeEnabled) {
+
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		if (pricingConfigurationService.getPriceConfig(country, ApiConstants.ROUND_TAXES_AND_DISCOUNT_BEFORE_SUBTOTAL_AND_TOTAL)) {</span>
+<span class="fc" id="L70">			itemBasePrice = roundValueService.execute(itemBasePrice);</span>
+		}
+
+<span class="fc bfc" id="L73" title="All 4 branches covered.">		if (isExcludeTaxesEnabled &amp;&amp; isExcludeChargeEnabled) {</span>
+<span class="fc" id="L74">			return itemBasePrice;</span>
+		}
+
+<span class="fc" id="L77">		BigDecimal calculatedChargeAmount = BigDecimal.ZERO;</span>
+<span class="fc" id="L78">		BigDecimal calculatedTaxes = BigDecimal.ZERO;</span>
+
+<span class="fc" id="L80">		final BigDecimal taxBasePrice = calculateTaxBasePriceService</span>
+<span class="fc" id="L81">				.execute(itemBasePrice, priceFact.getDeposit(), priceFact.getConsignment(), country);</span>
+
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		if (!isExcludeTaxesEnabled) {</span>
+<span class="fc" id="L84">			calculatedTaxes = calculateTaxService.execute(priceFact.getTaxes(), taxBasePrice, itemBasePrice, country);</span>
+		}
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		if (!isExcludeChargeEnabled) {</span>
+<span class="fc" id="L88">			calculatedChargeAmount = calculateOrderItemChargeAmountService</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">					.execute(priceFact.getCharges(), taxBasePrice, isExcludeTaxesEnabled ? Collections.emptyMap() : priceFact.getTaxes(),</span>
+							country);
+		}
+
+<span class="fc" id="L93">		return roundValueService.execute(itemBasePrice.add(calculatedTaxes).add(calculatedChargeAmount));</span>
+	}
+
+	private BrowsePrice fillBrowsePrice(final PriceFact item, final BigDecimal calculatedOriginalPrice,
+			final BigDecimal calculatedBrowsePrice) {
+
+		final BrowsePrice browsePrice;
+
+<span class="fc bfc" id="L101" title="All 4 branches covered.">		if (!Objects.isNull(item.getPromotionalPrice()) &amp;&amp; StringUtils.isNotBlank(item.getPromotionalPrice().getValidUntil())) {</span>
+
+<span class="fc" id="L103">			final String timezone = item.getTimezone();</span>
+
+<span class="fc" id="L105">			final DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;</span>
+<span class="fc" id="L106">			final var today = ZonedDateTime.now(ZoneId.of(timezone));</span>
+
+<span class="fc" id="L108">			ZonedDateTime validUntil = null;</span>
+
+			try {
+<span class="fc" id="L111">				validUntil = ZonedDateTime</span>
+<span class="fc" id="L112">						.of(LocalDate.parse(item.getPromotionalPrice().getValidUntil(), formatter).atTime(23, 59, 59), ZoneId.of(timezone));</span>
+<span class="fc" id="L113">			} catch (final Exception ex) {</span>
+<span class="fc" id="L114">				return returnDefaultBrowsePrice(item, calculatedBrowsePrice, null);</span>
+<span class="fc" id="L115">			}</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			if (isTodayBeforeOrEqualValidUntil(today, validUntil)) {</span>
+<span class="fc" id="L117">				browsePrice = returnDefaultBrowsePrice(item, calculatedOriginalPrice, calculatedBrowsePrice);</span>
+			} else {
+<span class="fc" id="L119">				browsePrice = returnDefaultBrowsePrice(item, calculatedOriginalPrice, null);</span>
+			}
+
+<span class="fc" id="L122">		} else {</span>
+
+<span class="fc bfc" id="L124" title="All 4 branches covered.">			if (Objects.isNull(item.getPromotionalPrice()) || Objects.isNull(item.getPromotionalPrice().getPrice())) {</span>
+<span class="fc" id="L125">				browsePrice = returnDefaultBrowsePrice(item, calculatedOriginalPrice, null);</span>
+			} else {
+<span class="fc" id="L127">				browsePrice = returnDefaultBrowsePrice(item, calculatedOriginalPrice, calculatedBrowsePrice);</span>
+			}
+		}
+
+<span class="fc" id="L131">		return browsePrice;</span>
+	}
+
+	private BrowsePrice returnDefaultBrowsePrice(final PriceFact item, final BigDecimal calculatedOriginalPrice,
+			final BigDecimal calculatedBrowsePrice) {
+
+<span class="fc" id="L137">		final BrowsePrice browsePrice = new BrowsePrice();</span>
+
+<span class="fc" id="L139">		browsePrice.setSku(item.getSku());</span>
+<span class="fc" id="L140">		browsePrice.setVendorItemId(item.getVendorItemId());</span>
+
+<span class="fc bfc" id="L142" title="All 2 branches covered.">		if (Objects.isNull(calculatedBrowsePrice)) {</span>
+<span class="fc" id="L143">			browsePrice.setPrice(calculatedOriginalPrice);</span>
+<span class="fc" id="L144">			browsePrice.setOriginalPrice(null);</span>
+		} else {
+<span class="fc" id="L146">			browsePrice.setPrice(calculatedBrowsePrice);</span>
+<span class="fc" id="L147">			browsePrice.setOriginalPrice(calculatedOriginalPrice);</span>
+		}
+
+<span class="fc bfc" id="L150" title="All 2 branches covered.">		if (shouldSetValidUntil(item)) {</span>
+<span class="fc" id="L151">			browsePrice.setValidUntil(item.getPromotionalPrice().getValidUntil());</span>
+		}
+
+<span class="fc" id="L154">		return browsePrice;</span>
+	}
+
+	private boolean shouldSetValidUntil(final PriceFact item) {
+
+<span class="fc bfc" id="L159" title="All 4 branches covered.">		return item.getPromotionalPrice() != null &amp;&amp; item.getPromotionalPrice().getValidUntil() != null</span>
+				&amp;&amp; calculateDaysBehindToShowValidUntilHelper
+<span class="fc bfc" id="L161" title="All 2 branches covered.">				.shouldShowValidUntil(item.getPromotionalPrice().getValidUntil(), item.getCountry(), item.getTimezone())</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">				&amp;&amp; !hasValidUntilExpired(item);</span>
+	}
+
+	private boolean hasValidUntilExpired(final PriceFact item) {
+
+<span class="fc" id="L167">		final var formatter = DateTimeFormatter.ISO_DATE;</span>
+<span class="fc" id="L168">		final var validUntilAtEndOfDay = ZonedDateTime</span>
+<span class="fc" id="L169">				.of(LocalDate.parse(item.getPromotionalPrice().getValidUntil(), formatter).atTime(23, 59, 59),</span>
+<span class="fc" id="L170">						ZoneId.of(item.getTimezone()));</span>
+
+<span class="fc" id="L172">		final var currentZonedDateTime = ZonedDateTime.now(ZoneId.of(item.getTimezone()));</span>
+<span class="fc" id="L173">		return currentZonedDateTime.isAfter(validUntilAtEndOfDay);</span>
+	}
+
+	private boolean isTodayBeforeOrEqualValidUntil(final ZonedDateTime today, final ZonedDateTime validUntil) {
+
+<span class="fc bfc" id="L178" title="All 2 branches covered.">		return !today.isAfter(validUntil);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
