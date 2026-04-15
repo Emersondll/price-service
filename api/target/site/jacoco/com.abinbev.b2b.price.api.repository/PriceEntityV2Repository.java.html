@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceEntityV2Repository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.repository</a> &gt; <span class="el_source">PriceEntityV2Repository.java</span></div><h1>PriceEntityV2Repository.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.repository;
+
+import static com.abinbev.b2b.price.domain.model.v2.EntityTypeEnum.ACCOUNT;
+import static com.abinbev.b2b.price.domain.model.v2.EntityTypeEnum.DELIVERY_CENTER;
+import static com.abinbev.b2b.price.domain.model.v2.EntityTypeEnum.PRICE_LIST;
+import static com.abinbev.b2b.price.domain.model.v2.EntityTypeEnum.VENDOR;
+import static java.lang.Boolean.FALSE;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.collections4.MapUtils.isNotEmpty;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
+
+import com.abinbev.b2b.price.api.config.properties.DatabaseCollectionPropertiesV2;
+import com.abinbev.b2b.price.api.config.properties.ToggleConfigurationProperties;
+import com.abinbev.b2b.price.api.domain.v2.PriceResultListV2;
+import com.abinbev.b2b.price.api.domain.v3.PriceNormalizedInfo;
+import com.abinbev.b2b.price.api.helpers.ToggleValues;
+import com.abinbev.b2b.price.api.rest.vo.v2.PaginationResponseVoV2;
+import com.abinbev.b2b.price.domain.model.v2.EntityTypeEnum;
+import com.abinbev.b2b.price.domain.model.v2.PriceEntityV2;
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Token;
+import com.newrelic.api.agent.Trace;
+
+@Repository
+public class PriceEntityV2Repository {
+<span class="fc" id="L44">	private static final Logger LOGGER = LoggerFactory.getLogger(PriceEntityV2Repository.class);</span>
+
+	private static final String PRICE_VENDOR_ID_FIELD_NAME = &quot;_id.vendorId&quot;;
+	private static final String PRICE_VENDOR_ITEM_ID_FIELD_NAME = &quot;_id.vendorItemId&quot;;
+	private static final String PRICE_ID_FIELD_NAME = &quot;_id.id&quot;;
+	private static final String PRICE_DELETED_FIELD_NAME = &quot;deleted&quot;;
+<span class="fc" id="L50">	private static final Integer DEFAULT_PAGE_SIZE = 0;</span>
+	private static final String VALID_TO_FIELD_NAME = &quot;validTo&quot;;
+	private static final String VALID_FROM_FIELD_NAME = &quot;_id.validFrom&quot;;
+	private static final String PRICE_ID_TYPE_FIELD_NAME = &quot;_id.type&quot;;
+
+	private final MongoOperations mongoOperations;
+	private final DatabaseCollectionPropertiesV2 databaseCollectionProperties;
+
+	private final ToggleConfigurationProperties toggleConfigurationProperties;
+
+	@Autowired
+	public PriceEntityV2Repository(final MongoOperations mongoOperations,
+<span class="fc" id="L62">			final DatabaseCollectionPropertiesV2 databaseCollectionProperties, final ToggleConfigurationProperties toggleConfigurationProperties) {</span>
+
+<span class="fc" id="L64">		this.mongoOperations = mongoOperations;</span>
+<span class="fc" id="L65">		this.databaseCollectionProperties = databaseCollectionProperties;</span>
+<span class="fc" id="L66">		this.toggleConfigurationProperties = toggleConfigurationProperties;</span>
+<span class="fc" id="L67">	}</span>
+
+	@Trace(dispatcher = true)
+	public PriceResultListV2 findPriceByIdFilteringVendorItemId(final String vendorId, final String vendorAccountId, final String country,
+			final List&lt;String&gt; vendorItemId, final PaginationResponseVoV2 paginationFilter, final Instant currentDate,
+			final String priceListId) {
+
+<span class="fc" id="L74">		final Token token = NewRelic.getAgent().getTransaction().getToken();</span>
+
+		try {
+<span class="fc" id="L77">			token.link();</span>
+<span class="fc" id="L78">			PaginationResponseVoV2 pagination = null;</span>
+
+<span class="fc" id="L80">			final Query query = addCriteria(vendorId, vendorAccountId, vendorItemId, currentDate, priceListId);</span>
+<span class="fc" id="L81">			query.maxTimeMsec(databaseCollectionProperties.getQueryTimeoutMS());</span>
+
+<span class="fc" id="L83">			final String collectionByCountry = databaseCollectionProperties.getCollectionByCountryV2(country);</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">			if (paginationFilter != null) {</span>
+<span class="fc" id="L85">				pagination = new PaginationResponseVoV2(paginationFilter.getPage(), paginationFilter.getSize(),</span>
+<span class="fc" id="L86">						countByFilter(collectionByCountry, query));</span>
+
+<span class="fc" id="L88">				query.with(PageRequest.of(pagination.getPage(), pagination.getSize()));</span>
+			}
+
+<span class="fc" id="L91">			LOGGER.info(&quot;[PriceEntityV2Repository] Starting finding prices by id filtering vendorItemId&quot;);</span>
+
+<span class="fc" id="L93">			final List&lt;PriceEntityV2&gt; priceEntityList = mongoOperations.find(query, PriceEntityV2.class, collectionByCountry);</span>
+
+<span class="fc" id="L95">			LOGGER.info(&quot;[PriceEntityV2Repository] Finished finding prices by id filtering vendorItemId returning {} items&quot;, priceEntityList.size());</span>
+
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			return new PriceResultListV2(priceEntityList, pagination != null ?</span>
+<span class="fc" id="L98">					pagination :</span>
+<span class="fc" id="L99">					new PaginationResponseVoV2(DEFAULT_PAGE_SIZE, priceEntityList.size(), priceEntityList.size()));</span>
+
+		} finally {
+<span class="fc" id="L102">			token.expire();</span>
+		}
+	}
+
+	@Trace(dispatcher = true)
+	public List&lt;PriceEntityV2&gt; findPricesByAccountPriceForContractAndContractlessList(final List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoList, final String country,
+																					  final Instant currentDate, final Boolean ignoreValidFrom) {
+
+<span class="fc" id="L110">		final Token token = NewRelic.getAgent().getTransaction().getToken();</span>
+
+		try {
+<span class="fc" id="L113">			token.link();</span>
+
+<span class="fc" id="L115">			final Query query = createFilterByAccountPriceListForContractAndContractlessCriteria(priceNormalizedInfoList, currentDate, ignoreValidFrom);</span>
+<span class="fc" id="L116">			query.maxTimeMsec(databaseCollectionProperties.getQueryTimeoutMS());</span>
+
+<span class="fc" id="L118">			final String collectionByCountry = databaseCollectionProperties.getCollectionByCountryV2(country);</span>
+
+<span class="fc" id="L120">			return mongoOperations.find(query, PriceEntityV2.class, collectionByCountry);</span>
+		}
+<span class="fc" id="L122">		catch( IllegalArgumentException e) {</span>
+<span class="fc" id="L123">			LOGGER.info(e.getMessage());</span>
+<span class="fc" id="L124">			return new ArrayList&lt;&gt;();</span>
+		}
+		finally {
+<span class="fc" id="L127">			token.expire();</span>
+		}
+	}
+
+	@Trace(dispatcher = true)
+	public List&lt;PriceEntityV2&gt; findPricesByDDCVendorList(final List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoList, final String country,
+															final Instant currentDate, final Boolean ignoreValidFrom) {
+
+<span class="fc" id="L135">		final Token token = NewRelic.getAgent().getTransaction().getToken();</span>
+
+		try {
+<span class="fc" id="L138">			token.link();</span>
+
+<span class="fc" id="L140">			final Query query = createFilterByDDCVendor(priceNormalizedInfoList, currentDate, ignoreValidFrom);</span>
+<span class="fc" id="L141">			query.maxTimeMsec(databaseCollectionProperties.getQueryTimeoutMS());</span>
+
+<span class="fc" id="L143">			final String collectionByCountry = databaseCollectionProperties.getCollectionByCountryV2(country);</span>
+
+<span class="fc" id="L145">			return mongoOperations.find(query, PriceEntityV2.class, collectionByCountry);</span>
+
+		}
+<span class="fc" id="L148">		catch( IllegalArgumentException e) {</span>
+<span class="fc" id="L149">			LOGGER.info(e.getMessage());</span>
+<span class="fc" id="L150">			return new ArrayList&lt;&gt;();</span>
+		}
+		finally {
+<span class="fc" id="L153">			token.expire();</span>
+		}
+	}
+
+	private Query addCriteria(final String vendorId, final String vendorAccountId, final List&lt;String&gt; vendorItemId,
+			final Instant currentDate, final String priceListId) {
+
+<span class="fc" id="L160">		final Query query = new Query();</span>
+
+<span class="fc" id="L162">		final List&lt;Criteria&gt; criteriaList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L163">		criteriaList.add(criteriaType(vendorAccountId, priceListId));</span>
+
+<span class="fc" id="L165">		query.addCriteria(Criteria.where(PRICE_DELETED_FIELD_NAME).is(false).and(PRICE_VENDOR_ID_FIELD_NAME).is(vendorId));</span>
+
+<span class="fc bfc" id="L167" title="All 2 branches covered.">		if (CollectionUtils.isNotEmpty(vendorItemId)) {</span>
+<span class="fc" id="L168">			query.addCriteria(Criteria.where(PRICE_VENDOR_ITEM_ID_FIELD_NAME).in(vendorItemId));</span>
+		}
+
+<span class="fc" id="L171">		createPriceUpFrontFilter(currentDate, criteriaList);</span>
+<span class="fc" id="L172">		query.addCriteria(new Criteria().andOperator(criteriaList.toArray(new Criteria[0])));</span>
+
+		//Remove the if and keep the query.limit(1) when the toggle BEESPR_22389 is removed
+<span class="fc bfc" id="L175" title="All 2 branches covered.">		if (toggleConfigurationProperties.isEnabledCodeToggle(ToggleValues.BEESPR_22389)) {</span>
+<span class="fc" id="L176">			query.limit(1);</span>
+		}
+
+<span class="fc" id="L179">		return query;</span>
+	}
+
+
+	private Criteria criteriaType(final String vendorAccountId, final String priceListId) {
+
+<span class="fc" id="L185">		final Criteria typeFilter = new Criteria();</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">		if (Objects.nonNull(priceListId)) {</span>
+<span class="fc" id="L187">			typeFilter.orOperator(criteriaForVendorAccount(vendorAccountId), criteriaForPriceList(priceListId));</span>
+		} else {
+<span class="fc" id="L189">			typeFilter.andOperator(criteriaForVendorAccount(vendorAccountId));</span>
+		}
+<span class="fc" id="L191">		return typeFilter;</span>
+	}
+
+	private Criteria criteriaForVendorAccount(final String vendorAccountId) {
+
+<span class="fc" id="L196">		return new Criteria().andOperator(Criteria.where(PRICE_ID_FIELD_NAME).</span>
+<span class="fc" id="L197">				is(vendorAccountId), Criteria.where(PRICE_ID_TYPE_FIELD_NAME).is(ACCOUNT.toString()));</span>
+	}
+
+	private Criteria criteriaForPriceList(final String priceListId) {
+
+<span class="fc" id="L202">		return new Criteria().andOperator(Criteria.where(PRICE_ID_FIELD_NAME).is(priceListId),</span>
+<span class="fc" id="L203">				Criteria.where(PRICE_ID_TYPE_FIELD_NAME).is(EntityTypeEnum.PRICE_LIST.toString()));</span>
+	}
+
+	private int countByFilter(final String collectionName, final Query query) {
+
+<span class="fc" id="L208">		return Math.toIntExact(mongoOperations.count(query, collectionName));</span>
+	}
+
+	private void createPriceUpFrontFilter(final Instant currentDate, final List&lt;Criteria&gt; criteriaList) {
+
+<span class="fc" id="L213">		criteriaList.add(new Criteria().andOperator(new Criteria().orOperator(Criteria.where(VALID_FROM_FIELD_NAME).lte(currentDate),</span>
+<span class="fc" id="L214">				Criteria.where(VALID_FROM_FIELD_NAME).exists(false)), new Criteria()</span>
+<span class="fc" id="L215">				.orOperator(Criteria.where(VALID_TO_FIELD_NAME).gte(currentDate), Criteria.where(VALID_TO_FIELD_NAME).exists(false))));</span>
+<span class="fc" id="L216">	}</span>
+
+	private Query createFilterByAccountPriceListForContractAndContractlessCriteria(final List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoList, final Instant currentDate,
+																				   final Boolean ignoreValidFrom) {
+
+<span class="fc" id="L221">		final Query query = new Query();</span>
+<span class="fc" id="L222">		final List&lt;Criteria&gt; criteriaList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L224">		final Map&lt;String, List&lt;PriceNormalizedInfo&gt;&gt; pricesByContract = priceNormalizedInfoList.stream()</span>
+<span class="fc" id="L225">				.filter(price -&gt; nonNull(price.getContractId())).collect(Collectors.groupingBy(PriceNormalizedInfo::getContractId));</span>
+
+<span class="fc bfc" id="L227" title="All 2 branches covered.">		if (isNotEmpty(pricesByContract)) {</span>
+
+<span class="fc bfc" id="L229" title="All 2 branches covered.">			for (final List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoListByContract : pricesByContract.values()) {</span>
+
+<span class="fc" id="L231">				final List&lt;String&gt; vendorItemIds = priceNormalizedInfoListByContract.stream().map(PriceNormalizedInfo::getVendorItemId)</span>
+<span class="fc" id="L232">						.collect(Collectors.toList());</span>
+
+<span class="fc" id="L234">				criteriaList.addAll(createCriteriaByPriceAccountPriceList(priceNormalizedInfoListByContract.get(0), vendorItemIds));</span>
+<span class="fc" id="L235">			}</span>
+		}
+
+<span class="fc" id="L238">		final Map&lt;String, List&lt;PriceNormalizedInfo&gt;&gt; pricesByDeliveryCenter = priceNormalizedInfoList.stream()</span>
+<span class="fc bfc" id="L239" title="All 4 branches covered.">				.filter(price -&gt; nonNull(price.getDeliveryCenterId()) &amp;&amp; isNull(price.getContractId()))</span>
+<span class="fc" id="L240">				.collect(Collectors.groupingBy(PriceNormalizedInfo::getDeliveryCenterId));</span>
+
+<span class="fc bfc" id="L242" title="All 2 branches covered.">		if (isNotEmpty(pricesByDeliveryCenter)) {</span>
+
+<span class="fc bfc" id="L244" title="All 2 branches covered.">			for (final List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoListByDeliveryCenter : pricesByDeliveryCenter.values()) {</span>
+
+<span class="fc" id="L246">				final List&lt;String&gt; vendorItemIds = priceNormalizedInfoListByDeliveryCenter.stream()</span>
+<span class="fc" id="L247">						.map(PriceNormalizedInfo::getVendorItemId)</span>
+<span class="fc" id="L248">						.collect(Collectors.toList());</span>
+
+<span class="fc" id="L250">				criteriaList.addAll(</span>
+<span class="fc" id="L251">						createCriteriaByPriceDDCVendor(priceNormalizedInfoListByDeliveryCenter.get(0), vendorItemIds));</span>
+<span class="fc" id="L252">			}</span>
+		}
+
+<span class="fc bfc" id="L255" title="All 2 branches covered.">		if (criteriaList.isEmpty()) {</span>
+<span class="fc" id="L256">			throw new IllegalArgumentException(&quot;query with no keys skipped&quot;);</span>
+		}
+
+<span class="fc" id="L259">		final Criteria criteriaDefinition = getPricesUpfrontCriteria(criteriaList, currentDate, ignoreValidFrom, query);</span>
+
+<span class="fc" id="L261">		return query.addCriteria(criteriaDefinition);</span>
+	}
+
+	private Query createFilterByDDCVendor(final List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoList, final Instant currentDate,
+											 final Boolean ignoreValidFrom) {
+
+<span class="fc" id="L267">		final Query query = new Query();</span>
+<span class="fc" id="L268">		final List&lt;Criteria&gt; criteriaList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L270">		final Map&lt;String, List&lt;PriceNormalizedInfo&gt;&gt; pricesByDeliveryCenter = priceNormalizedInfoList.stream()</span>
+<span class="fc" id="L271">				.filter(price -&gt; nonNull(price.getContractId()))</span>
+<span class="fc" id="L272">				.collect(Collectors.groupingBy(PriceNormalizedInfo::getContractId));</span>
+
+<span class="fc bfc" id="L274" title="All 2 branches covered.">		if (isNotEmpty(pricesByDeliveryCenter)) {</span>
+
+<span class="fc bfc" id="L276" title="All 2 branches covered.">			for (final List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoListByDeliveryCenter : pricesByDeliveryCenter.values()) {</span>
+
+<span class="fc" id="L278">				final List&lt;String&gt; vendorItemIds = priceNormalizedInfoListByDeliveryCenter.stream()</span>
+<span class="fc" id="L279">						.map(PriceNormalizedInfo::getVendorItemId)</span>
+<span class="fc" id="L280">						.collect(Collectors.toList());</span>
+
+<span class="fc" id="L282">				criteriaList.addAll(</span>
+<span class="fc" id="L283">						createCriteriaByPriceDDCVendor(priceNormalizedInfoListByDeliveryCenter.get(0), vendorItemIds));</span>
+<span class="fc" id="L284">			}</span>
+		}
+
+<span class="fc bfc" id="L287" title="All 2 branches covered.">		if (criteriaList.isEmpty()) {</span>
+<span class="fc" id="L288">			throw new IllegalArgumentException(&quot;query with no keys skipped&quot;);</span>
+		}
+
+<span class="fc" id="L291">		final Criteria criteriaDefinition = getPricesUpfrontCriteria(criteriaList, currentDate, ignoreValidFrom, query);</span>
+
+<span class="fc" id="L293">		return query.addCriteria(criteriaDefinition);</span>
+	}
+
+	@NotNull
+	private Criteria getPricesUpfrontCriteria(List&lt;Criteria&gt; pCriteriaList, Instant currentDate, Boolean ignoreValidFrom, Query query) {
+
+<span class="fc" id="L299">		List&lt;Criteria&gt; criteriaList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L300">		criteriaList.add(new Criteria().orOperator(pCriteriaList));</span>
+<span class="fc" id="L301">		criteriaList.add(Criteria.where(PRICE_DELETED_FIELD_NAME).is(false));</span>
+<span class="fc" id="L302">		criteriaList.add(new Criteria().orOperator(Criteria.where(VALID_TO_FIELD_NAME).gte(currentDate),Criteria.where(VALID_TO_FIELD_NAME).exists(false)));</span>
+
+<span class="fc" id="L304">		final Criteria criteriaDefinition = new Criteria().andOperator( criteriaList );</span>
+
+<span class="fc bfc" id="L306" title="All 4 branches covered.">		if (isNull(ignoreValidFrom) || FALSE.equals(ignoreValidFrom)) {</span>
+<span class="fc" id="L307">			criteriaDefinition.orOperator(new Criteria().orOperator(Criteria.where(VALID_FROM_FIELD_NAME).lte(currentDate),</span>
+<span class="fc" id="L308">					Criteria.where(VALID_FROM_FIELD_NAME).exists(false)));</span>
+		}
+
+		//Remove the if and keep the query.limit(1) when the toggle BEESPR_22389 is removed
+<span class="fc bfc" id="L312" title="All 2 branches covered.">		if (toggleConfigurationProperties.isEnabledCodeToggle(ToggleValues.BEESPR_22389)) {</span>
+<span class="fc" id="L313">			query.limit(1);</span>
+		}
+<span class="fc" id="L315">		return criteriaDefinition;</span>
+	}
+
+	private List&lt;Criteria&gt; createCriteriaByPriceAccountPriceList(final PriceNormalizedInfo priceNormalizedInfo,
+														  final List&lt;String&gt; vendorItemsIds) {
+
+<span class="fc" id="L321">		final List&lt;Criteria&gt; criteriaList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L323">		createCriteriaAccountPriceList(priceNormalizedInfo, vendorItemsIds, criteriaList);</span>
+
+<span class="fc" id="L325">		return criteriaList;</span>
+	}
+
+	private List&lt;Criteria&gt; createCriteriaByPriceDDCVendor(final PriceNormalizedInfo priceNormalizedInfo,
+																 final List&lt;String&gt; vendorItemsIds) {
+
+<span class="fc" id="L331">		final List&lt;Criteria&gt; criteriaList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L333">		createCriteriaDDCVendor(priceNormalizedInfo, vendorItemsIds, criteriaList);</span>
+
+<span class="fc" id="L335">		return criteriaList;</span>
+	}
+
+	private void createCriteriaDDCVendor(PriceNormalizedInfo priceNormalizedInfo, List&lt;String&gt; vendorItemsIds, List&lt;Criteria&gt; criteriaList) {
+
+<span class="fc bfc" id="L340" title="All 2 branches covered.">		if (Objects.nonNull(priceNormalizedInfo.getVendorDeliveryCenterId())) {</span>
+<span class="fc" id="L341">			final Criteria criteriaByTypeDeliveryCenter = Criteria.where(PRICE_ID_FIELD_NAME)</span>
+<span class="fc" id="L342">					.is(priceNormalizedInfo.getVendorDeliveryCenterId())</span>
+<span class="fc" id="L343">					.and(PRICE_VENDOR_ITEM_ID_FIELD_NAME).in(vendorItemsIds)</span>
+<span class="fc" id="L344">					.and(PRICE_VENDOR_ID_FIELD_NAME).is(priceNormalizedInfo.getVendorId())</span>
+<span class="fc" id="L345">					.and(PRICE_ID_TYPE_FIELD_NAME).is(DELIVERY_CENTER.name());</span>
+
+<span class="fc" id="L347">			criteriaList.add(criteriaByTypeDeliveryCenter);</span>
+		}
+
+<span class="fc" id="L350">		final Criteria criteriaByTypeVendorId = Criteria.where(PRICE_ID_FIELD_NAME).is(priceNormalizedInfo.getVendorId())</span>
+<span class="fc" id="L351">				.and(PRICE_VENDOR_ITEM_ID_FIELD_NAME).in(vendorItemsIds)</span>
+<span class="fc" id="L352">				.and(PRICE_VENDOR_ID_FIELD_NAME).is(priceNormalizedInfo.getVendorId())</span>
+<span class="fc" id="L353">				.and(PRICE_ID_TYPE_FIELD_NAME).is(VENDOR.name());</span>
+
+<span class="fc" id="L355">		criteriaList.add(criteriaByTypeVendorId);</span>
+<span class="fc" id="L356">	}</span>
+
+	private void createCriteriaAccountPriceList(PriceNormalizedInfo priceNormalizedInfo, List&lt;String&gt; vendorItemsIds, List&lt;Criteria&gt; criteriaList) {
+
+<span class="fc bfc" id="L360" title="All 2 branches covered.">		if (Objects.nonNull(priceNormalizedInfo.getAccountId())) {</span>
+<span class="fc" id="L361">			final Criteria criteriaByTypeAccount = Criteria.where(PRICE_ID_FIELD_NAME).is(priceNormalizedInfo.getAccountId())</span>
+<span class="fc" id="L362">					.and(PRICE_VENDOR_ITEM_ID_FIELD_NAME).in(vendorItemsIds)</span>
+<span class="fc" id="L363">					.and(PRICE_VENDOR_ID_FIELD_NAME).is(priceNormalizedInfo.getVendorId())</span>
+<span class="fc" id="L364">					.and(PRICE_ID_TYPE_FIELD_NAME).is(ACCOUNT.name());</span>
+
+<span class="fc" id="L366">			criteriaList.add(criteriaByTypeAccount);</span>
+		}
+
+<span class="fc bfc" id="L369" title="All 2 branches covered.">		if (Objects.nonNull(priceNormalizedInfo.getPriceListId())) {</span>
+<span class="fc" id="L370">			final Criteria criteriaByTypePriceList = Criteria.where(PRICE_ID_FIELD_NAME).is(priceNormalizedInfo.getPriceListId())</span>
+<span class="fc" id="L371">					.and(PRICE_VENDOR_ITEM_ID_FIELD_NAME).in(vendorItemsIds)</span>
+<span class="fc" id="L372">					.and(PRICE_VENDOR_ID_FIELD_NAME).is(priceNormalizedInfo.getVendorId())</span>
+<span class="fc" id="L373">					.and(PRICE_ID_TYPE_FIELD_NAME).is(PRICE_LIST.name());</span>
+
+<span class="fc" id="L375">			criteriaList.add(criteriaByTypePriceList);</span>
+		}
+<span class="fc" id="L377">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
