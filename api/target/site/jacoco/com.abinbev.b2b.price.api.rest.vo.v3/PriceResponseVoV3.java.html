@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceResponseVoV3.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.rest.vo.v3</a> &gt; <span class="el_source">PriceResponseVoV3.java</span></div><h1>PriceResponseVoV3.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.rest.vo.v3;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(name = &quot;PriceResponseVoV3&quot;)
+<span class="fc" id="L13">public class PriceResponseVoV3 {</span>
+
+	@Schema(description = &quot;The vendor item identifier. It can have special characters&quot;, required = true, example = &quot;SKU0001-CASE&quot;)
+	private String vendorItemId;
+
+	@Schema(description = &quot;The sku alphanumeric identifier. It can have special characters but not dot&quot;, example = &quot;SKU0001&quot;)
+	private String sku;
+
+	@Schema(description = &quot;The unique identifier of the Item&quot;, example = &quot;VkVORE9SX0lEO0lURU1fSUQ=&quot;)
+	private String itemId;
+
+	@Schema(description = &quot;The identifier of the Vendor and Account&quot;, example = &quot;VkVORE9SX0lEO0NPTlRSQUNUX0lE&quot;)
+	private String contractId;
+
+	@Schema(description = &quot;The identifier of the Vendor´s Delivery Center&quot;, example = &quot;VkVORE9SX0lEO0RFTElWRVJZX0NFTlRFUl9JRA==&quot;)
+	private String deliveryCenterId;
+
+	@Schema(description = &quot;The base price for the current sku represented by a financial amount. The max number of decimal places is 15&quot;, required = true, example = &quot;20.99&quot;)
+	private BigDecimal basePrice;
+
+	@Schema(description = &quot;The minimum price for the current sku represented by a financial amount. The max number of decimal places is 15&quot;, example = &quot;5.99&quot;)
+	private BigDecimal minimumPrice;
+
+	@Schema(description = &quot;The measure unit for the current sku&quot;, example = &quot;CS&quot;)
+	private String measureUnit;
+
+	@Schema(description = &quot;The type of the price measure unit&quot;, example = &quot;PER_UNIT or PER_UOM&quot;)
+	private String type;
+
+	@Schema(description = &quot;The deposit represents the can/cask price. It's represented by a financial amount and the max number of decimal places is 15&quot;, example = &quot;3.99&quot;)
+	private BigDecimal deposit;
+
+	@Schema(description = &quot;The deposit fee for kegs.&quot;, example = &quot;0.75&quot;)
+	private BigDecimal consignment;
+
+	@Schema(description = &quot;The quantity of the current sku that fit in a pallet. Used for the calculations of pallet deals&quot;, example = &quot;88&quot;)
+	private Integer quantityPerPallet;
+
+	@Schema(description = &quot;The suggested sales price for the POC applies to the final consumer, also known as PTC. The zone or partner define/ingest it and the Pricing ms´s doesn´t make any calculation. It´s also used to calculate the profitMargin parameter&quot;, example = &quot;39.99&quot;)
+	private BigDecimal suggestedRetailPrice;
+
+	@Schema(description = &quot;A geographic region within which the same standard time is used.&quot;, example = &quot;America/Los_Angeles&quot;)
+	private String timezone;
+
+	@Schema(description = &quot;The valid from date on format 'yyyy-MM-dd'. Indicates when this price starts to be used in the calculation process.&quot;, example = &quot;2020-12-31&quot;)
+	private String validFrom;
+
+	@ArraySchema(arraySchema = @Schema(description = &quot;List of taxes&quot;), schema = @Schema(description = &quot;TaxResponseVoV3&quot;))
+	private List&lt;TaxResponseVoV3&gt; taxes;
+
+	@Schema(description = &quot;The promotional price&quot;)
+	private PromotionalPriceResponseVoV3 promotionalPrice;
+
+	@ArraySchema(arraySchema = @Schema(description = &quot;List of charges&quot;), schema = @Schema(description = &quot;ChargeResponseVoV3&quot;))
+	private List&lt;ChargeResponseVoV3&gt; charges;
+
+	public String getVendorItemId() {
+
+<span class="fc" id="L71">		return vendorItemId;</span>
+	}
+
+	public void setVendorItemId(final String vendorItemId) {
+
+<span class="fc" id="L76">		this.vendorItemId = vendorItemId;</span>
+<span class="fc" id="L77">	}</span>
+
+	public String getSku() {
+
+<span class="fc" id="L81">		return sku;</span>
+	}
+
+	public void setSku(final String sku) {
+
+<span class="fc" id="L86">		this.sku = sku;</span>
+<span class="fc" id="L87">	}</span>
+
+	public String getItemId() {
+
+<span class="fc" id="L91">		return itemId;</span>
+	}
+
+	public void setItemId(final String itemId) {
+
+<span class="fc" id="L96">		this.itemId = itemId;</span>
+<span class="fc" id="L97">	}</span>
+
+	public String getContractId() {
+
+<span class="fc" id="L101">		return contractId;</span>
+	}
+
+	public void setContractId(final String contractId) {
+
+<span class="fc" id="L106">		this.contractId = contractId;</span>
+<span class="fc" id="L107">	}</span>
+
+	public String getDeliveryCenterId() {
+
+<span class="fc" id="L111">		return deliveryCenterId;</span>
+	}
+
+	public void setDeliveryCenterId(final String deliveryCenterId) {
+
+<span class="fc" id="L116">		this.deliveryCenterId = deliveryCenterId;</span>
+<span class="fc" id="L117">	}</span>
+
+	public BigDecimal getBasePrice() {
+
+<span class="fc" id="L121">		return basePrice;</span>
+	}
+
+	public void setBasePrice(final BigDecimal basePrice) {
+
+<span class="fc" id="L126">		this.basePrice = basePrice;</span>
+<span class="fc" id="L127">	}</span>
+
+	public BigDecimal getMinimumPrice() {
+
+<span class="fc" id="L131">		return minimumPrice;</span>
+	}
+
+	public void setMinimumPrice(final BigDecimal minimumPrice) {
+
+<span class="fc" id="L136">		this.minimumPrice = minimumPrice;</span>
+<span class="fc" id="L137">	}</span>
+
+	public String getMeasureUnit() {
+
+<span class="fc" id="L141">		return measureUnit;</span>
+	}
+
+	public void setMeasureUnit(final String measureUnit) {
+
+<span class="fc" id="L146">		this.measureUnit = measureUnit;</span>
+<span class="fc" id="L147">	}</span>
+
+	public String getType() {
+
+<span class="fc" id="L151">		return type;</span>
+	}
+
+	public void setType(final String type) {
+
+<span class="fc" id="L156">		this.type = type;</span>
+<span class="fc" id="L157">	}</span>
+
+	public BigDecimal getDeposit() {
+
+<span class="fc" id="L161">		return deposit;</span>
+	}
+
+	public void setDeposit(final BigDecimal deposit) {
+
+<span class="fc" id="L166">		this.deposit = deposit;</span>
+<span class="fc" id="L167">	}</span>
+
+	public BigDecimal getConsignment() {
+
+<span class="fc" id="L171">		return consignment;</span>
+	}
+
+	public void setConsignment(final BigDecimal consignment) {
+
+<span class="fc" id="L176">		this.consignment = consignment;</span>
+<span class="fc" id="L177">	}</span>
+
+	public Integer getQuantityPerPallet() {
+
+<span class="fc" id="L181">		return quantityPerPallet;</span>
+	}
+
+	public void setQuantityPerPallet(final Integer quantityPerPallet) {
+
+<span class="fc" id="L186">		this.quantityPerPallet = quantityPerPallet;</span>
+<span class="fc" id="L187">	}</span>
+
+	public String getTimezone() {
+
+<span class="fc" id="L191">		return timezone;</span>
+	}
+
+	public void setTimezone(final String timezone) {
+
+<span class="fc" id="L196">		this.timezone = timezone;</span>
+<span class="fc" id="L197">	}</span>
+
+	public String getValidFrom() {
+
+<span class="fc" id="L201">		return validFrom;</span>
+	}
+
+	public void setValidFrom(final String validFrom) {
+
+<span class="fc" id="L206">		this.validFrom = validFrom;</span>
+<span class="fc" id="L207">	}</span>
+
+	public List&lt;TaxResponseVoV3&gt; getTaxes() {
+
+<span class="fc" id="L211">		return taxes;</span>
+	}
+
+	public void setTaxes(final List&lt;TaxResponseVoV3&gt; taxes) {
+
+<span class="fc" id="L216">		this.taxes = taxes;</span>
+<span class="fc" id="L217">	}</span>
+
+	public PromotionalPriceResponseVoV3 getPromotionalPrice() {
+
+<span class="fc" id="L221">		return promotionalPrice;</span>
+	}
+
+	public void setPromotionalPrice(final PromotionalPriceResponseVoV3 promotionalPrice) {
+
+<span class="fc" id="L226">		this.promotionalPrice = promotionalPrice;</span>
+<span class="fc" id="L227">	}</span>
+
+	public List&lt;ChargeResponseVoV3&gt; getCharges() {
+
+<span class="fc" id="L231">		return charges;</span>
+	}
+
+	public void setCharges(final List&lt;ChargeResponseVoV3&gt; charges) {
+
+<span class="fc" id="L236">		this.charges = charges;</span>
+<span class="fc" id="L237">	}</span>
+
+	public BigDecimal getSuggestedRetailPrice() {
+<span class="fc" id="L240">		return suggestedRetailPrice;</span>
+	}
+
+	public void setSuggestedRetailPrice(BigDecimal suggestedRetailPrice) {
+<span class="fc" id="L244">		this.suggestedRetailPrice = suggestedRetailPrice;</span>
+<span class="fc" id="L245">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
