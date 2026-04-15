@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceRequestV3.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.rest.vo.v3</a> &gt; <span class="el_source">PriceRequestV3.java</span></div><h1>PriceRequestV3.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.rest.vo.v3;
+
+import jakarta.validation.constraints.NotBlank;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = &quot;PriceRequestV3&quot;)
+<span class="fc" id="L8">public class PriceRequestV3 {</span>
+
+	@NotBlank
+	@Schema(description = &quot;The unique identifier of the Item.&quot;, required = true)
+	private String itemId;
+
+	@Schema(description = &quot;The identifier of the Vendor and Account. Is required if priceListId is sent&quot;)
+	private String contractId;
+
+	@Schema(description = &quot;The identifier of the Vendor´s Delivery Center&quot;)
+	private String deliveryCenterId;
+
+	@Schema(description = &quot;PRICE LIST ID for filtering by price list&quot;)
+	private String priceListId;
+
+	public String getItemId() {
+
+<span class="fc" id="L25">		return itemId;</span>
+	}
+
+	public void setItemId(final String itemId) {
+
+<span class="fc" id="L30">		this.itemId = itemId;</span>
+<span class="fc" id="L31">	}</span>
+
+	public String getContractId() {
+
+<span class="fc" id="L35">		return contractId;</span>
+	}
+
+	public void setContractId(final String contractId) {
+
+<span class="fc" id="L40">		this.contractId = contractId;</span>
+<span class="fc" id="L41">	}</span>
+
+	public String getDeliveryCenterId() {
+
+<span class="fc" id="L45">		return deliveryCenterId;</span>
+	}
+
+	public void setDeliveryCenterId(final String deliveryCenterId) {
+
+<span class="fc" id="L50">		this.deliveryCenterId = deliveryCenterId;</span>
+<span class="fc" id="L51">	}</span>
+
+	public String getPriceListId() {
+
+<span class="fc" id="L55">		return priceListId;</span>
+	}
+
+	public void setPriceListId(final String priceListId) {
+
+<span class="fc" id="L60">		this.priceListId = priceListId;</span>
+<span class="fc" id="L61">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
