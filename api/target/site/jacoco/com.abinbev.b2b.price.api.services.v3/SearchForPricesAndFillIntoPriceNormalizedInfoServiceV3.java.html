@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SearchForPricesAndFillIntoPriceNormalizedInfoServiceV3.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.services.v3</a> &gt; <span class="el_source">SearchForPricesAndFillIntoPriceNormalizedInfoServiceV3.java</span></div><h1>SearchForPricesAndFillIntoPriceNormalizedInfoServiceV3.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.services.v3;
+
+import static java.lang.Boolean.TRUE;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.collections4.MapUtils.isNotEmpty;
+
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.abinbev.b2b.price.api.config.properties.PriceUpFrontProperties;
+import com.abinbev.b2b.price.api.config.properties.ToggleConfigurationProperties;
+import com.abinbev.b2b.price.api.domain.v3.PriceNormalizedInfo;
+import com.abinbev.b2b.price.api.helpers.CalculateDaysBehindToShowValidUntilHelper;
+import com.abinbev.b2b.price.api.repository.PriceEntityV2Repository;
+import com.abinbev.b2b.price.domain.model.v2.PriceEntityV2;
+import com.abinbev.b2b.price.domain.model.v2.PromotionalPriceV2;
+
+@Service
+public class SearchForPricesAndFillIntoPriceNormalizedInfoServiceV3 {
+
+<span class="fc" id="L31">	private static final Logger LOGGER = LoggerFactory.getLogger(SearchForPricesAndFillIntoPriceNormalizedInfoServiceV3.class);</span>
+	private static final String CODE_TOGGLE_19558 = &quot;BEESPR_19558&quot;;
+
+	private final PriceEntityV2Repository priceEntityV2Repository;
+	private final PriceUpFrontProperties priceUpFrontProperties;
+	private final ObtainPricesWithClosestDatesService obtainPricesWithClosestDatesService;
+	private final PrioritizePriceByTypeServiceV3 prioritizePriceByTypeServiceV3;
+	private final CalculateDaysBehindToShowValidUntilHelper calculateDaysBehindToShowValidUntilHelper;
+	private final ToggleConfigurationProperties toggleConfigurationProperties;
+
+	@Autowired
+	public SearchForPricesAndFillIntoPriceNormalizedInfoServiceV3(final PriceEntityV2Repository priceEntityV2Repository,
+			final PriceUpFrontProperties priceUpFrontProperties,
+			final ObtainPricesWithClosestDatesService obtainPricesWithClosestDatesService,
+			final PrioritizePriceByTypeServiceV3 prioritizePriceByTypeServiceV3,
+			final CalculateDaysBehindToShowValidUntilHelper calculateDaysBehindToShowValidUntilHelper,
+<span class="fc" id="L47">			final ToggleConfigurationProperties toggleConfigurationProperties) {</span>
+
+<span class="fc" id="L49">		this.priceEntityV2Repository = priceEntityV2Repository;</span>
+<span class="fc" id="L50">		this.priceUpFrontProperties = priceUpFrontProperties;</span>
+<span class="fc" id="L51">		this.obtainPricesWithClosestDatesService = obtainPricesWithClosestDatesService;</span>
+<span class="fc" id="L52">		this.prioritizePriceByTypeServiceV3 = prioritizePriceByTypeServiceV3;</span>
+<span class="fc" id="L53">		this.calculateDaysBehindToShowValidUntilHelper = calculateDaysBehindToShowValidUntilHelper;</span>
+<span class="fc" id="L54">		this.toggleConfigurationProperties = toggleConfigurationProperties;</span>
+<span class="fc" id="L55">	}</span>
+
+	public List&lt;PriceNormalizedInfo&gt; execute(final List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoList, final String country, Boolean ignoreValidFrom) {
+
+<span class="fc" id="L59">		final boolean isPriceUpFrontEnabled = isPriceUpFrontEnabledToCountry(country);</span>
+
+<span class="fc" id="L61">		LOGGER.info(&quot;[SearchForPricesAndFillIntoPriceNormalizedInfoServiceV3] Starting finding prices&quot;);</span>
+
+<span class="fc" id="L63">		List&lt;PriceEntityV2&gt; pricesList = priceEntityV2Repository.findPricesByAccountPriceForContractAndContractlessList(priceNormalizedInfoList, country, Instant.now(), ignoreValidFrom);</span>
+
+<span class="fc" id="L65">		List&lt;PriceEntityV2&gt; finalPricesList = pricesList;</span>
+
+<span class="fc" id="L67">		List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoNotFoundList = getPriceNormalizedInfoNotFoundList(priceNormalizedInfoList, finalPricesList);</span>
+
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		if(!priceNormalizedInfoNotFoundList.isEmpty()){</span>
+<span class="fc" id="L70">			List&lt;PriceEntityV2&gt; pricesDDCVendorPriceList = priceEntityV2Repository.findPricesByDDCVendorList(priceNormalizedInfoNotFoundList, country, Instant.now(), ignoreValidFrom);</span>
+<span class="fc" id="L71">			pricesList.addAll(pricesDDCVendorPriceList);</span>
+		}
+
+<span class="fc" id="L74">		LOGGER.info(&quot;[SearchForPricesAndFillIntoPriceNormalizedInfoServiceV3] Finished finding prices and returning {} items&quot;, pricesList.size());</span>
+
+<span class="fc bfc" id="L76" title="All 4 branches covered.">		if (nonNull(ignoreValidFrom) &amp;&amp; TRUE.equals(ignoreValidFrom)) {</span>
+<span class="fc" id="L77">            return getPriceNormalizedInfoIgnoringValidFrom(priceNormalizedInfoList, pricesList);</span>
+		}
+
+<span class="fc" id="L80">		final boolean toggle19558 = toggleConfigurationProperties.isEnabledCodeToggle(CODE_TOGGLE_19558);</span>
+
+<span class="fc bfc" id="L82" title="All 4 branches covered.">		if (isPriceUpFrontEnabled || toggle19558) {</span>
+<span class="fc" id="L83">			pricesList = obtainPricesWithClosestDatesService.execute(pricesList);</span>
+		}
+<span class="fc" id="L85">		prioritizePriceByTypeServiceV3.execute(pricesList, priceNormalizedInfoList);</span>
+
+<span class="fc" id="L87">		priceNormalizedInfoList.forEach(priceNormalizedInfo -&gt; ofNullable(priceNormalizedInfo.getSelectedPrice()).ifPresent(</span>
+<span class="fc" id="L88">				priceEntityV2 -&gt; showValidUntilBasedOnSimulationDateTime(priceEntityV2, country)));</span>
+
+<span class="fc" id="L90">		LOGGER.info(&quot;[SearchForPricesAndFillIntoPriceNormalizedInfoServiceV3] {} prices successfully retrieved&quot;, priceNormalizedInfoList.size());</span>
+
+<span class="fc" id="L92">		return priceNormalizedInfoList;</span>
+	}
+
+	List&lt;PriceNormalizedInfo&gt; getPriceNormalizedInfoNotFoundList(
+			List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoList,
+			List&lt;PriceEntityV2&gt; finalPricesList) {
+
+<span class="fc" id="L99">		return priceNormalizedInfoList</span>
+<span class="fc" id="L100">				.stream()</span>
+<span class="fc" id="L101">				.filter( priceNormalizedInfo -&gt; finalPricesList</span>
+<span class="fc" id="L102">						.stream()</span>
+<span class="fc" id="L103">						.filter(priceEntityV2 -&gt; nonNull(priceEntityV2.getId()))</span>
+<span class="fc" id="L104">						.noneMatch( priceEntityV2 -&gt;</span>
+<span class="fc" id="L105">								( priceNormalizedInfo.getVendorId().equals( priceEntityV2.getId().getVendorId()))</span>
+								&amp;
+<span class="fc" id="L107">								( priceNormalizedInfo.getVendorItemId().equals(priceEntityV2.getId().getVendorItemId()))</span>
+						)
+<span class="fc" id="L109">				).collect(Collectors.toList());</span>
+	}
+
+	private List&lt;PriceNormalizedInfo&gt; getPriceNormalizedInfoIgnoringValidFrom(List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoList, List&lt;PriceEntityV2&gt; prices) {
+<span class="fc" id="L113">        List&lt;PriceNormalizedInfo&gt; priceNormalizedInfoListResult = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L115">        priceNormalizedInfoList.forEach(priceNormalizedInfo -&gt;</span>
+<span class="fc" id="L116">                    priceNormalizedInfoListResult.addAll(</span>
+<span class="fc" id="L117">                            prices.stream()</span>
+<span class="fc" id="L118">                                    .filter(Objects::nonNull)</span>
+<span class="fc" id="L119">                                    .filter(priceEntityV2 -&gt; priceEntityV2.getId().getVendorItemId().equals(priceNormalizedInfo.getVendorItemId()))</span>
+<span class="fc" id="L120">                                    .map(priceEntityV2 -&gt; new PriceNormalizedInfo(priceNormalizedInfo, priceEntityV2))</span>
+<span class="fc" id="L121">                                    .collect(Collectors.toList()))</span>
+                );
+<span class="fc" id="L123">        return priceNormalizedInfoListResult;</span>
+    }
+
+	private boolean isPriceUpFrontEnabledToCountry(final String country) {
+
+<span class="fc" id="L128">		final String countriesEnabled = priceUpFrontProperties.getCountriesEnabled();</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">		if (StringUtils.isNotEmpty(countriesEnabled)) {</span>
+<span class="fc" id="L130">			return Arrays.stream(countriesEnabled.split(&quot;,&quot;)).anyMatch(c -&gt; c.equalsIgnoreCase(country));</span>
+		}
+<span class="fc" id="L132">		return false;</span>
+	}
+
+	private void showValidUntilBasedOnSimulationDateTime(final PriceEntityV2 priceEntity, final String country) {
+
+<span class="fc bfc" id="L137" title="All 4 branches covered.">		if (hasPromotionalPriceAndValidUntil(priceEntity) &amp;&amp; !calculateDaysBehindToShowValidUntilHelper.shouldShowValidUntil(</span>
+<span class="fc" id="L138">				priceEntity.getPromotionalPrice().getValidUntil(), country, priceEntity.getTimezone())) {</span>
+<span class="fc" id="L139">			priceEntity.getPromotionalPrice().setValidUntil(null);</span>
+		}
+<span class="fc" id="L141">	}</span>
+
+	private boolean hasPromotionalPriceAndValidUntil(final PriceEntityV2 priceEntity) {
+
+<span class="fc" id="L145">		return ofNullable(priceEntity.getPromotionalPrice()).map(PromotionalPriceV2::getValidUntil).isPresent();</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
