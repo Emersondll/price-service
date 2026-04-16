@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrioritizePriceByTypeServiceV3.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.services.v3</a> &gt; <span class="el_source">PrioritizePriceByTypeServiceV3.java</span></div><h1>PrioritizePriceByTypeServiceV3.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.services.v3;
+
+import static java.util.Optional.ofNullable;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import com.abinbev.b2b.price.api.domain.v3.PriceNormalizedInfo;
+import com.abinbev.b2b.price.domain.model.v2.EntityTypeEnum;
+import com.abinbev.b2b.price.domain.model.v2.PriceEntityV2;
+
+@Service
+<span class="fc" id="L16">public class PrioritizePriceByTypeServiceV3 {</span>
+
+	public void execute(final List&lt;PriceEntityV2&gt; filteredPrices, final List&lt;PriceNormalizedInfo&gt; priceNormalizedInfos) {
+
+<span class="fc" id="L20">		final Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt; pricesByVendorIdByVendorItemId = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L21">		final Map&lt;String, Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt;&gt; pricesByAccountIdByVendorItemIdByVendorId = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L22">		final Map&lt;String, Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt;&gt; pricesByVendorDeliveryCenterIdByVendorItemIdByVendorId = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L23">		final Map&lt;String, Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt;&gt; pricesByPriceListByVendorItemIdByVendorId = new HashMap&lt;&gt;();</span>
+
+<span class="fc" id="L25">		fillPricesIntoMapsByType(filteredPrices, pricesByVendorIdByVendorItemId, pricesByAccountIdByVendorItemIdByVendorId,</span>
+				pricesByVendorDeliveryCenterIdByVendorItemIdByVendorId, pricesByPriceListByVendorItemIdByVendorId);
+
+<span class="fc" id="L28">		fillSelectedPriceIntoNormalizedInfos(priceNormalizedInfos, pricesByVendorIdByVendorItemId,</span>
+				pricesByAccountIdByVendorItemIdByVendorId,
+				pricesByVendorDeliveryCenterIdByVendorItemIdByVendorId, pricesByPriceListByVendorItemIdByVendorId);
+<span class="fc" id="L31">	}</span>
+
+	private void fillSelectedPriceIntoNormalizedInfos(final List&lt;PriceNormalizedInfo&gt; priceNormalizedInfos,
+			final Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt; pricesByVendorIdByVendorItemId,
+			final Map&lt;String, Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt;&gt; pricesByAccountIdByVendorItemIdByVendorId,
+			final Map&lt;String, Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt;&gt; pricesByVendorDeliveryCenterIdByVendorItemIdByVendorId,
+			final Map&lt;String, Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt;&gt; pricesByPriceListByVendorItemIdByVendorId) {
+
+<span class="fc" id="L39">		priceNormalizedInfos.forEach(priceNormalizedInfo -&gt; {</span>
+<span class="fc" id="L40">			PriceEntityV2 prioritizePrice = getPriceByAccount(pricesByAccountIdByVendorItemIdByVendorId, priceNormalizedInfo);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">			if (prioritizePrice == null) {</span>
+<span class="fc" id="L42">				prioritizePrice = getPriceByPriceList(pricesByPriceListByVendorItemIdByVendorId, priceNormalizedInfo);</span>
+			}
+<span class="fc bfc" id="L44" title="All 2 branches covered.">			if (prioritizePrice == null) {</span>
+<span class="fc" id="L45">				prioritizePrice = getPriceByDeliveryCenter(pricesByVendorDeliveryCenterIdByVendorItemIdByVendorId,</span>
+						priceNormalizedInfo);
+			}
+<span class="fc bfc" id="L48" title="All 2 branches covered.">			if (prioritizePrice == null) {</span>
+<span class="fc" id="L49">				prioritizePrice = getPriceByVendor(pricesByVendorIdByVendorItemId, priceNormalizedInfo);</span>
+			}
+
+<span class="fc" id="L52">			priceNormalizedInfo.setSelectedPrice(prioritizePrice);</span>
+<span class="fc" id="L53">		});</span>
+<span class="fc" id="L54">	}</span>
+
+	private void fillPricesIntoMapsByType(final List&lt;PriceEntityV2&gt; filteredPrices,
+			final Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt; pricesByVendorIdByVendorItemId,
+			final Map&lt;String, Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt;&gt; pricesByAccountIdByVendorItemIdByVendorId,
+			final Map&lt;String, Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt;&gt; pricesByVendorDeliveryCenterIdByVendorItemIdByVendorId,
+			final Map&lt;String, Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt;&gt; pricesByPriceListByVendorItemIdByVendorId) {
+
+<span class="fc" id="L62">		filteredPrices.forEach(priceEntityV2 -&gt; {</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">			if (EntityTypeEnum.VENDOR.name().equals(priceEntityV2.getId().getType())) {</span>
+<span class="fc" id="L64">				pricesByVendorIdByVendorItemId.computeIfAbsent(priceEntityV2.getId().getId(), k -&gt; new HashMap&lt;&gt;())</span>
+<span class="fc" id="L65">						.put(priceEntityV2.getId().getVendorItemId(), priceEntityV2);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">			} else if (EntityTypeEnum.ACCOUNT.name().equals(priceEntityV2.getId().getType())) {</span>
+<span class="fc" id="L67">				pricesByAccountIdByVendorItemIdByVendorId.computeIfAbsent(priceEntityV2.getId().getId(), k -&gt; new HashMap&lt;&gt;())</span>
+<span class="fc" id="L68">						.computeIfAbsent(priceEntityV2.getId().getVendorItemId(), k -&gt; new HashMap&lt;&gt;())</span>
+<span class="fc" id="L69">						.put(priceEntityV2.getId().getVendorId(), priceEntityV2);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">			} else if (EntityTypeEnum.DELIVERY_CENTER.name().equals(priceEntityV2.getId().getType())) {</span>
+<span class="fc" id="L71">				pricesByVendorDeliveryCenterIdByVendorItemIdByVendorId.computeIfAbsent(priceEntityV2.getId().getId(), k -&gt; new HashMap&lt;&gt;())</span>
+<span class="fc" id="L72">						.computeIfAbsent(priceEntityV2.getId().getVendorItemId(), k -&gt; new HashMap&lt;&gt;())</span>
+<span class="fc" id="L73">						.put(priceEntityV2.getId().getVendorId(), priceEntityV2);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			} else if (EntityTypeEnum.PRICE_LIST.name().equals(priceEntityV2.getId().getType())) {</span>
+<span class="fc" id="L75">				pricesByPriceListByVendorItemIdByVendorId.computeIfAbsent(priceEntityV2.getId().getId(), k -&gt; new HashMap&lt;&gt;())</span>
+<span class="fc" id="L76">						.computeIfAbsent(priceEntityV2.getId().getVendorItemId(), k -&gt; new HashMap&lt;&gt;())</span>
+<span class="fc" id="L77">						.put(priceEntityV2.getId().getVendorId(), priceEntityV2);</span>
+			}
+<span class="fc" id="L79">		});</span>
+<span class="fc" id="L80">	}</span>
+
+	private PriceEntityV2 getPriceByVendor(final Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt; pricesByVendorIdByVendorItemId,
+			final PriceNormalizedInfo priceNormalizedInfo) {
+
+<span class="fc" id="L85">		return ofNullable(pricesByVendorIdByVendorItemId.get(priceNormalizedInfo.getVendorId())).map(</span>
+<span class="fc" id="L86">				map -&gt; map.get(priceNormalizedInfo.getVendorItemId())).orElse(null);</span>
+	}
+
+	private PriceEntityV2 getPriceByAccount(
+			final Map&lt;String, Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt;&gt; pricesByAccountIdByVendorItemIdByVendorId,
+			final PriceNormalizedInfo priceNormalizedInfo) {
+
+<span class="fc" id="L93">		return ofNullable(</span>
+<span class="fc" id="L94">				pricesByAccountIdByVendorItemIdByVendorId.get(priceNormalizedInfo.getAccountId())).map(</span>
+<span class="fc" id="L95">						map -&gt; map.get(priceNormalizedInfo.getVendorItemId())).map(map -&gt; map.get(priceNormalizedInfo.getVendorId()))</span>
+<span class="fc" id="L96">				.orElse(null);</span>
+	}
+
+	private PriceEntityV2 getPriceByDeliveryCenter(
+			final Map&lt;String, Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt;&gt; pricesByVendorDeliveryCenterIdByVendorItemIdByVendorId,
+			final PriceNormalizedInfo priceNormalizedInfo) {
+
+<span class="fc" id="L103">		return ofNullable(</span>
+<span class="fc" id="L104">				pricesByVendorDeliveryCenterIdByVendorItemIdByVendorId.get(priceNormalizedInfo.getVendorDeliveryCenterId())).map(</span>
+<span class="fc" id="L105">						map -&gt; map.get(priceNormalizedInfo.getVendorItemId()))</span>
+<span class="fc" id="L106">				.map(map -&gt; map.get(priceNormalizedInfo.getVendorId()))</span>
+<span class="fc" id="L107">				.orElse(null);</span>
+	}
+
+	private PriceEntityV2 getPriceByPriceList(
+			final Map&lt;String, Map&lt;String, Map&lt;String, PriceEntityV2&gt;&gt;&gt; pricesByPriceListByVendorItemIdByVendorId,
+			final PriceNormalizedInfo priceNormalizedInfo) {
+
+<span class="fc" id="L114">		return ofNullable(</span>
+<span class="fc" id="L115">				pricesByPriceListByVendorItemIdByVendorId.get(priceNormalizedInfo.getPriceListId())).map(</span>
+<span class="fc" id="L116">						map -&gt; map.get(priceNormalizedInfo.getVendorItemId())).map(map -&gt; map.get(priceNormalizedInfo.getVendorId()))</span>
+<span class="fc" id="L117">				.orElse(null);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
