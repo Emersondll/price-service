@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">price-service</a> &gt; <a href="index.source.html" class="el_package">com.abinbev.b2b.price.api.services</a> &gt; <span class="el_source">PriceService.java</span></div><h1>PriceService.java</h1><pre class="source lang-java linenums">package com.abinbev.b2b.price.api.services;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.abinbev.b2b.price.api.config.properties.PriceUpFrontProperties;
+import com.abinbev.b2b.price.api.domain.PriceResultList;
+import com.abinbev.b2b.price.api.exceptions.NotFoundException;
+import com.abinbev.b2b.price.api.helpers.CalculateDaysBehindToShowValidUntilHelper;
+import com.abinbev.b2b.price.api.repository.PriceRepository;
+import com.abinbev.b2b.price.api.rest.vo.Pagination;
+import com.abinbev.b2b.price.api.rest.vo.PriceResponseVo;
+import com.abinbev.b2b.price.api.validators.PaginationValidator;
+import com.abinbev.b2b.price.domain.model.PriceEntity;
+import com.newrelic.api.agent.Trace;
+
+@Service
+public class PriceService {
+
+<span class="fc" id="L36">	private static final Logger LOGGER = LoggerFactory.getLogger(PriceService.class);</span>
+
+	private final PriceRepository priceDAO;
+	private final PriceUpFrontProperties priceUpFrontProperties;
+	private final PaginationValidator paginationValidator;
+	private final CalculateDaysBehindToShowValidUntilHelper calculateDaysBehindToShowValidUntilHelper;
+	@Autowired
+	public PriceService(final PriceRepository priceDAO, final PriceUpFrontProperties priceUpFrontProperties,
+			final PaginationValidator paginationValidator,
+<span class="fc" id="L45">			final CalculateDaysBehindToShowValidUntilHelper calculateDaysBehindToShowValidUntilHelper) {</span>
+
+<span class="fc" id="L47">		this.priceDAO = priceDAO;</span>
+<span class="fc" id="L48">		this.priceUpFrontProperties = priceUpFrontProperties;</span>
+<span class="fc" id="L49">		this.paginationValidator = paginationValidator;</span>
+<span class="fc" id="L50">		this.calculateDaysBehindToShowValidUntilHelper = calculateDaysBehindToShowValidUntilHelper;</span>
+<span class="fc" id="L51">	}</span>
+
+	@Trace(dispatcher = true)
+	public PriceResponseVo getAllPrices(final String accountId, final String country, final List&lt;String&gt; skus,
+			final Pagination pagination) {
+
+<span class="fc" id="L57">		LOGGER.debug(&quot;Starting find the Prices by accountId {} for country {}&quot;, accountId, country);</span>
+
+<span class="fc" id="L59">		paginationValidator.validatePagination(pagination);</span>
+
+<span class="fc" id="L61">		final boolean priceUpFrontEnabled = priceUpFrontEnabledToCountry(country);</span>
+
+<span class="fc" id="L63">		final Instant currentDate = Instant.now();</span>
+
+<span class="fc" id="L65">		final PriceResultList priceResult = priceDAO</span>
+<span class="fc" id="L66">				.findPriceByIdFilteringSkus(accountId, country, skus, pagination, priceUpFrontEnabled, currentDate);</span>
+
+<span class="fc bfc" id="L68" title="All 4 branches covered.">		if (Objects.isNull(priceResult) || CollectionUtils.isEmpty(priceResult.getPriceEntities())) {</span>
+<span class="fc" id="L69">			throw NotFoundException.customerPricesNotFound(accountId, country);</span>
+		}
+
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		if (priceUpFrontEnabled) {</span>
+<span class="fc" id="L73">			priceResult.setPriceEntities(getPriceWithClosestDate(priceResult, currentDate));</span>
+<span class="fc" id="L74">			priceResult.getPagination().setTotalElements(priceResult.getPriceEntities().size());</span>
+<span class="fc" id="L75">			priceResult.getPagination().setSize(priceResult.getPriceEntities().size());</span>
+		}
+
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		for (final PriceEntity priceEntity : priceResult.getPriceEntities()) {</span>
+<span class="fc" id="L79">			showValidUntilBasedOnSimulationDateTime(priceEntity);</span>
+<span class="fc" id="L80">		}</span>
+
+<span class="fc" id="L82">		LOGGER.debug(&quot;All prices successfully retrieved&quot;);</span>
+
+<span class="fc" id="L84">		return createPriceResponseVo(priceResult);</span>
+	}
+
+	private PriceResponseVo createPriceResponseVo(final PriceResultList priceResultList) {
+
+<span class="fc" id="L89">		return new PriceResponseVo(priceResultList.getPriceEntities(), priceResultList.getPagination());</span>
+	}
+
+	private boolean priceUpFrontEnabledToCountry(final String country) {
+
+<span class="fc" id="L94">		final String countriesEnabled = priceUpFrontProperties.getCountriesEnabled();</span>
+
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (StringUtils.isNotEmpty(countriesEnabled)) {</span>
+<span class="fc" id="L97">			return Arrays.stream(countriesEnabled.split(&quot;,&quot;)).anyMatch(c -&gt; c.equalsIgnoreCase(country));</span>
+		}
+
+<span class="fc" id="L100">		return false;</span>
+	}
+
+	private List&lt;PriceEntity&gt; getPriceWithClosestDate(final PriceResultList priceResult, final Instant currentDate) {
+
+<span class="fc" id="L105">		final Map&lt;String, List&lt;PriceEntity&gt;&gt; priceGroupById = priceResult.getPriceEntities().stream()</span>
+<span class="fc" id="L106">				.collect(Collectors.groupingBy(entity -&gt; entity.getId().getSku()));</span>
+
+<span class="fc" id="L108">		final List&lt;PriceEntity&gt; closestDatePrice = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		for (final List&lt;PriceEntity&gt; entities : priceGroupById.values()) {</span>
+
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			if (entities.size() &gt; NumberUtils.INTEGER_ONE) {</span>
+
+<span class="fc bfc" id="L114" title="All 2 branches covered.">				final Optional&lt;PriceEntity&gt; priceEntity = entities.stream().filter(price -&gt; price.getId().getValidFrom() != null)</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">						.filter(entity -&gt; ChronoUnit.HOURS.between(currentDate, entity.getId().getValidFrom()) &lt;= 0)</span>
+<span class="fc" id="L116">						.max(Comparator.comparingLong(entity -&gt; ChronoUnit.HOURS.between(currentDate, entity.getId().getValidFrom())));</span>
+
+<span class="fc" id="L118">				priceEntity.ifPresent(closestDatePrice::add);</span>
+<span class="fc" id="L119">			} else {</span>
+<span class="fc" id="L120">				closestDatePrice.add(entities.get(0));</span>
+			}
+<span class="fc" id="L122">		}</span>
+
+<span class="fc" id="L124">		return closestDatePrice;</span>
+	}
+
+	private void showValidUntilBasedOnSimulationDateTime(final PriceEntity priceEntity) {
+
+<span class="fc bfc" id="L129" title="All 4 branches covered.">		if (priceEntity.getPromotionalPrice() != null &amp;&amp; priceEntity.getPromotionalPrice().getValidUntil() != null</span>
+				&amp;&amp; !calculateDaysBehindToShowValidUntilHelper
+<span class="fc bfc" id="L131" title="All 2 branches covered.">				.shouldShowValidUntil(priceEntity.getPromotionalPrice().getValidUntil(), priceEntity.getCountry(),</span>
+<span class="fc" id="L132">						priceEntity.getTimezone())) {</span>
+<span class="fc" id="L133">			priceEntity.getPromotionalPrice().setValidUntil(null);</span>
+		}
+<span class="fc" id="L135">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
