@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.abinbev.b2b.price.api.arch.MainApplicationArchRulesTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.115 s - in com.abinbev.b2b.price.api.arch.MainApplicationArchRulesTest
