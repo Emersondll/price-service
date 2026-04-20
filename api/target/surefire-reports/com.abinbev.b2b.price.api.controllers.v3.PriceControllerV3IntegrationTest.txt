@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.abinbev.b2b.price.api.controllers.v3.PriceControllerV3IntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 47, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 14.276 s - in com.abinbev.b2b.price.api.controllers.v3.PriceControllerV3IntegrationTest
