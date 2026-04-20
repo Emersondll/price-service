@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.abinbev.b2b.price.api.config.properties.ToggleConfigurationPropertiesTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.042 s - in com.abinbev.b2b.price.api.config.properties.ToggleConfigurationPropertiesTest
