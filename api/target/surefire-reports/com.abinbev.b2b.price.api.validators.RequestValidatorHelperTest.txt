@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.abinbev.b2b.price.api.validators.RequestValidatorHelperTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.492 s - in com.abinbev.b2b.price.api.validators.RequestValidatorHelperTest
