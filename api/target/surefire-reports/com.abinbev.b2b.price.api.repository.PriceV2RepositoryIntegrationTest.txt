@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.abinbev.b2b.price.api.repository.PriceV2RepositoryIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 40.441 s - in com.abinbev.b2b.price.api.repository.PriceV2RepositoryIntegrationTest
