@@ -1,0 +1,121 @@
+[
+  {
+    "id": {
+      "id": "VDC-1",
+      "type": "DELIVERY_CENTER",
+      "vendorItemId": "VI-1",
+      "vendorId": "52551e44-be50-4c33-8c4f-3531ff5b4163"
+    },
+    "sku": "DORITOS",
+    "basePrice": 20.99,
+    "measureUnit": "CS",
+    "type": "PER_UNIT",
+    "minimumPrice": 5.99,
+    "deposit": 3.99,
+    "consignment": 0.75,
+    "quantityPerPallet": 88,
+    "taxes": {
+      "IVA": {
+        "taxId": "IVA",
+        "type": "%",
+        "value": 20.99,
+        "taxBaseInclusionIds": [
+          "IVA"
+        ],
+        "hidden": false,
+        "base": 10.99,
+        "conditions": {
+          "orderSubTotal": {
+            "minimumValue": 2000.99
+          }
+        }
+      }
+    },
+    "charges": {
+      "LOGISTIC_COST": {
+        "chargeId": "LOGISTIC_COST",
+        "type": "$",
+        "value": 20.99,
+        "base": 10.99
+      }
+    },
+    "promotionalPrice": {
+      "price": 10.19,
+      "externalId": "PROMOTIONAL_PRICE"
+    },
+    "deleted": false,
+    "timezone": "America/Sao_Paulo",
+    "country": "BR",
+    "timestamp": 1590386162572,
+    "createdDate": "2021-04-11T17:31:34.010+00:00",
+    "updatedDate": "2021-04-11T14:09:33.246+00:00",
+    "validTo": "2999-07-14T14:09:33.246+00:00"
+  },
+  {
+    "id": {
+      "id": "A-1",
+      "type": "ACCOUNT",
+      "vendorItemId": "VI-2",
+      "vendorId": "52551e44-be50-4c33-8c4f-3531ff5b4163"
+    },
+    "sku": "FACAXPTO",
+    "basePrice": 20.99,
+    "measureUnit": "CS",
+    "type": "PER_UNIT",
+    "minimumPrice": 5.99,
+    "deposit": 3.99,
+    "consignment": 0.75,
+    "quantityPerPallet": 88,
+    "taxes": {
+      "IVA": {
+        "taxId": "IVA",
+        "type": "%",
+        "value": 20,
+        "taxBaseInclusionIds": [
+          "IVA"
+        ],
+        "hidden": false,
+        "base": 10.99,
+        "conditions": {
+          "orderSubTotal": {
+            "minimumValue": 2000.99
+          }
+        },
+        "baseChanges": {
+          "reduction": 5,
+          "increase": 5,
+          "compareWith": {
+            "type": "AMOUNT",
+            "base": 5.99
+          }
+        },
+        "deduction": {
+          "type": "$",
+          "value": 5,
+          "baseChanges": {
+            "reduction": 5
+          }
+        }
+      }
+    },
+    "charges": {
+      "LOGISTIC_COST": {
+        "chargeId": "LOGISTIC_COST",
+        "type": "$",
+        "value": 20.99,
+        "base": 10.99
+      }
+    },
+    "promotionalPrice": {
+      "price": 10.19,
+      "externalId": "ZTPM"
+    },
+    "deleted": false,
+    "timezone": "America/Sao_Paulo",
+    "country": "BR",
+    "timestamp": 1590386162572,
+    "createdDate": "2021-04-11T17:31:34.010+00:00",
+    "updatedDate": "2021-04-11T14:09:33.246+00:00",
+    "validTo": "2999-07-14T14:09:33.246+00:00"
+  }
+]
