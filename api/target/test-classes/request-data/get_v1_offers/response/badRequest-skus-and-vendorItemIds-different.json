@@ -1,0 +1,7 @@
+{
+  "code": 1,
+  "message": "Malformed Request",
+  "details": [
+    "The values of skus and vendorItemIds cannot be different."
+  ]
+}
