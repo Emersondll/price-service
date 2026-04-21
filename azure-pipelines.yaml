@@ -1,0 +1,45 @@
+name: $(Build.BuildId)
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+trigger:
+  branches:
+    include:
+      - master
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: GHQ_B2B_Delta/golden-CICD-library
+      ref: refs/heads/master
+
+variables:
+  - group: BEES-GoldenCICD-Microservice-vg
+  - group: PricingEngine-GoldenCICD-vg
+  - group: BEES-PricingEngine-GoldenCICD-Jdk17-vg
+
+extends:
+  template: sre-pipelines/global-pricing-engine/ms_base_pipeline.yml@templates ## --> GoldenCICD entrypoint template
+  parameters:
+    # AI Reviewer
+    automaticReviewerApplicationType: microservice
+
+    microserviceName: price-service
+    microserviceVersion: '1.0.0'
+
+    # Docker
+    dockerImageNames:
+      - price-relay-service
+      - price-consumer
+      - price-service
+
+    deployType: canary
+
+    # APIM
+    enableApiConfig: true
+
+    # Check E2E
+    runCheckE2E: true
+    deployCanaryDependsOnCheckE2E: false
