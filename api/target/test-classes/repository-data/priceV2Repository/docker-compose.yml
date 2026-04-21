@@ -1,0 +1,23 @@
+version: '2.1'
+
+networks:
+  repository_api_integration_tests_price_repository_v2:
+    driver: bridge
+
+services:
+
+  repository_api_integration_tests_price_repository_v2_mongo:
+    image: mongo:3.6.1
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    healthcheck:
+      test: [ "CMD-SHELL", "mongo --eval 'db.runCommand({ connectionStatus: 1 })'" ]
+      interval: 10s
+      timeout: 10s
+      retries: 15
+    ports:
+      - 26001:27017
+    networks:
+      - repository_api_integration_tests_price_repository_v2
+    command: mongod
