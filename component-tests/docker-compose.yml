@@ -1,0 +1,121 @@
+version: '2.1'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.12.1-management-alpine
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_DEFAULT_USER=price
+      - RABBITMQ_DEFAULT_PASS=price
+      - RABBITMQ_DEFAULT_VHOST=local-vh-1
+    healthcheck:
+      test: [ "CMD-SHELL", "rabbitmqctl status" ]
+      interval: 10s
+      timeout: 15s
+      retries: 15
+    ports:
+      - "5672:5672"
+
+  mongo:
+    image: mongo:3.6.1
+    healthcheck:
+      test: [ "CMD-SHELL", "mongo --eval 'db.runCommand({ connectionStatus: 1 })'" ]
+      interval: 15s
+      timeout: 10s
+      retries: 15
+    ports:
+      - "27017:27017"
+
+  consumer:
+    build: ../consumer/target/docker/
+    image: price-consumer:latest
+    environment:
+      - JAVA_OPTS=-Xms2G -Xmx3G
+      - MONGO_CONNECTION_STRING=mongodb://mongo:27017
+      - RABBIT_MQ_HOST=rabbitmq
+      - UPCOMING_PRICES_COUNTRIES=AR
+      - QUEUE_PRICES_STAGING_V2=ar-prices-service-v2-staging,br-prices-service-v2-staging,ca-prices-service-v2-staging,us-prices-service-v2-staging,ec-prices-service-v2-staging
+      - QUEUE_PRICES_DELETE_V2=ar-prices-service-v2-delete,br-prices-service-v2-delete,ca-prices-service-v2-delete,us-prices-service-v2-delete
+      - QUEUE_PRICES_V2=ar-prices-service-v2,br-prices-service-v2,ca-prices-service-v2,us-prices-service-v2,ec-prices-service-v2,ar-prices-service-v2-cosmos,br-prices-service-v2-cosmos,ca-prices-service-v2-cosmos,us-prices-service-v2-cosmos,ec-prices-service-v2-cosmos
+      - SUPPORTED_COUNTRIES=AR,BR,CA,CL,CO,DO,EC,MX,PA,PE,PY,SV,ZA
+      - SUPPORTED_COUNTRIES_V2=AR,BR,CA,SV,US,EC
+      - QUEUE_PRICES=ar-prices-service,br-prices-service,ca-prices-service,cl-prices-service,co-prices-service,do-prices-service,ec-prices-service,mx-prices-service,pa-prices-service,pe-prices-service,py-prices-service,sv-prices-service,za-prices-service
+      - QUEUE_PRICES_DELETE=ar-prices-service-delete,br-prices-service-delete,ca-prices-service-delete,cl-prices-service-delete,co-prices-service-delete,do-prices-service-delete,ec-prices-service-delete,mx-prices-service-delete,pa-prices-service-delete,pe-prices-service-delete,py-prices-service-delete,sv-prices-service-delete,za-prices-service-delete
+      - QUEUE_PRICES_STAGING=ar-prices-service-staging,br-prices-service-staging,ca-prices-service-staging,cl-prices-service-staging,co-prices-service-staging,do-prices-service-staging,ec-prices-service-staging,mx-prices-service-staging,pa-prices-service-staging,pe-prices-service-staging,py-prices-service-staging,sv-prices-service-staging,za-prices-service-staging
+      - QUEUE_PRICES_CART_STAGING=ar-prices-cart-staging,br-prices-cart-staging,ca-prices-cart-staging,cl-prices-cart-staging,co-prices-cart-staging,do-prices-cart-staging,ec-prices-cart-staging,mx-prices-cart-staging,pa-prices-cart-staging,pe-prices-cart-staging,py-prices-cart-staging,sv-prices-cart-staging,za-prices-cart-staging
+      - ALLOW_TAX_NEGATIVE_VALUE=SV
+      - BEESPR_16872=true
+      - BEESPR_19558=true
+      - BEESPR_19558_2=true
+      - SPECIFIC_QUEUES_BY_VENDOR_BY_COUNTRY={"EC":["4b83b5ce-5e6e-408e-a1a2-bf3b36080ca3"],"BR":["4a54b07f-8067-4d09-a74a-9cbd34a85ddc"]}
+      - DATABASE_ZONE_COLLECTIONS_V2={"AR":"ARPrices_V2","BE":"BRPrices_V2","BR":"BRPrices_V2","CA":"CAPrices_V2","DE":"DEPrices_V2","ID":"IDPrices_V2","NL":"NLPrices_V2","PH":"PHPrices_V2","SV":"SVPrices_V2","US":"USPrices_V2","EC":"ECPrices_V2"}
+    healthcheck:
+      test: [ "CMD-SHELL", "ps -fe | grep java" ]
+      interval: 30s
+      timeout: 60s
+      retries: 15
+    logging:
+      driver: json-file
+    ports:
+      - "8081:8081"
+    depends_on:
+      "rabbitmq":
+        condition: service_healthy
+      "mongo":
+        condition: service_healthy
+
+  api:
+    build: ../api/target/docker/
+    image: price-service:latest
+    environment:
+      - JAVA_OPTS=-Xms2G -Xmx2G
+      - MONGO_CONNECTION_STRING=mongodb://mongo:27017
+      - UPCOMING_PRICES_COUNTRIES=AR
+      - ENABLE_VALIDATION_JWT=true
+      - PRICING_CONFIGURATION={"default":{"pricesIgnoreTaxCondition":true,"whenApplyRoundingOnTaxes":"IN_THE_END","roundTaxesAndDiscountBeforeSubtotalAndTotal":true,"priceIncludeDeposit":false,"taxIncludesDeposit":false,"excludeTaxesFromBrowsePrice":false,"excludeChargeFromBrowsePrice":false,"daysBehindToShowValidUntil":0,"excludeConditionalTaxesFromBrowsePrice":false},"ar":{"pricesIgnoreTaxCondition":true,"whenApplyRoundingOnTaxes":"ON_EACH_TAX","roundTaxesAndDiscountBeforeSubtotalAndTotal":true,"priceIncludeDeposit":false,"taxIncludesDeposit":false,"excludeTaxesFromBrowsePrice":false,"excludeChargeFromBrowsePrice":false,"daysBehindToShowValidUntil":0,"excludeConditionalTaxesFromBrowsePrice":false},"br":{"pricesIgnoreTaxCondition":true,"whenApplyRoundingOnTaxes":"ON_EACH_TAX","roundTaxesAndDiscountBeforeSubtotalAndTotal":true,"priceIncludeDeposit":false,"taxIncludesDeposit":false,"excludeTaxesFromBrowsePrice":false,"excludeChargeFromBrowsePrice":false,"daysBehindToShowValidUntil":0,"excludeConditionalTaxesFromBrowsePrice":false},"us":{"pricesIgnoreTaxCondition":true,"whenApplyRoundingOnTaxes":"IN_THE_END","roundTaxesAndDiscountBeforeSubtotalAndTotal":true,"priceIncludeDeposit":false,"taxIncludesDeposit":false,"excludeTaxesFromBrowsePrice":false,"excludeChargeFromBrowsePrice":false,"daysBehindToShowValidUntil":14,"excludeConditionalTaxesFromBrowsePrice":false},"sv":{"pricesIgnoreTaxCondition":true,"whenApplyRoundingOnTaxes":"IN_THE_END","roundTaxesAndDiscountBeforeSubtotalAndTotal":true,"priceIncludeDeposit":false,"taxIncludesDeposit":false,"excludeTaxesFromBrowsePrice":false,"excludeChargeFromBrowsePrice":false,"daysBehindToShowValidUntil":0,"excludeConditionalTaxesFromBrowsePrice":true},"za":{"pricesIgnoreTaxCondition":true,"whenApplyRoundingOnTaxes":"NONE","roundTaxesAndDiscountBeforeSubtotalAndTotal":true,"priceIncludeDeposit":true,"taxIncludesDeposit":true,"excludeTaxesFromBrowsePrice":false,"excludeChargeFromBrowsePrice":false,"daysBehindToShowValidUntil":0,"excludeConditionalTaxesFromBrowsePrice":true},"mx":{"pricesIgnoreTaxCondition":true,"whenApplyRoundingOnTaxes":"ON_EACH_TAX","roundTaxesAndDiscountBeforeSubtotalAndTotal":true,"priceIncludeDeposit":false,"taxIncludesDeposit":false,"excludeTaxesFromBrowsePrice":false,"excludeChargeFromBrowsePrice":false,"daysBehindToShowValidUntil":0,"excludeConditionalTaxesFromBrowsePrice":false},"py":{"pricesIgnoreTaxCondition":true,"whenApplyRoundingOnTaxes":"ON_EACH_TAX","roundTaxesAndDiscountBeforeSubtotalAndTotal":true,"priceIncludeDeposit":false,"taxIncludesDeposit":false,"excludeTaxesFromBrowsePrice":false,"excludeChargeFromBrowsePrice":false,"daysBehindToShowValidUntil":0,"excludeConditionalTaxesFromBrowsePrice":false},"pa":{"pricesIgnoreTaxCondition":true,"whenApplyRoundingOnTaxes":"IN_THE_END","roundTaxesAndDiscountBeforeSubtotalAndTotal":true,"priceIncludeDeposit":false,"taxIncludesDeposit":false,"excludeTaxesFromBrowsePrice":true,"excludeChargeFromBrowsePrice":true,"daysBehindToShowValidUntil":0,"excludeConditionalTaxesFromBrowsePrice":false}}
+      - SUPPORTED_COUNTRIES=AR,BR,CA,CL,CO,DO,EC,MX,PA,PE,PY,SV,ZA
+      - SUPPORTED_COUNTRIES_V2=AR,BR,CA,SV,US
+      - SUPPORTED_COUNTRIES_V3=AR,BR,CA,SV,US,EC
+      - DATABASE_ZONE_COLLECTIONS={"AR":"ARPrices","BR":"BRPrices","CA":"CAPrices","CL":"CLPrices","CO":"COPrices","DO":"DOPrices","EC":"ECPrices","MX":"MXPrices","PA":"PAPrices","PE":"PEPrices","PY":"PYPrices","SV":"SVPrices","ZA":"ZAPrices"}
+      - DATABASE_ZONE_COLLECTIONS_V2={"AR":"ARPrices_V2","BR":"BRPrices_V2","CA":"CAPrices_V2","SV":"SVPrices_V2","US":"USPrices_V2","EC":"ECPrices_V2"}
+      - DEFAULT_VENDOR_ID={"BR":"44092477-b173-477a-a24a-25eeab20fccb","CA":"86e691a4-16a8-4478-bc43-461c76fad14b"}
+      - COUNTRIES_WITH_PRICE_LIST_PRIORITY=BR
+      - BEESPR_19558=true
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost 8082" ]
+      interval: 30s
+      timeout: 10s
+      retries: 15
+    logging:
+      driver: json-file
+    ports:
+      - "8082:8082"
+    depends_on:
+      "mongo":
+        condition: service_healthy
+
+  relay:
+    build: ../relay/target/docker/
+    image: price-relay-service:latest
+    environment:
+      - JAVA_OPTS=-Xms2G -Xmx2G
+      - RABBIT_MQ_HOST=rabbitmq
+      - DECODE_JWT=true
+      - UPCOMING_PRICES_COUNTRIES=AR
+      - SUPPORTED_COUNTRIES=AR,BR,CA,CL,CO,DO,EC,MX,PA,PE,PY,SV,ZA
+      - SUPPORTED_COUNTRIES_V2=AR,US,CA
+      - SUPPORTED_COUNTRIES_V3=BR,US,EC
+      - BEESPR_19558=true
+      - SPECIFIC_QUEUES_BY_VENDOR_BY_COUNTRY={"EC":["4b83b5ce-5e6e-408e-a1a2-bf3b36080ca3"],"BR":["4a54b07f-8067-4d09-a74a-9cbd34a85ddc"]}
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost 8080" ]
+      interval: 30s
+      timeout: 20s
+      retries: 15
+    logging:
+      driver: json-file
+    ports:
+      - "8080:8080"
+    depends_on:
+      "rabbitmq":
+        condition: service_healthy
