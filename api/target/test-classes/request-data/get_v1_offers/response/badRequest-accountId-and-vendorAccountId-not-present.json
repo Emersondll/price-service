@@ -1,0 +1,7 @@
+{
+  "code": 1,
+  "message": "Malformed Request",
+  "details": [
+    "Please provide accountId or vendorAccountId header."
+  ]
+}
