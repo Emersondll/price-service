@@ -1,0 +1,23 @@
+[
+  {
+    "id": {
+      "id": "ACCOUNT_ID_1-VALID_FROM_AND_VALID_TO_VALID",
+      "type": "ACCOUNT",
+      "vendorItemId": "VENDOR_ITEM_1",
+      "vendorId": "VENDOR_ID_1",
+      "validFrom": "2050-04-01"
+    },
+    "sku": "SKU_1",
+    "basePrice": 10.00,
+    "country": "AR",
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": 1,
+    "quantityPerPallet": 11,
+    "timezone": "America/Buenos_Aires",
+    "timestamp": 1617628719,
+    "createdDate": 978220799000,
+    "updatedDate": 978220799000,
+    "validTo": 2533247999000
+  }
+]
