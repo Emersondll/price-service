@@ -1,0 +1,83 @@
+[
+  {
+    "_id": {
+      "id": "ACCOUNT_ID_1-VALID_FROM_AND_VALID_TO_VALID",
+      "type": "ACCOUNT",
+      "vendorItemId": "VENDOR_ITEM_1",
+      "vendorId": "VENDOR_ID_1",
+      "validFrom": "2050-04-01"
+    },
+    "sku": "SKU_1",
+    "basePrice": "10.00",
+    "country": "AR",
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": "1",
+    "quantityPerPallet": 11,
+    "timezone": "America/Buenos_Aires",
+    "timestamp": 1617628719,
+    "createdDate": "2000-12-30T23:59:59+00:00",
+    "updatedDate": "2000-12-30T23:59:59+00:00",
+    "validTo": "2050-04-10T23:59:59+00:00"
+  },
+  {
+    "_id": {
+      "id": "PRICE_LIST_ID_1-VALID_FROM_INVALID",
+      "type": "PRICE_LIST",
+      "vendorItemId": "VENDOR_ITEM_1",
+      "vendorId": "VENDOR_ID_1",
+      "validFrom": "2055-04-01"
+    },
+    "sku": "SKU_1",
+    "basePrice": "20.00",
+    "country": "AR",
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": "2",
+    "quantityPerPallet": 22,
+    "timezone": "America/Buenos_Aires",
+    "timestamp": 1617628891,
+    "createdDate": "2001-12-30T23:59:59+00:00",
+    "updatedDate": "2001-12-30T23:59:59+00:00",
+    "validTo": null
+  },
+  {
+    "_id": {
+      "id": "DELIVERY_CENTER_ID_1-VALID_FROM_AND-WITHOUT_VALID_TO",
+      "type": "DELIVERY_CENTER",
+      "vendorItemId": "VENDOR_ITEM_1",
+      "vendorId": "VENDOR_ID_1",
+      "validFrom": "2050-01-01"
+    },
+    "sku": "SKU_1",
+    "basePrice": "30.00",
+    "country": "AR",
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": "3",
+    "quantityPerPallet": 33,
+    "timezone": "America/Buenos_Aires",
+    "timestamp": 1617628892,
+    "createdDate": "2002-12-30T23:59:59+00:00",
+    "updatedDate": "2002-12-30T23:59:59+00:00"
+  },
+  {
+    "_id": {
+      "id": "VENDOR_ID_1",
+      "type": "VENDOR",
+      "vendorItemId": "VENDOR_ITEM_1",
+      "vendorId": "VENDOR_ID_1"
+    },
+    "sku": "SKU_1",
+    "basePrice": "40.00",
+    "country": "AR",
+    "deleted": false,
+    "measureUnit": "CS",
+    "minimumPrice": "4",
+    "quantityPerPallet": 44,
+    "timezone": "America/Buenos_Aires",
+    "timestamp": 1617628892,
+    "createdDate": "2003-12-30T23:59:59+00:00",
+    "updatedDate": "2003-12-30T23:59:59+00:00"
+  }
+]
