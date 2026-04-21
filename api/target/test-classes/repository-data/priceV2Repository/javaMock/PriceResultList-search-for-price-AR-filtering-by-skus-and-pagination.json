@@ -1,0 +1,133 @@
+{
+  "pagination": {
+    "page": 0,
+    "size": 2,
+    "totalPages": 1,
+    "totalElements": 2
+  },
+  "priceEntities": [
+    {
+      "id": {
+        "id": "ACCOUNT_ID-1",
+        "type": "ACCOUNT",
+        "vendorItemId": "SKU_1-1",
+        "vendorId": "Vendor-1",
+        "validFrom": "2031-12-31"
+      },
+      "basePrice": 10.00,
+      "charges": {
+        "VALID_CHARGE-1": {
+          "chargeId": "VALID_CHARGE-1",
+          "type": "$",
+          "value": 20.19
+        }
+      },
+      "consignment": 0.85,
+      "country": "AR",
+      "createdDate": 978220799000,
+      "deleted": false,
+      "deposit": 2.99,
+      "measureUnit": "CS",
+      "minimumPrice": 8.40,
+      "promotionalPrice": {
+        "externalId": "ZTPM",
+        "price": 11.99,
+        "validUntil": "2032-12-31"
+      },
+      "quantityPerPallet": 78,
+      "sku": "SKU_1-1",
+      "taxes": {
+        "VALID_tax-1": {
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": 2000.19
+            }
+          },
+          "hidden": false,
+          "taxId": "VALID_tax-1",
+          "type": "$",
+          "value": 20.19
+        },
+        "VALID_tax-2": {
+          "base": 10.19,
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": 2000.19
+            }
+          },
+          "hidden": false,
+          "taxBaseInclusionIds": [
+            "VALID_tax-1"
+          ],
+          "taxId": "VALID_tax-2",
+          "type": "%"
+        }
+      },
+      "timestamp": 1617628719,
+      "timezone": "America/Buenos_Aires",
+      "updatedDate": 978220799000
+    },
+    {
+      "id": {
+        "id": "ACCOUNT_ID-1",
+        "type": "ACCOUNT",
+        "vendorItemId": "SKU_1-2",
+        "vendorId": "Vendor-1",
+        "validFrom": "2035-12-31"
+      },
+      "basePrice": 20.00,
+      "charges": {
+        "VALID_CHARGE-1": {
+          "base": 10.99,
+          "chargeId": "VALID_CHARGE-1",
+          "type": "%"
+        }
+      },
+      "consignment": 0.75,
+      "country": "AR",
+      "createdDate": 978220799000,
+      "deleted": false,
+      "deposit": 3.99,
+      "measureUnit": "CS",
+      "minimumPrice": 19.20,
+      "promotionalPrice": {
+        "externalId": "ZTPM",
+        "price": 10.99,
+        "validUntil": "2031-12-31"
+      },
+      "quantityPerPallet": 88,
+      "sku": "SKU_1-2",
+      "taxes": {
+        "VALID_tax-1": {
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": 2000.99
+            }
+          },
+          "hidden": false,
+          "taxId": "VALID_tax-1",
+          "type": "$",
+          "value": 20.99
+        },
+        "VALID_tax-2": {
+          "base": 10.99,
+          "conditions": {
+            "orderSubTotal": {
+              "minimumValue": 2000.99
+            }
+          },
+          "hidden": false,
+          "taxBaseInclusionIds": [
+            "VALID_tax-1"
+          ],
+          "taxId": "VALID_tax-2",
+          "type": "%"
+        }
+      },
+      "timestamp": 1617628719,
+      "timezone": "America/Buenos_Aires",
+      "updatedDate": 978220799000,
+      "validTo": 2082671999000
+    }
+  ]
+}
