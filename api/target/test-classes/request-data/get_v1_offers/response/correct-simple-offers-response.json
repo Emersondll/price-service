@@ -1,0 +1,23 @@
+[
+  {
+    "sku": "SKU_001",
+    "price": 100.0,
+    "originalPrice": 100.0,
+    "validUntil": null,
+    "vendorItemId": null
+  },
+  {
+    "sku": "SKU_002",
+    "price": 200.02,
+    "originalPrice": 202.02,
+    "validUntil": null,
+    "vendorItemId": null
+  },
+  {
+    "sku": "SKU_003",
+    "price": 300.3,
+    "originalPrice": 300.3,
+    "validUntil": null,
+    "vendorItemId": null
+  }
+]
